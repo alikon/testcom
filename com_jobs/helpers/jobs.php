@@ -10,7 +10,7 @@
 defined('_JEXEC') or die;
 
 /**
- * Redirect component helper.
+ * Jobs component helper.
  *
  * @since       __DEPLOY_VERSION__
  */
