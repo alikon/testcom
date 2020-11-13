@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form addfieldprefix="Joomla\Component\Jobs\Administrator\Field">
+	<fields name="filter">
+		<field
+			name="search"
+			type="text"
+			inputmode="search"
+			label="COM_JOBS_FILTER_SEARCH_LABEL"
+			description="COM_JOBS_FILTER_SEARCH_DESC"
+			hint="JSEARCH_FILTER"
+		/>
+		<field
+			name="exitcode"
+			type="Jobs"
+			label="COM_JOBS_HEADING_EXITCODE"
+			onchange="this.form.submit();"
+			>
+			<option value="">COM_JOBS_FILTER_SELECT_OPTION_EXITCODE</option>
+		</field>
+	</fields>
+	<fields name="list">
+		<field
+			name="fullordering"
+			type="list"
+			label="JGLOBAL_SORT_BY"
+			onchange="this.form.submit();"
+			default="a.taskname DESC"
+			validate="options"
+			>
+			<option value="">JGLOBAL_SORT_BY</option>
+			<option value="a.taskname ASC">COM_JOBS_HEADING_JOBNAME_ASC</option>
+			<option value="a.taskname DESC">COM_JOBS_HEADING_JOBNAME_DESC</option>
+			<option value="a.lastdate ASC">COM_JOBS_HEADING_EXECUTION_ASC</option>
+			<option value="a.lastdate DESC">COM_JOBS_HEADING_EXECUTION_DESC</option>
+			<option value="a.duration ASC">COM_JOBS_HEADING_DURATION_ASC</option>
+			<option value="a.duration DESC">COM_JOBS_HEADING_DURATION_DESC</option>
+			<option value="a.exitcode ASC">COM_JOBS_HEADING_EXIT_CODE_ASC</option>
+			<option value="a.exitcode DESC">COM_JOBS_HEADING_EXIT_CODE_DESC</option>
+			<option value="a.nextdate ASC">COM_JOBS_HEADING_NEXTEXECUTION_ASC</option>
+			<option value="a.nextdate DESC">COM_JOBS_HEADING_NEXTEXECUTION_DESC</option>
+			<option value="a.id ASC">JGRID_HEADING_ID_ASC</option>
+			<option value="a.id DESC">JGRID_HEADING_ID_DESC</option>
+		</field>
+		<field
+			name="limit"
+			type="limitbox"
+			label="JGLOBAL_LIST_LIMIT"
+			default="5"
+			onchange="this.form.submit();"
+		/>
+	</fields>
+</form>
