@@ -27,4 +27,7 @@
 			<language tag="en-GB">language/en-GB/com_jobs.sys.ini</language>
 		</languages>
 	</administration>
+	<updateservers>
+		<server type="extension" name="Jobs Component">https://raw.githubusercontent.com/alikon/testcom/main/manifest.xml</server>
+	</updateservers>
 </extension>
