@@ -19,15 +19,15 @@ use Joomla\CMS\Router\Route;
 use Joomla\Component\Jobs\Administrator\Helper\JobsHelper;
 
 /**
- * Redirect master display controller.
+ * Jobs master display controller.
  *
- * @since  1.6
+ * @since  __DEPLOY_VERSION__
  */
 class DisplayController extends BaseController
 {
 	/**
 	 * @var		string	The default view.
-	 * @since   1.6
+	 * @since   __DEPLOY_VERSION__
 	 */
 	protected $default_view = 'jobs';
 
@@ -39,7 +39,7 @@ class DisplayController extends BaseController
 	 *
 	 * @return  static|boolean	 This object to support chaining or false on failure.
 	 *
-	 * @since   1.5
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public function display($cachable = false, $urlparams = false)
 	{

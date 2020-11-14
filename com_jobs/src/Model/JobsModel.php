@@ -19,9 +19,9 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Database\ParameterType;
 
 /**
- * Methods supporting a list of redirect links.
+ * Methods supporting a list of jobs.
  *
- * @since  1.6
+ * @since  __DEPLOY_VERSION__
  */
 class JobsModel extends ListModel
 {
@@ -32,7 +32,7 @@ class JobsModel extends ListModel
 	 * @param   MVCFactoryInterface  $factory  The factory.
 	 *
 	 * @see     \JControllerLegacy
-	 * @since   1.6
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public function __construct($config = array(), MVCFactoryInterface $factory = null)
 	{
@@ -55,11 +55,11 @@ class JobsModel extends ListModel
 		parent::__construct($config, $factory);
 	}
 	/**
-	 * Removes all of the unpublished redirects from the table.
+	 * Removes all of the jobs from the table.
 	 *
 	 * @return  boolean result of operation
 	 *
-	 * @since   3.5
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public function purge()
 	{
@@ -85,7 +85,7 @@ class JobsModel extends ListModel
 	 *
 	 * @return  void
 	 *
-	 * @since   1.6
+	 * @since   __DEPLOY_VERSION__
 	 */
 	protected function populateState($ordering = 'a.lastdate', $direction = 'desc')
 	{
@@ -108,7 +108,7 @@ class JobsModel extends ListModel
 	 *
 	 * @return  string  A store id.
 	 *
-	 * @since   1.6
+	 * @since   __DEPLOY_VERSION__
 	 */
 	protected function getStoreId($id = '')
 	{
@@ -125,7 +125,7 @@ class JobsModel extends ListModel
 	 *
 	 * @return  \JDatabaseQuery
 	 *
-	 * @since   1.6
+	 * @since   __DEPLOY_VERSION__
 	 */
 	protected function getListQuery()
 	{
@@ -190,7 +190,7 @@ class JobsModel extends ListModel
 	 *
 	 * @return  \JDatabaseQuery
 	 *
-	 * @since   1.6
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public function addJob($info)
 	{

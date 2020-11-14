@@ -7,7 +7,7 @@
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>admin@joomla.org</authorEmail>
 	<authorUrl>www.joomla.org</authorUrl>
-	<version>4.1.0</version>
+	<version>0.0.1</version>
 	<description>COM_JOBS_XML_DESCRIPTION</description>
 	<namespace path="src">Joomla\Component\Jobs</namespace>
 	<administration>
@@ -17,7 +17,6 @@
 			<filename>config.xml</filename>
 			<filename>jobs.xml</filename>
 			<folder>forms</folder>
-			<folder>helpers</folder>
 			<folder>layouts</folder>
 			<folder>services</folder>
 			<folder>src</folder>

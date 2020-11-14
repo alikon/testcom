@@ -22,14 +22,14 @@ use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\Component\Jobs\Administrator\Helper\JobsHelper;
 
 /**
- * View class for a list of redirection links.
+ * View class for a list of jobs.
  *
- * @since  1.6
+ * @since  __DEPLOY_VERSION__
  */
 class HtmlView extends BaseHtmlView
 {
 	/**
-	 * True if "System - Redirect Plugin" is enabled
+	 * True if "System - Scheduler Plugin" is enabled
 	 *
 	 * @var  boolean
 	 */
@@ -67,7 +67,7 @@ class HtmlView extends BaseHtmlView
 	 * Form object for search filters
 	 *
 	 * @var    \JForm
-	 * @since  4.0.0
+	 * @since  __DEPLOY_VERSION__
 	 */
 	public $filterForm;
 
@@ -75,7 +75,7 @@ class HtmlView extends BaseHtmlView
 	 * The active search filters
 	 *
 	 * @var    array
-	 * @since  4.0.0
+	 * @since  __DEPLOY_VERSION__
 	 */
 	public $activeFilters;
 
@@ -87,7 +87,7 @@ class HtmlView extends BaseHtmlView
 	 * @return  mixed  False if unsuccessful, otherwise void.
 	 *
 	 * @throws  GenericDataException
-	 * @since   1.6
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public function display($tpl = null)
 	{
@@ -115,7 +115,7 @@ class HtmlView extends BaseHtmlView
 	 *
 	 * @return  void
 	 *
-	 * @since   1.6
+	 * @since   __DEPLOY_VERSION__
 	 */
 	protected function addToolbar()
 	{

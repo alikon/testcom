@@ -15,11 +15,11 @@ use Joomla\CMS\Form\Field\ListField;
 use Joomla\CMS\HTML\HTMLHelper;
 
 /**
- * A dropdown containing all valid HTTP 1.1 response codes.
+ * A dropdown containing all valid job response codes.
  *
  * @package     Joomla.Administrator
  * @subpackage  com_jobs
- * @since       3.4
+ * @since       __DEPLOY_VERSION__
  */
 class JobsField extends ListField
 {
@@ -49,7 +49,7 @@ class JobsField extends ListField
 	 *
 	 * @return  string	The field input markup.
 	 *
-	 * @since   3.4
+	 * @since   __DEPLOY_VERSION__
 	 */
 	protected function getOptions()
 	{

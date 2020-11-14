@@ -17,7 +17,7 @@ use Joomla\Utilities\ArrayHelper;
 /**
  * Utility class for creating HTML Grids.
  *
- * @since  1.6
+ * @since  __DEPLOY_VERSION__
  */
 class Jobs
 {
@@ -30,7 +30,7 @@ class Jobs
 	 *
 	 * @return  string
 	 *
-	 * @since   1.6
+	 * @since   __DEPLOY_VERSION__
 	 *
 	 * @throws  \InvalidArgumentException
 	 */

@@ -17,9 +17,9 @@ use Joomla\CMS\MVC\Controller\AdminController;
 use Joomla\Utilities\ArrayHelper;
 
 /**
- * Redirect link list controller class.
+ * Jobs list controller class.
  *
- * @since  1.6
+ * @since  __DEPLOY_VERSION__
  */
 class JobsController extends AdminController
 {
@@ -32,7 +32,7 @@ class JobsController extends AdminController
 	 *
 	 * @return  \Joomla\CMS\MVC\Model\BaseDatabaseModel The model instance
 	 *
-	 * @since   1.6
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public function getModel($name = 'Jobs', $prefix = 'Administrator', $config = array('ignore_request' => true))
 	{
@@ -44,7 +44,7 @@ class JobsController extends AdminController
 	 *
 	 * @return  void
 	 *
-	 * @since   3.5
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public function purge()
 	{
@@ -72,7 +72,7 @@ class JobsController extends AdminController
 	 *
 	 * @return  void
 	 *
-	 * @since   1.6
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public function delete()
 	{
@@ -109,7 +109,7 @@ class JobsController extends AdminController
 	 *
 	 * @return  void
 	 *
-	 * @since   1.6
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public function run()
 	{

@@ -20,7 +20,7 @@ use Joomla\Database\DatabaseDriver;
 /**
  * Executed task Table for Jobs.
  *
- * @since  1.6
+ * @since  __DEPLOY_VERSION__
  */
 class TaskTable extends Table
 {
@@ -29,7 +29,7 @@ class TaskTable extends Table
 	 *
 	 * @param   DatabaseDriver  $db  Database object.
 	 *
-	 * @since   1.6
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public function __construct(DatabaseDriver $db)
 	{
@@ -41,7 +41,7 @@ class TaskTable extends Table
 	 *
 	 * @return  boolean
 	 *
-	 * @since   1.6
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public function check()
 	{
@@ -66,7 +66,7 @@ class TaskTable extends Table
 	 *
 	 * @return  boolean  True on success.
 	 *
-	 * @since   1.6
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public function store($updateNulls = false)
 	{

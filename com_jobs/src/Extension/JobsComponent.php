@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     Joomla.Administrator
- * @subpackage  com_redirect
+ * @subpackage  com_jobs
  *
  * @copyright   Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
@@ -18,9 +18,9 @@ use Joomla\Component\Jobs\Administrator\Service\HTML\Jobs;
 use Psr\Container\ContainerInterface;
 
 /**
- * Component class for com_redirect
+ * Component class for com_jobs
  *
- * @since  4.0.0
+ * @since  __DEPLOY_VERSION__
  */
 class JobsComponent extends MVCComponent implements BootableExtensionInterface
 {
@@ -37,7 +37,7 @@ class JobsComponent extends MVCComponent implements BootableExtensionInterface
 	 *
 	 * @return  void
 	 *
-	 * @since   4.0.0
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public function boot(ContainerInterface $container)
 	{
