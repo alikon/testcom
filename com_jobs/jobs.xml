@@ -28,6 +28,6 @@
 		</languages>
 	</administration>
 	<updateservers>
-		<server type="extension" name="Jobs Component">https://raw.githubusercontent.com/alikon/testcom/main/manifest.xml</server>
+		<server type="extension" name="Jobs Component">https://github.com/alikon/testcom/blob/main/manifest.xml</server>
 	</updateservers>
 </extension>
