@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `#__task`
+CREATE TABLE IF NOT EXISTS `#__tasks`
 (
     `id`       int(11)  NOT NULL AUTO_INCREMENT,
     `taskname` varchar(100) NOT NULL,

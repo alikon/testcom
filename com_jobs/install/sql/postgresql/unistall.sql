@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS "#__task";
+DROP TABLE IF EXISTS "#__tasks";
