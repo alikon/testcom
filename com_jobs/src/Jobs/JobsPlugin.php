@@ -200,7 +200,7 @@ abstract class JobsPlugin extends CMSPlugin
 		}
 
 		$taskid   = null;
-//
+
 		$query = $db->getQuery(true);
 
 		$query->select($db->quoteName(['extension_id', 'params']))
