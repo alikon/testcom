@@ -48,7 +48,6 @@ class JobsModel extends ListModel
 				'lastdate', 'a.lastdate',
 				'nextdate', 'a.nextdate',
 				'exitcode',
-	//			'header', 'a.header', 'http_status',
 			);
 		}
 
