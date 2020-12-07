@@ -39,51 +39,7 @@ class JobsController extends ApiController
 	protected $default_view = 'jobs';
 
 	/**
-	 * Method to edit an existing record.
-	 *
-	 * @return  static  A \JControllerLegacy object to support chaining.
-	 *
-	 * @since   4.0.0
-	 */
-	public function start()
-	{
-		/** @var JobsModel $model */
-		$model = $this->getModel($this->contentType);
-
-		if (!$model)
-		{
-			throw new \RuntimeException(Text::_('JLIB_APPLICATION_ERROR_MODEL_CREATE'));
-		}
-
-		$recordId = $this->input->getInt('id');
-
-		if (!$recordId)
-		{
-			throw new \RuntimeException(Text::_('JLIB_APPLICATION_ERROR_RECORD'), 404);
-		}
-
-		$cid = [$recordId];
-
-		// Execute the job THREE task
-		try
-		{
-			$data = $model->start($cid);
-		}
-		catch (\Exception $e)
-		{
-			throw new \RuntimeException(Text::plural('COM_CONTENTHISTORY_N_ITEMS_KEEP_TOGGLE', count($cid)));
-		}
-
-		$view->setModel($model, true);
-
-		$view->document = $this->app->getDocument();
-
-		$view->displayListTypes();
-
-	}
-
-	/**
-	 * Return module items types
+	 * Exececute the jobs
 	 *
 	 * @return  static  A \JControllerLegacy object to support chaining.
 	 *
@@ -110,7 +66,6 @@ class JobsController extends ApiController
 			throw new \RuntimeException($e->getMessage());
 		}
 
-		/** @var SelectModel $model */
 		$model = $this->getModel();
 
 		if (!$model)
@@ -118,7 +73,7 @@ class JobsController extends ApiController
 			throw new \RuntimeException(Text::_('JLIB_APPLICATION_ERROR_MODEL_CREATE'));
 		}
 
-		//$model->setState('client_id', $this->getClientIdFromInput());
+		//$model->setState('client_id', $this->todo);
 
 		$view->setModel($model, true);
 
