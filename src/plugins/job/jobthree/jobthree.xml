@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.9" type="plugin" group="job" method="upgrade">
+	<name>plg_job_jobthree</name>
+	<author>Joomla! Project</author>
+	<creationDate>May 2018</creationDate>
+	<copyright>Copyright (C) 2005 - 2018 Open Source Matters. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>admin@joomla.org</authorEmail>
+	<authorUrl>www.joomla.org</authorUrl>
+	<version>3.9.0</version>
+	<description>PLG_JOB_JOBTHREE_XML_DESCRIPTION</description>
+	<files>
+		<filename plugin="jobthree">jobthree.php</filename>
+	</files>
+	<languages folder="language">
+		<language tag="en-GB">en-GB.plg_job_jobthree.ini</language>
+		<language tag="en-GB">en-GB.plg_job_jobthree.sys.ini</language>
+	</languages>
+	<config>
+		<fields name="params" addfieldprefix="/plugins/system/scheduler/fields">
+			<fieldset name="basic">
+				<field
+					name="timeout"
+					type="integer"
+					label="PLG_JOB_JOBTHREE_TIMEOUT_LABEL"
+					description="PLG_JOB_JOBTHREE_TIMEOUT_DESC"
+					first="0"
+					last="120"
+					step="1"
+					default="30"
+					filter="int"
+					validate="number"
+				/>
+				<field
+					name="lastrun"
+					type="hidden"
+					default="0"
+					filter="integer"
+				/>
+				<field
+					name="unit"
+					type="list"
+					label="PLG_JOB_JOBTHREE_UNIT_LABEL"
+					description="PLG_JOB_JOBTHREE_UNIT_DESC"
+					default="86400"
+					filter="integer"
+				>
+					<option value="60">PLG_JOB_JOBTHREE_MINUTE</option>
+					<option value="3600">PLG_JOB_JOBTHREE_HOUR</option>
+					<option value="86400">JDAY</option>
+				</field>
+				<field
+					name="taskid"
+					type="hidden"
+					default="0"
+					size="15"
+				/>
+				<field
+					name="simulate"
+					type="radio"
+					label="PLG_JOB_JOBTHREE_SIMULATE_LABEL"
+					layout="joomla.form.field.radio.switcher"
+					default="0"
+					filter="integer"
+				>
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+				<field
+					name="sleep"
+					type="integer"
+					label="PLG_JOB_JOBTHREE_SLEEP_LABEL"
+					first="1"
+					last="10"
+					step="1"
+					default="5"
+					filter="int"
+					validate="number"
+				/>
+			</fieldset>
+			<fieldset name="info">
+				
+			</fieldset>
+		</fields>
+		
+	</config>
+</extension>
