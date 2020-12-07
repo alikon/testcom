@@ -74,7 +74,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 					?>
 					<tr class="row<?php echo $i % 2; ?>">
 						<td class="text-center">
-							<?php echo HTMLHelper::_('grid.id', $i, $item->id); ?>
+							<?php echo HTMLHelper::_('grid.id', $i, $item->id . '.' . $item->taskname); ?>
 						</td>
 						<th scope="row" class="d-none d-md-table-cell">
 							<?php if ($canEdit) : ?>
@@ -105,6 +105,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 							<?php echo (int) $item->id; ?>
 						</td>
 					</tr>
+					<input type="hidden" name="jobid[]" value="<?php echo $item->jobid; ?>">
 					<?php endforeach; ?>
 				</tbody>
 			</table>
@@ -115,6 +116,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 		<?php endif; ?>
 
 		<input type="hidden" name="task" value="">
+		
 		<input type="hidden" name="boxchecked" value="0">
 		<?php echo HTMLHelper::_('form.token'); ?>
 	</div>

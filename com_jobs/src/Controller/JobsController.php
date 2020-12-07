@@ -119,12 +119,19 @@ class JobsController extends AdminController
 		$ids    = $this->input->get('cid', array(), 'array');
 		$task   = $this->getTask();
 
+		foreach ($ids as $id)
+		{
+			$tmp[] = explode('.', $id);
+			$ids[] = $tmp[0][0];
+			$job[] = $tmp[0][1];
+		}
+
 		// Get the model.
 		/** @var \Joomla\Component\Jobs\Administrator\Model\JobsModel $model */
 		$model  = $this->getModel();
 
 		// Run the jobs.
-		if (!$model->execute())
+		if (!$model->execute($job))
 		{
 			$this->app->enqueueMessage($model->getError(), 'warning');
 		}

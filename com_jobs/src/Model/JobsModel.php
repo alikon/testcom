@@ -53,6 +53,7 @@ class JobsModel extends ListModel
 
 		parent::__construct($config, $factory);
 	}
+
 	/**
 	 * Removes all of the jobs from the table.
 	 *
@@ -177,14 +178,6 @@ class JobsModel extends ListModel
 	}
 
 	/**
-	 * Add the entered URLs into the database
-	 *
-	 * @param   array  $batch_urls  Array of URLs to enter into the database
-	 *
-	 * @return boolean
-	 */
-
-	/**
 	 * Build an SQL query to load the list data.
 	 *
 	 * @return  \JDatabaseQuery
@@ -275,14 +268,19 @@ class JobsModel extends ListModel
 		return true;
 	}
 
-	public function execute($force = false): array
+	/**
+	 * Method to delete rows.
+	 *
+	 * @return  boolean  Returns true on success, false on failure.
+	 */
+	public function start(): array
 	{
 		// The job plugin group
 		PluginHelper::importPlugin('job');
 		PluginHelper::importPlugin('actionlog');
 
 		// Trigger the ExecuteTask event
-		$results = Factory::getApplication()->triggerEvent('onExecuteScheduledTask', ['force' => $force]);
+		$results = Factory::getApplication()->triggerEvent('onExecuteScheduledTask', ['force' => false]);
 
 		foreach ($results as $result)
 		{
