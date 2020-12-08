@@ -14,6 +14,7 @@ namespace Joomla\Component\Jobs\Api\Controller;
 use Joomla\CMS\MVC\Controller\ApiController;
 use Joomla\CMS\Language\Text;
 use Joomla\Component\Jobs\Api\View\Jobs\JsonapiView;
+use Joomla\CMS\Filter\InputFilter;
 
 /**
  * The jobs controller
@@ -39,7 +40,51 @@ class JobsController extends ApiController
 	protected $default_view = 'jobs';
 
 	/**
-	 * Exececute the jobs
+	 * Method to start executing jobs.
+	 *
+	 * @return  static  A \JControllerLegacy object to support chaining.
+	 *
+	 * @since   4.0.0
+	 */
+	public function start()
+	{
+		/** @var JobsModel $model */
+		$model = $this->getModel($this->contentType);
+
+		if (!$model)
+		{
+			throw new \RuntimeException(Text::_('JLIB_APPLICATION_ERROR_MODEL_CREATE'));
+		}
+
+		$recordId = $this->input->getInt('id');
+
+		if (!$recordId)
+		{
+			throw new \RuntimeException(Text::_('JLIB_APPLICATION_ERROR_RECORD'), 404);
+		}
+
+		$cid = [$recordId];
+
+		// Execute the jobs task
+		try
+		{
+			$data = $model->start($cid);
+		}
+		catch (\Exception $e)
+		{
+			throw new \RuntimeException(Text::plural('COM_JOBS_N_ITEMS_EXECUTE', count($cid)));
+		}
+
+		$view->setModel($model, true);
+
+		$view->document = $this->app->getDocument();
+
+		$view->displayListTypes();
+
+	}
+
+	/**
+	 * Return module items types
 	 *
 	 * @return  static  A \JControllerLegacy object to support chaining.
 	 *
@@ -50,6 +95,8 @@ class JobsController extends ApiController
 		$viewType   = $this->app->getDocument()->getType();
 		$viewName   = $this->input->get('view', $this->default_view);
 		$viewLayout = $this->input->get('layout', 'default', 'string');
+		$filter        = InputFilter::getInstance();
+		$apiFilterInfo = $this->input->get('id', '', 'string');
 
 		try
 		{
@@ -66,6 +113,7 @@ class JobsController extends ApiController
 			throw new \RuntimeException($e->getMessage());
 		}
 
+		/** @var \Joomla\Component\Jobs\Administrator\Model\JobsModel $model */
 		$model = $this->getModel();
 
 		if (!$model)
@@ -73,7 +121,7 @@ class JobsController extends ApiController
 			throw new \RuntimeException(Text::_('JLIB_APPLICATION_ERROR_MODEL_CREATE'));
 		}
 
-		//$model->setState('client_id', $this->todo);
+		$model->setState('id', $filter->clean($apiFilterInfo, 'STRING'));
 
 		$view->setModel($model, true);
 

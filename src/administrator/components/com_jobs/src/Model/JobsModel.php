@@ -273,10 +273,20 @@ class JobsModel extends ListModel
 	 *
 	 * @return  boolean  Returns true on success, false on failure.
 	 */
-	public function start(): array
+	public function start($jobs = [] ): array
 	{
-		// The job plugin group
-		PluginHelper::importPlugin('job');
+		if (empty($jobs))
+		{
+			// The job plugin group
+			PluginHelper::importPlugin('job');
+		}
+
+		foreach ($jobs as $job)
+		{
+			// The job plugin group
+			PluginHelper::importPlugin('job', $job);
+		}
+
 		PluginHelper::importPlugin('actionlog');
 
 		// Trigger the ExecuteTask event

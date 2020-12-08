@@ -65,7 +65,14 @@ class JsonapiView extends BaseApiView
 	{
 		/** @var SelectModel $model */
 		$model = $this->getModel();
-		$items = $model->start();
+		$param = [];
+
+		if (!empty($model->getState('id')))
+		{
+			$param[] = $model->getState('id');
+		}
+
+		$items = $model->start($param);
 		$runs  = [];
 
 		foreach ($items as $item)
