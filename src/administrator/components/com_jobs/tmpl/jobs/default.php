@@ -90,6 +90,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 						</td>
 						
 						<td class="d-none d-md-table-cell">
+							<?php echo HTMLHelper::_('date.relative', $item->lastdate); ?>
 							<?php echo HTMLHelper::_('date', $item->lastdate, Text::_('DATE_FORMAT_LC6')); ?>
 						</td>
 						<td class="d-none d-md-table-cell">
@@ -99,6 +100,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 							<?php echo (int) $item->exitcode; ?>
 						</td>
 						<td class="d-none d-md-table-cell">
+						<?php echo HTMLHelper::_('date.relative', $item->nextdate); ?>
 							<?php echo HTMLHelper::_('date', $item->nextdate, Text::_('DATE_FORMAT_LC6')); ?>
 						</td>
 						<td class="d-none d-md-table-cell">

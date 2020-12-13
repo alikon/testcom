@@ -16,6 +16,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\Component\Jobs\Api\View\Jobs\JsonapiView;
 use Joomla\CMS\Filter\InputFilter;
 
+
 /**
  * The jobs controller
  *

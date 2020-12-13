@@ -24,7 +24,7 @@
 					type="list"
 					label="PLG_WEBSERVICES_CONTENT_ALLOWEDVERBS_LABEL"
 					multiple="true"
-					default="GET"
+					default=""
 					layout="joomla.form.field.list-fancy-select"
 					>
 					<option value="GET">GET</option>
@@ -40,6 +40,19 @@
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
 				</field>
+				<field
+					name="taskid"
+					type="hidden"
+					default="0"
+					size="15"
+				/>
+				<field
+					name="limit"
+					type="number"
+					label="COM_MENUS_ADMIN_LEVEL_LABEL"
+					default="0"
+					filter="integer"
+				/>
 			</fieldset>
 		</fields>
 	</config>

@@ -131,7 +131,7 @@ class JobsController extends AdminController
 		$model  = $this->getModel();
 
 		// Run the jobs.
-		if (!$model->execute($job))
+		if (!$model->start($job))
 		{
 			$this->app->enqueueMessage($model->getError(), 'warning');
 		}
