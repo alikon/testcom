@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   job
- * @copyright Copyright (c)2021 Alikon
+ * @copyright Copyright (C)2021 Alikon
  * @license   GNU General Public License version 3, or later
  */
 
@@ -10,6 +10,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Extension\PluginInterface;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
@@ -32,8 +33,7 @@ return new class implements ServiceProviderInterface
 			PluginInterface::class,
 			function (Container $container)
 			{
-				// @Todo This needs to be changed
-				$plugin = \Joomla\CMS\Plugin\PluginHelper::getPlugin('console', 'job');
+				$plugin = PluginHelper::getPlugin('console', 'job');
 
 				return new Job(
 					$container->get(DispatcherInterface::class),
