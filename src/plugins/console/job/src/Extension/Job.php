@@ -77,18 +77,6 @@ class Job extends CMSPlugin implements SubscriberInterface
 	 */
 	public function registerCommands(): void
 	{
-		$serviceId = '\Joomla\Component\Jobs\Administrator\Extension\HelloCommand';
-
-		Factory::getContainer()->share(
-			$serviceId,
-			function (ContainerInterface $container) {
-				return new \Joomla\Component\Jobs\Administrator\Extension\HelloCommand();
-			},
-			true
-		);
-
-		Factory::getContainer()->get(WritableLoaderInterface::class)->add('jobs:world', $serviceId);
-
 		$serviceId = '\Joomla\Component\Jobs\Administrator\Extension\JobListCommand';
 
 		Factory::getContainer()->share(
