@@ -14,3 +14,10 @@ CREATE TABLE IF NOT EXISTS `#__tasks`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   DEFAULT COLLATE = utf8mb4_unicode_ci;
+  
+ 
+CREATE TABLE IF NOT EXISTS `#__jobs` (
+  `element` varchar(100) NOT NULL,
+  `folder` varchar(100) NOT NULL,
+  PRIMARY KEY (`element`, `folder`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
