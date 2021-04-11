@@ -38,7 +38,8 @@
 			<filename>config.xml</filename>
 			<filename>jobs.xml</filename>
 			<folder>forms</folder>
-			<folder>layouts</folder>
+			<folder>helpers</folder>
+			<folder>install</folder>
 			<folder>services</folder>
 			<folder>src</folder>
 			<folder>tmpl</folder>
