@@ -11,12 +11,9 @@
 	<description>PLG_CONSOLE_JOB_XML_DESCRIPTION</description>
 	<namespace path="src">Joomla\Plugin\Console\Job</namespace>
 	<files>
+		<filename plugin="job">job.php</filename>
+		<folder>language</folder>
 		<folder>services</folder>
 		<folder>src</folder>
 	</files>
-	<languages folder="language">
-		<language tag="en-GB">en-GB/en-GB.plg_console_job.ini</language>
-		<language tag="en-GB">en-GB/en-GB.plg_console_job.sys.ini</language>
-	</languages>
-	<!--<scriptfile>script.php</scriptfile>-->
 </extension>
