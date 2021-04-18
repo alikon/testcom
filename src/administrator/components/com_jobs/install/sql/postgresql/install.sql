@@ -15,3 +15,9 @@ CREATE TABLE IF NOT EXISTS "#__tasks" (
 	"nextdate" timestamp NOT NULL,
 	CONSTRAINT #__tasks_pkey PRIMARY KEY (id)
 );
+
+CREATE TABLE IF NOT EXISTS "#__jobs" (
+  "element" varchar(100) NOT NULL DEFAULT ''::character varying,
+  "folder" varchar(100) NOT NULL DEFAULT ''::character varying,
+  CONSTRAINT "#__jobs_pkey" PRIMARY KEY ("element", "folder")
+);
