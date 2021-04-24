@@ -23,8 +23,8 @@
 				<field
 					name="timeout"
 					type="integer"
-					label="PLG_JOB_JOBONE_TIMEOUT_LABEL"
-					description="PLG_JOB_JOBONE_TIMEOUT_DESC"
+					label="PLG_JOB_ONE_TIMEOUT_LABEL"
+					description="PLG_JOB_ONE_TIMEOUT_DESC"
 					first="0"
 					last="120"
 					step="1"
@@ -32,7 +32,6 @@
 					filter="int"
 					validate="number"
 				/>
-
 				<field
 					name="lastrun"
 					type="hidden"
@@ -42,13 +41,13 @@
 				<field
 					name="unit"
 					type="list"
-					label="PLG_JOB_JOBONE_UNIT_LABEL"
-					description="PLG_JOB_JOBONE_UNIT_DESC"
+					label="PLG_JOB_ONE_UNIT_LABEL"
+					description="PLG_JOB_ONE_UNIT_DESC"
 					default="86400"
 					filter="integer"
 				>
-					<option value="60">PLG_JOB_JOBONE_MINUTE</option>
-					<option value="3600">PLG_JOB_JOBONE_HOUR</option>
+					<option value="60">PLG_JOB_ONE_MINUTE</option>
+					<option value="3600">PLG_JOB_ONE_HOUR</option>
 					<option value="86400">JDAY</option>
 				</field>
 				<field
