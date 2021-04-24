@@ -1,21 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="3.9" type="plugin" group="job" method="upgrade">
+<extension type="plugin" group="job" method="upgrade">
 	<name>plg_job_jobthree</name>
-	<author>Joomla! Project</author>
+	<author>Alikon</author>
 	<creationDate>May 2018</creationDate>
-	<copyright>Copyright (C) 2005 - 2018 Open Source Matters. All rights reserved.</copyright>
-	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-	<authorEmail>admin@joomla.org</authorEmail>
+	<authorEmail>nicola.galgano@community.joomla.org</authorEmail>
+	<authorUrl>www.alikonweb.it</authorUrl>
+	<copyright>Copyright (C) 2021 Alikon. All rights reserved.</copyright>
 	<authorUrl>www.joomla.org</authorUrl>
-	<version>3.9.0</version>
+	<version>0.0.1</version>
 	<description>PLG_JOB_JOBTHREE_XML_DESCRIPTION</description>
 	<files>
 		<filename plugin="jobthree">jobthree.php</filename>
+		<folder>language</folder>
 	</files>
-	<languages folder="language">
-		<language tag="en-GB">en-GB.plg_job_jobthree.ini</language>
-		<language tag="en-GB">en-GB.plg_job_jobthree.sys.ini</language>
-	</languages>
 	<config>
 		<fields name="params" addfieldprefix="/plugins/system/scheduler/fields">
 			<fieldset name="basic">

@@ -11,6 +11,7 @@
 	<description>PLG_JOB_JOBONE_XML_DESCRIPTION</description>
 	<files>
 		<filename plugin="jobone">jobone.php</filename>
+		<folder>language</folder>
 	</files>
 	<languages folder="language">
 		<language tag="en-GB">en-GB.plg_job_jobone.ini</language>
