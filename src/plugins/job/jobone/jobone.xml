@@ -17,6 +17,18 @@
 		<fields name="params">
 			<fieldset name="basic">
 				<field
+					name="unit"
+					type="list"
+					label="PLG_JOB_JOBONE_UNIT_LABEL"
+					description="PLG_JOB_JOBONE_UNIT_DESC"
+					default="86400"
+					filter="integer"
+				>
+					<option value="60">PLG_JOB_JOBONE_MINUTE</option>
+					<option value="3600">PLG_JOB_JOBONE_HOUR</option>
+					<option value="86400">JDAY</option>
+				</field>
+				<field
 					name="timeout"
 					type="integer"
 					label="PLG_JOB_JOBONE_TIMEOUT_LABEL"
@@ -34,18 +46,6 @@
 					default="0"
 					filter="integer"
 				/>
-				<field
-					name="unit"
-					type="list"
-					label="PLG_JOB_JOBONE_UNIT_LABEL"
-					description="PLG_JOB_JOBONE_UNIT_DESC"
-					default="86400"
-					filter="integer"
-				>
-					<option value="60">PLG_JOB_JOBONE_MINUTE</option>
-					<option value="3600">PLG_JOB_JOBONE_HOUR</option>
-					<option value="86400">JDAY</option>
-				</field>
 				<field
 					name="taskid"
 					type="hidden"
