@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="4.0" type="plugin" group="job" method="upgrade">
+<extension type="plugin" group="job" method="upgrade">
 	<name>plg_job_exportdb</name>
-	<author>Joomla! Project</author>
+	<author>Alikon</author>
 	<creationDate>February 2020</creationDate>
-	<copyright>Copyright (C) 2005 - 2020 Open Source Matters. All rights reserved.</copyright>
+	<copyright>Copyright (C) 2021 Alikon. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-	<authorEmail>admin@joomla.org</authorEmail>
+	<authorEmail>nicola.galgano@community.joomla.org</authorEmail>
 	<authorUrl>www.joomla.org</authorUrl>
-	<version>4.0.0</version>
+	<version>0.0.1</version>
 	<description>PLG_JOB_EXPORTDB_XML_DESCRIPTION</description>
 	<files>
 		<filename plugin="jobexportdb">jobexportdb.php</filename>
@@ -41,7 +41,6 @@
 					filter="int"
 					validate="number"
 				/>
-
 				<field
 					name="lastrun"
 					type="hidden"
@@ -66,7 +65,6 @@
 					default="0"
 					size="15"
 				/>
-	
 			</fieldset>
 		</fields>
 	</config>
