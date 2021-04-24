@@ -13,10 +13,6 @@
 		<filename plugin="jobone">jobone.php</filename>
 		<folder>language</folder>
 	</files>
-	<languages folder="language">
-		<language tag="en-GB">en-GB.plg_job_jobone.ini</language>
-		<language tag="en-GB">en-GB.plg_job_jobone.sys.ini</language>
-	</languages>
 	<config>
 		<fields name="params">
 			<fieldset name="basic">
