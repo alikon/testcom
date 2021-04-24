@@ -17,4 +17,21 @@
 		</tags>
 		<targetplatform name="joomla" version="4.[0123]" />
 	</update>
+		<update>
+		<name>Jobs Component</name>
+		<description>Joomla! CMS Jobs Component</description>
+		<element>com_jobs</element>
+		<type>component</type>
+		<version>0.0.2</version>
+		<client>administrator</client>
+		<infourl title="Jobs Component">https://github.com/alikon/testcom/releases/tag/0.0.1</infourl>
+		<downloads>
+			<downloadurl type="full" format="zip">https://github.com/alikon/testcom/releases/download/0.0.1/com_jobs.zip</downloadurl>
+		</downloads>
+		<sha384>todo</sha384>
+		<tags>
+			<tag>alpha</tag>
+		</tags>
+		<targetplatform name="joomla" version="4.[0123]" />
+	</update>
 </updates>
