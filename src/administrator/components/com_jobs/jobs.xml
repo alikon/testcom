@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" method="upgrade">
 	<name>com_jobs</name>
-	<author>Joomla! Project</author>
+	<author>Alikon</author>
 	<creationDate>November 2020</creationDate>
-	<copyright>(C) 2005 - 2020 Open Source Matters. All rights reserved.</copyright>
+	<copyright>(C) 2020 Alikon. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-	<authorEmail>admin@joomla.org</authorEmail>
-	<authorUrl>www.joomla.org</authorUrl>
+	<authorEmail>nicola.galgano@community.joomla.org</authorEmail>
+	<authorUrl>www.alikonweb.it</authorUrl>
 	<version>0.0.1</version>
 	<description>COM_JOBS_XML_DESCRIPTION</description>
 	<install>
@@ -46,6 +46,11 @@
 			<language tag="en-GB">language/en-GB/com_jobs.sys.ini</language>
 		</languages>
 	</administration>
+	<api>
+		<files folder="api/components/com_jobs">
+			<folder>src</folder>
+		</files>
+	</api>
 	<updateservers>
 		<server type="extension" name="Jobs Component">https://github.com/alikon/testcom/blob/main/manifest.xml</server>
 	</updateservers>
