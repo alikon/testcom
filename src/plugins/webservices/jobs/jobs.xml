@@ -13,8 +13,8 @@
 			<filename plugin="jobs">jobs.php</filename>
 		</files>
 	<languages>
-		<language tag="en-GB">language/en-GB/plg_webservices_jobs.ini</language>
-		<language tag="en-GB">language/en-GB/plg_webservices_jobs.sys.ini</language>
+		<language tag="en-GB">language/en-GB/en-GB.plg_webservices_jobs.ini</language>
+		<language tag="en-GB">language/en-GB/en-GB.plg_webservices_jobs.sys.ini</language>
 	</languages>
 		<config>
 		<fields name="params">
@@ -57,3 +57,4 @@
 		</fields>
 	</config>
 </extension>
+
