@@ -45,6 +45,9 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 							<?php echo HTMLHelper::_('grid.checkall'); ?>
 						</td>
 						<th scope="col" class="w-1 d-none d-md-table-cell">
+							<?php echo HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
+						</th>
+						<th scope="col" class="w-1 d-none d-md-table-cell">
 							<?php echo HTMLHelper::_('searchtools.sort', 'COM_JOBS_HEADING_JOBNAME', 'a.taskname', $listDirn, $listOrder); ?>
 						</th>
 						<th scope="col" class="w-1 d-none d-md-table-cell">
@@ -62,9 +65,6 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 						<th scope="col" class="w-1 d-none d-md-table-cell">
 							<?php echo HTMLHelper::_('searchtools.sort', 'COM_JOBS_HEADING_NEXTEXECUTION', 'a.nextdate', $listDirn, $listOrder); ?>
 						</th>
-						<th scope="col" class="w-1 d-none d-md-table-cell">
-							<?php echo HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
-						</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -74,7 +74,10 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 					?>
 					<tr class="row<?php echo $i % 2; ?>">
 						<td class="text-center">
-							<?php echo HTMLHelper::_('grid.id', $i, $item->id . '.' . $item->taskname); ?>
+							<?php echo HTMLHelper::_('grid.id', $i, $item->id); ?>
+						</td>
+						<td class="d-none d-md-table-cell">
+							<?php echo (int) $item->id; ?>
 						</td>
 						<th scope="row" class="d-none d-md-table-cell">
 							<?php if ($canEdit) : ?>
@@ -88,9 +91,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 						<td class="d-none d-md-table-cell">
 							<?php echo (int) $item->taskid; ?>
 						</td>
-						
 						<td class="d-none d-md-table-cell">
-							<?php echo HTMLHelper::_('date.relative', $item->lastdate); ?>
 							<?php echo HTMLHelper::_('date', $item->lastdate, Text::_('DATE_FORMAT_LC6')); ?>
 						</td>
 						<td class="d-none d-md-table-cell">
@@ -100,11 +101,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 							<?php echo (int) $item->exitcode; ?>
 						</td>
 						<td class="d-none d-md-table-cell">
-						<?php echo HTMLHelper::_('date.relative', $item->nextdate); ?>
 							<?php echo HTMLHelper::_('date', $item->nextdate, Text::_('DATE_FORMAT_LC6')); ?>
-						</td>
-						<td class="d-none d-md-table-cell">
-							<?php echo (int) $item->id; ?>
 						</td>
 					</tr>
 					<input type="hidden" name="jobid[]" value="<?php echo $item->jobid; ?>">
