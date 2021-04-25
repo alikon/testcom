@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" group="console" method="upgrade">
-	<name>PLG_CONSOLE_JOB</name>
+	<name>plg_console_job</name>
 	<version>0.0.1</version>
 	<creationDate>2021-03-03</creationDate>
 	<author>Alikon</author>
@@ -16,4 +16,7 @@
 		<folder>services</folder>
 		<folder>src</folder>
 	</files>
+	<updateservers>
+		<server type="extension" name="Job Console">https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/console/job/manifest.xml</server>
+	</updateservers>
 </extension>
