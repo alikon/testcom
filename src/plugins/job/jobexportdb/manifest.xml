@@ -4,7 +4,7 @@
 	<update>
 		<name>Jobs ExportDB</name>
 		<description>Joomla! CMS Jobs Plugin</description>
-		<element>plg_job_jobexportdb</element>
+		<element>jobexportdb</element>
 		<type>plugin</type>
 		<version>0.0.1</version>
 		<client>administrator</client>
@@ -21,7 +21,7 @@
 		<update>
 		<name>Jobs ExportDB</name>
 		<description>Joomla! CMS Jobs Plugin</description>
-		<element>plg_job_jobexportdb</element>
+		<element>jobexportdb</element>
 		<type>plugin</type>
 		<version>0.0.2</version>
 		<client>administrator</client>
