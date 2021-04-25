@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<updates>
+	<update>
+		<name>Job Webservices</name>
+		<description>Joomla! CMS Job Webservices Plugin</description>
+		<element>jobs</element>
+		<type>plugin</type>
+		<folder>webservices</folder>
+		<version>0.0.1</version>
+		<client>0</client>
+		<infourl title="Job Webservices">https://github.com/alikon/testcom/releases/tag/0.0.1</infourl>
+		<downloads>
+			<downloadurl type="full" format="zip">https://github.com/alikon/testcom/releases/download/0.0.1/com_jobs.zip</downloadurl>
+		</downloads>
+		<sha384>todo</sha384>
+		<tags>
+			<tag>alpha</tag>
+		</tags>
+		<targetplatform name="joomla" version="4.[0123]" />
+	</update>
+		<update>
+		<name>Job Webservices</name>
+		<description>Joomla! CMS Job Webservices Plugin</description>
+		<element>jobs</element>
+		<type>plugin</type>
+		<folder>webservices</folder>
+		<version>0.0.2</version>
+		<client>0</client>
+		<infourl title="Job Webservices">https://github.com/alikon/testcom/releases/tag/0.0.1</infourl>
+		<downloads>
+			<downloadurl type="full" format="zip">https://github.com/alikon/testcom/releases/download/0.0.1/com_jobs.zip</downloadurl>
+		</downloads>
+		<sha384>todo</sha384>
+		<tags>
+			<tag>alpha</tag>
+		</tags>
+		<targetplatform name="joomla" version="4.[0123]" />
+	</update>
+</updates>
