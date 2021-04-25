@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <updates>
 	<update>
-		<name>Jobs ExportDB</name>
-		<description>Joomla! CMS Jobs Plugin</description>
+		<name>plg_job_jobexportdb</name>
+		<description>Joomla! CMS Jobs ExportDB Plugin</description>
 		<element>jobexportdb</element>
 		<type>plugin</type>
 		<folder>job</folder>
@@ -19,8 +19,8 @@
 		<targetplatform name="joomla" version="4.[0123]" />
 	</update>
 		<update>
-		<name>Jobs ExportDB</name>
-		<description>Joomla! CMS Jobs Plugin</description>
+		<name>plg_job_jobexportdb</name>
+		<description>Joomla! CMS Jobs ExportDB Plugin</description>
 		<element>jobexportdb</element>
 		<type>plugin</type>
 		<folder>job</folder>
