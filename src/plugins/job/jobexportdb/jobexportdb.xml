@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" group="job" method="upgrade">
-	<name>plg_job_exportdb</name>
+	<name>plg_job_jobexportdb</name>
 	<author>Alikon</author>
 	<creationDate>February 2020</creationDate>
 	<copyright>Copyright (C) 2021 Alikon. All rights reserved.</copyright>
