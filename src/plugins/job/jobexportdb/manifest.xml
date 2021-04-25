@@ -6,6 +6,7 @@
 		<description>Joomla! CMS Jobs Plugin</description>
 		<element>jobexportdb</element>
 		<type>plugin</type>
+		<folder>job</folder>
 		<version>0.0.1</version>
 		<client>administrator</client>
 		<infourl title="Job ExportDB">https://github.com/alikon/testcom/releases/tag/0.0.1</infourl>
@@ -23,6 +24,7 @@
 		<description>Joomla! CMS Jobs Plugin</description>
 		<element>jobexportdb</element>
 		<type>plugin</type>
+		<folder>job</folder>
 		<version>0.0.2</version>
 		<client>administrator</client>
 		<infourl title="Job ExportDB">https://github.com/alikon/testcom/releases/tag/0.0.1</infourl>
