@@ -66,6 +66,6 @@
 		</fields>
 	</config>
 	<updateservers>
-		<server type="extension" name="Jobs Component">https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/job/jobexportdb/manifest.xml</server>
+		<server type="extension" name="Jobs ExportDB">https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/job/jobexportdb/manifest.xml</server>
 	</updateservers>
 </extension>
