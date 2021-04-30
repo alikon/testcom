@@ -3,7 +3,7 @@
  * @package     Joomla.Administrator
  * @subpackage  com_jobs
  *
- * @copyright   Copyright (C) 2020 Alikon. All rights reserved.
+ * @copyright   (C) 2021 Alikon. <https://www.alikonweb.it>
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -80,6 +80,14 @@ class HtmlView extends BaseHtmlView
 	public $activeFilters;
 
 	/**
+	 * Is this view an Empty State
+	 *
+	 * @var  boolean
+	 * @since __DEPLOY_VERSION__
+	 */
+	private $isEmptyState = false;
+
+	/**
 	 * Display the view.
 	 *
 	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
@@ -98,6 +106,11 @@ class HtmlView extends BaseHtmlView
 		$this->filterForm           = $this->get('FilterForm');
 		$this->activeFilters        = $this->get('ActiveFilters');
 		$this->params               = ComponentHelper::getParams('com_jobs');
+
+		if (!count($this->items) && $this->isEmptyState = $this->get('IsEmptyState'))
+		{
+			$this->setLayout('emptystate');
+		}
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
@@ -121,33 +134,35 @@ class HtmlView extends BaseHtmlView
 	{
 		$state = $this->get('State');
 		$canDo = ContentHelper::getActions('com_jobs');
-
 		$toolbar = Toolbar::getInstance('toolbar');
 
-		ToolbarHelper::title(Text::_('COM_JOBS_MANAGER_LINKS'), 'loading redirect');
-
-		$dropdown = $toolbar->dropdownButton('status-group')
-			->text('JTOOLBAR_CHANGE_STATUS')
-			->toggleSplit(false)
-			->icon('icon-ellipsis-h')
-			->buttonClass('btn btn-action')
-			->listCheck(true);
-		$childBar = $dropdown->getChildToolbar();
-
-		if ($canDo->get('core.delete'))
+		ToolbarHelper::title(Text::_('COM_JOBS_MANAGER_LINKS'), 'play');
+		
+		if (!$this->isEmptyState)
 		{
-			$childBar->delete('jobs.delete')
-				->text('JTOOLBAR_DELETE')
-				->message('JGLOBAL_CONFIRM_DELETE')
+			$dropdown = $toolbar->dropdownButton('status-group')
+				->text('JTOOLBAR_CHANGE_STATUS')
+				->toggleSplit(false)
+				->icon('icon-ellipsis-h')
+				->buttonClass('btn btn-action')
 				->listCheck(true);
-			$toolbar->confirmButton('heart')
-				->text('JEXECUTE')
-				->message('COM_JOBS_CONFIRM_EXEC')
-				->task('jobs.run');
-			$toolbar->confirmButton('delete')
-				->text('COM_JOBS_TOOLBAR_PURGE')
-				->message('COM_JOBS_CONFIRM_PURGE')
-				->task('jobs.purge');
+			$childBar = $dropdown->getChildToolbar();
+
+			if ($canDo->get('core.delete'))
+			{
+				$childBar->delete('jobs.delete')
+					->text('JTOOLBAR_DELETE')
+					->message('JGLOBAL_CONFIRM_DELETE')
+					->listCheck(true);
+				$toolbar->confirmButton('heart')
+					->text('JEXECUTE')
+					->message('COM_JOBS_CONFIRM_EXEC')
+					->task('jobs.run');
+				$toolbar->confirmButton('delete')
+					->text('COM_JOBS_TOOLBAR_PURGE')
+					->message('COM_JOBS_CONFIRM_PURGE')
+					->task('jobs.purge');
+			}
 		}
 
 		if ($canDo->get('core.admin') || $canDo->get('core.options'))
