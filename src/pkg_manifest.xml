@@ -3,7 +3,7 @@
 	<name>The Job Package</name>
 	<packagename>jobspackage</packagename>
 	<version>0.0.1</version>
-	<creationDate>May 2020</creationDate>
+	<creationDate>May 2021</creationDate>
 	<copyright>Copyright (C) 2021 Alikon. All rights reserved.</copyright>
 	<packager>Alikon</packager>
 	<packagerurl>www.alikonweb.it</packagerurl>
@@ -14,6 +14,6 @@
 		<file type="plugin" id="webserviceplugin" group="webservices">plg_webservices_jobs.0.0.1.zip</file>
 		<file type="plugin" id="consoleplugin" group="console">plg_console_job.0.0.1.zip</file>
 		<file type="plugin" id="schedulerplugin" group="system">plg_system_scheduler.0.0.1.zip</file>
-		<file type="plugin" id="exportdbplugin" group="system">plg_job_exportdb.0.0.1.zip</file>
+		<file type="plugin" id="exportdbplugin" group="job">plg_job_exportdb.0.0.1.zip</file>
 	</files>
 </extension>
