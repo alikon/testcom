@@ -92,89 +92,9 @@ class PlgWebservicesJobs extends CMSPlugin
 		$routes = [
 			new Route(['GET'], 'v1/jobs', 'jobs.displayList', [], $defaults),
 			new Route(['GET'], 'v1/jobs/start', 'jobs.executeTask', [], $defaults),
-			new Route(['GET'], 'v1/jobs/start/:id', 'jobs.executeTask', ['id' => '(\w+)'], $defaults)
+			new Route(['GET'], 'v1/jobs/:name/start', 'jobs.executeTask', ['name' => '(\w+)'], $defaults)
 		];
 
 		$router->addRoutes($routes);
-//qua
-		if (!in_array($object->input->getMethod(), $this->allowedVerbs))
-		{
-			//Factory::getApplication()->input->set('requestDisabled', 'true');
-
-			return;
-		}
-
-		if ($this->taskid < $this->limit)
-		{
-			Factory::getApplication()->input->set('ratelimit', 'true');
-
-			return;
-		}
-
-	}
-
-	/**
-	 * Registers com_jobs API's routes in the application
-	 *
-	 * @return  void
-	 *
-	 * @since   4.0.0
-	 */
-	public function onAfterDispatch()
-	{
-		//$a = $this->input->get('ratelimit', 'false');
-		//if (!$this->allowpublic)
-		//{
-		//	return;
-		//}
-
-		$taskid   = null;
-		$db = $this->db;
-		$type = 'webservices';
-		$name = 'jobs';
-
-		$query = $db->getQuery(true);
-
-		$query->select($db->quoteName(['extension_id', 'params']))
-			->from($db->quoteName('#__extensions'))
-			->where($db->quoteName('element') . ' = :element')
-			->where($db->quoteName('folder') . ' = :folder')
-			->bind(':element', $name)
-			->bind(':folder', $type);
-
-		$db->setQuery($query);
-
-		$params = $db->loadObject();
-
-		$query  = $db->getQuery(true);
-		$now    = Factory::getDate()->toSql();
-		$query->update($db->quoteName('#__extensions'));
-
-		// Update last run and taskid
-		$taskParams = json_decode($params->params, true);
-		$taskid = $taskParams['taskid'];
-
-		$taskid++;
-		$registry = new Registry($taskParams);
-		$registry->set('taskid', $taskid);
-		$jsonparam = $registry->toString('JSON');
-
-		$query->set($db->quoteName('params') . ' = :params')
-			->where($db->quoteName('element') . ' = :element')
-			->where($db->quoteName('folder') . ' = :folder')
-			->bind(':params', $jsonparam)
-			->bind(':element', $name)
-			->bind(':folder', $type);
-
-		try
-		{
-			// Update the plugin parameters
-			$result = $db->setQuery($query)->execute();
-		}
-		catch (RuntimeException $e)
-		{
-			// If we failed to execute
-			return;
-		}
 	}
 }
