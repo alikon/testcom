@@ -2,7 +2,7 @@
 <extension type="plugin" group="console" method="upgrade">
 	<name>plg_console_job</name>
 	<version>0.0.1</version>
-	<creationDate>2021-03-03</creationDate>
+	<creationDate>March 2021</creationDate>
 	<author>Alikon</author>
 	<authorEmail>nicola.galgano@community.joomla.org</authorEmail>
 	<authorUrl>www.alikonweb.it</authorUrl>
