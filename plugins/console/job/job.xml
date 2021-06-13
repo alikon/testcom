@@ -17,6 +17,6 @@
 		<folder>src</folder>
 	</files>
 	<updateservers>
-		<server type="extension" name="Job Console">https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/console/job/manifest.xml</server>
+		<server type="extension" name="Job Console">https://raw.githubusercontent.com/alikon/testcom/main/plugins/console/job/manifest.xml</server>
 	</updateservers>
 </extension>

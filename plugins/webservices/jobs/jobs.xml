@@ -83,7 +83,7 @@
 		</fields>
 	</config>
 	<updateservers>
-		<server type="extension" name="Jobs Webservices">https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/webservices/jobs/manifest.xml</server>
+		<server type="extension" name="Jobs Webservices">https://raw.githubusercontent.com/alikon/testcom/main/plugins/webservices/jobs/manifest.xml</server>
 	</updateservers>
 </extension>
 

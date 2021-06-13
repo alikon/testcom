@@ -74,6 +74,6 @@
 		</fields>
 	</config>
 	<updateservers>
-		<server type="extension" name="Systen Scheduler">https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/systen/scheduler/manifest.xml</server>
+		<server type="extension" name="Systen Scheduler">https://raw.githubusercontent.com/alikon/testcom/main/plugins/systen/scheduler/manifest.xml</server>
 	</updateservers>
 </extension>
