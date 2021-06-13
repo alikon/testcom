@@ -154,10 +154,12 @@ class HtmlView extends BaseHtmlView
 					->text('JTOOLBAR_DELETE')
 					->message('JGLOBAL_CONFIRM_DELETE')
 					->listCheck(true);
+				/**
 				$toolbar->confirmButton('heart')
 					->text('JEXECUTE')
 					->message('COM_JOBS_CONFIRM_EXEC')
 					->task('jobs.run');
+				*/
 				$toolbar->confirmButton('delete')
 					->text('COM_JOBS_TOOLBAR_PURGE')
 					->message('COM_JOBS_CONFIRM_PURGE')
