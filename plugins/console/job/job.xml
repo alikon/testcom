@@ -16,6 +16,33 @@
 		<folder>services</folder>
 		<folder>src</folder>
 	</files>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field
+					name="id"
+					type="text"
+					default="php cli/joomla.php jobs:list"
+					readonly="true"
+					class="readonly"
+				/>
+				<field
+					name="id"
+					type="text"
+					default="php cli/joomla.php jobs:run"
+					readonly="true"
+					class="readonly"
+				/>
+				<field
+					name="id"
+					type="text"
+					default="php cli/joomla.php jobs:run --force"
+					readonly="true"
+					class="readonly"
+				/>
+			</fieldset>
+		</fields>
+	</config>
 	<updateservers>
 		<server type="extension" name="Job Console">https://raw.githubusercontent.com/alikon/testcom/main/plugins/console/job/manifest.xml</server>
 	</updateservers>
