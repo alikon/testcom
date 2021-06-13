@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" method="upgrade">
+	<name>com_jobs</name>
+	<author>Alikon</author>
+	<creationDate>November 2020</creationDate>
+	<copyright>(C) 2020 Alikon. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>nicola.galgano@community.joomla.org</authorEmail>
+	<authorUrl>www.alikonweb.it</authorUrl>
+	<version>0.0.1</version>
+	<description>COM_JOBS_XML_DESCRIPTION</description>
+	<install>
+		<sql>
+			<file driver="mysql" charset="utf8">install/sql/mysql/install.sql</file>
+			<file driver="postgresql" charset="utf8">install/sql/postgresql/install.sql</file>
+		</sql>
+	</install>
+	<uninstall>
+		<sql>
+			<file driver="mysql" charset="utf8">install/sql/mysql/uninstall.sql</file>
+			<file driver="postgresql" charset="utf8">install/sql/postgresql/uninstall.sql</file>
+		</sql>
+	</uninstall>
+	<update>
+		<schemas>
+			<schemapath type="mysql">install/sql/updates/mysql</schemapath>
+			<schemapath type="postgresql">install/sql/updates/postgresql</schemapath>
+		</schemas>
+	</update>
+	<namespace path="src">Joomla\Component\Jobs</namespace>
+	<administration>
+		<menu link="option=com_jobs">Jobs</menu>
+		<files folder="admin">
+			<filename>access.xml</filename>
+			<filename>config.xml</filename>
+			<filename>jobs.xml</filename>
+			<folder>forms</folder>
+			<folder>helpers</folder>
+			<folder>install</folder>
+			<folder>services</folder>
+			<folder>src</folder>
+			<folder>tmpl</folder>
+		</files>
+		<languages folder="admin">
+			<language tag="en-GB">language/en-GB/com_jobs.ini</language>
+			<language tag="en-GB">language/en-GB/com_jobs.sys.ini</language>
+		</languages>
+	</administration>
+	<api>
+		<files folder="api/components/com_jobs">
+			<folder>src</folder>
+		</files>
+	</api>
+	<updateservers>
+		<server type="extension" name="Jobs Component">https://raw.githubusercontent.com/alikon/testcom/main/manifest.xml</server>
+	</updateservers>
+</extension>

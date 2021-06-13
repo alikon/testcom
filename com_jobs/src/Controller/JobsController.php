@@ -1,143 +1,135 @@
 <?php
 /**
- * @package     Joomla.Administrator
+ * @package     Joomla.API
  * @subpackage  com_jobs
  *
  * @copyright   Copyright (C) 2020 Alikon. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Component\Jobs\Administrator\Controller;
+namespace Joomla\Component\Jobs\Api\Controller;
 
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\MVC\Controller\ApiController;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\Controller\AdminController;
-use Joomla\Utilities\ArrayHelper;
+use Joomla\Component\Jobs\Api\View\Jobs\JsonapiView;
+use Joomla\CMS\Filter\InputFilter;
+
 
 /**
- * Jobs list controller class.
+ * The jobs controller
  *
- * @since  __DEPLOY_VERSION__
+ * @since  4.0.0
  */
-class JobsController extends AdminController
+class JobsController extends ApiController
 {
 	/**
-	 * Proxy for getModel.
+	 * The content type of the item.
 	 *
-	 * @param   string  $name    The name of the model.
-	 * @param   string  $prefix  The prefix of the model.
-	 * @param   array   $config  An array of settings.
-	 *
-	 * @return  \Joomla\CMS\MVC\Model\BaseDatabaseModel The model instance
-	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @var    string
+	 * @since  4.0.0
 	 */
-	public function getModel($name = 'Jobs', $prefix = 'Administrator', $config = array('ignore_request' => true))
+	protected $contentType = 'jobs';
+
+	/**
+	 * The default view for the display method.
+	 *
+	 * @var    string
+	 * @since  4.0.0
+	 */
+	protected $default_view = 'jobs';
+
+	/**
+	 * Method to start executing jobs.
+	 *
+	 * @return  static  A \JControllerLegacy object to support chaining.
+	 *
+	 * @since   4.0.0
+	 */
+	public function start()
 	{
-		return parent::getModel($name, $prefix, $config);
+		/** @var JobsModel $model */
+		$model = $this->getModel($this->contentType);
+
+		if (!$model)
+		{
+			throw new \RuntimeException(Text::_('JLIB_APPLICATION_ERROR_MODEL_CREATE'));
+		}
+
+		$recordId = $this->input->getInt('id');
+
+		if (!$recordId)
+		{
+			throw new \RuntimeException(Text::_('JLIB_APPLICATION_ERROR_RECORD'), 404);
+		}
+
+		$cid = [$recordId];
+
+		// Execute the jobs task
+		try
+		{
+			$data = $model->start($cid);
+		}
+		catch (\Exception $e)
+		{
+			throw new \RuntimeException(Text::plural('COM_JOBS_N_ITEMS_EXECUTE', count($cid)));
+		}
+
+		$view->setModel($model, true);
+
+		$view->document = $this->app->getDocument();
+
+		$view->displayListTypes();
+
 	}
 
 	/**
-	 * Clean out the unpublished links.
+	 * Return module items types
 	 *
-	 * @return  void
+	 * @return  static  A \JControllerLegacy object to support chaining.
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   4.0.0
 	 */
-	public function purge()
+	public function executeTask()
 	{
-		// Check for request forgeries.
-		$this->checkToken();
+		$viewType   = $this->app->getDocument()->getType();
+		$viewName   = $this->input->get('view', $this->default_view);
+		$viewLayout = $this->input->get('layout', 'default', 'string');
+		$filter        = InputFilter::getInstance();
+		$apiFilterInfo = $this->input->get('id', '', 'string');
 
-		$model = $this->getModel('Jobs');
-
-		if ($model->purge())
+		try
 		{
-			$message = Text::_('COM_JOBS_CLEAR_SUCCESS');
+			/** @var JsonapiView $view */
+			$view = $this->getView(
+				$viewName,
+				$viewType,
+				'',
+				['base_path' => $this->basePath, 'layout' => $viewLayout, 'contentType' => $this->contentType]
+			);
 		}
-		else
+		catch (\Exception $e)
 		{
-			$message = Text::_('COM_JOBS_CLEAR_FAIL');
-		}
-
-		$this->setRedirect('index.php?option=com_jobs&view=jobs', $message);
-	}
-
-	/**
-	 * Removes an item.
-	 *
-	 * Overrides Joomla\CMS\MVC\Controller\FormController::delete to check the core.admin permission.
-	 *
-	 * @return  void
-	 *
-	 * @since   __DEPLOY_VERSION__
-	 */
-	public function delete()
-	{
-
-		$ids = $this->input->get('cid', array(), 'array');
-
-		if (!$this->app->getIdentity()->authorise('core.admin', $this->option))
-		{
-			throw new NotAllowed(Text::_('JERROR_ALERTNOAUTHOR'), 403);
-		}
-		elseif (empty($ids))
-		{
-			$this->setMessage(Text::_('COM_USERS_NO_LEVELS_SELECTED'), 'warning');
-		}
-		else
-		{
-			// Get the model.
-			$model = $this->getModel();
-
-			$ids = ArrayHelper::toInteger($ids);
-
-			// Remove the items.
-			if ($model->delete($ids))
-			{
-				$this->setMessage(Text::plural('COM_JOBS_N_ITEMS_DELETED', count($ids)));
-			}
+			throw new \RuntimeException($e->getMessage());
 		}
 
-		$this->setRedirect('index.php?option=com_jobs&view=jobs');
-	}
-
-	/**
-	 * Method to toggle the featured setting of a list of contacts.
-	 *
-	 * @return  void
-	 *
-	 * @since   __DEPLOY_VERSION__
-	 */
-	public function run()
-	{
-		// Check for request forgeries
-		$this->checkToken();
-
-		$ids    = $this->input->get('cid', array(), 'array');
-		$task   = $this->getTask();
-
-		foreach ($ids as $id)
-		{
-			$tmp[] = explode('.', $id);
-			$ids[] = $tmp[0][0];
-			$job[] = $tmp[0][1];
-		}
-
-		// Get the model.
 		/** @var \Joomla\Component\Jobs\Administrator\Model\JobsModel $model */
-		$model  = $this->getModel();
+		$model = $this->getModel();
 
-		// Run the jobs.
-		if (!$model->start($job))
+		if (!$model)
 		{
-			$this->app->enqueueMessage($model->getError(), 'warning');
+			throw new \RuntimeException(Text::_('JLIB_APPLICATION_ERROR_MODEL_CREATE'));
 		}
 
-		$message = Text::plural('COM_JOBS_N_ITEMS_EXECUTED', 1);
+		$model->setState('id', $filter->clean($apiFilterInfo, 'STRING'));
 
-		$this->setRedirect('index.php?option=com_jobs&view=jobs', $message);
+		$view->setModel($model, true);
+
+		$view->document = $this->app->getDocument();
+
+		$view->executeTask();
+
+		return $this;
 	}
 }
