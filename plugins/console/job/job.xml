@@ -20,21 +20,21 @@
 		<fields name="params">
 			<fieldset name="basic">
 				<field
-					name="id"
+					name="id1"
 					type="text"
 					default="php cli/joomla.php jobs:list"
 					readonly="true"
 					class="readonly"
 				/>
 				<field
-					name="id"
+					name="id2"
 					type="text"
 					default="php cli/joomla.php jobs:run"
 					readonly="true"
 					class="readonly"
 				/>
 				<field
-					name="id"
+					name="id3"
 					type="text"
 					default="php cli/joomla.php jobs:run --force"
 					readonly="true"
