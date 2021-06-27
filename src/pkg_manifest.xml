@@ -15,5 +15,7 @@
 		<file type="plugin" id="consoleplugin" group="console">plg_console_job.0.0.1.zip</file>
 		<file type="plugin" id="schedulerplugin" group="system">plg_system_scheduler.0.0.1.zip</file>
 		<file type="plugin" id="exportdbplugin" group="job">plg_job_exportdb.0.0.1.zip</file>
+		<file type="plugin" id="cleancacheplugin" group="job">plg_job_cleancache.0.0.1.zip</file>
+		<file type="plugin" id="logrotationplugin" group="job">plg_job_logrotation.0.0.1.zip</file>
 	</files>
 </extension>
