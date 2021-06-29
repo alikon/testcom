@@ -1,4 +1,4 @@
-This is the source of Jobs, a Joomla task manager. Here you will find the component, some plugins of type Job, 2 CLI commands and 2 webservices entrypoint.
+This is the source of Jobs, a Joomla task manager extension. Here you will find the component, some plugins of type Job, 2 CLI commands and 2 webservices entrypoint.
 
 ## Requirements
 Joomla >= 4.0
