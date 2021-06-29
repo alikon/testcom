@@ -17,5 +17,6 @@
 		<file type="plugin" id="exportdbplugin" group="job">plg_job_exportdb.0.0.1.zip</file>
 		<file type="plugin" id="cleancacheplugin" group="job">plg_job_cleancache.0.0.1.zip</file>
 		<file type="plugin" id="logrotationplugin" group="job">plg_job_logrotation.0.0.1.zip</file>
+		<file type="plugin" id="consentexpirationplugin" group="job">plg_job_expiredconsent.0.0.1.zip</file>
 	</files>
 </extension>
