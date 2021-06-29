@@ -11,11 +11,8 @@
 	<description>PLG_JOB_CLEANCACHE_XML_DESCRIPTION</description>
 	<files>
 		<filename plugin="cleancache">cleancache.php</filename>
+		<folder>language</folder>
 	</files>
-	<languages folder="language">
-		<language tag="en-GB">en-GB.plg_job_cleancache.ini</language>
-		<language tag="en-GB">en-GB.plg_job_cleancache.sys.ini</language>
-	</languages>
 	<config>
 		<fields name="params">
 			<fieldset name="basic">
