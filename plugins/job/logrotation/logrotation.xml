@@ -2,11 +2,11 @@
 <extension type="plugin" group="job" method="upgrade">
 	<name>plg_job_logrotation</name>
 	<author>Alikon</author>
-	<creationDate>May 2018</creationDate>
-	<copyright>Copyright (C) 2005 - 2018 Open Source Matters. All rights reserved.</copyright>
+	<creationDate>May 2021</creationDate>
+	<copyright>Copyright (C) 2021 Alikon. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-	<authorEmail>admin@joomla.org</authorEmail>
-	<authorUrl>www.joomla.org</authorUrl>
+	<authorEmail>nicola.galgano@community.joomla.org</authorEmail>
+	<authorUrl>www.alikonweb.it</authorUrl>
 	<version>0.0.1</version>
 	<description>PLG_JOB_LOGROTATION_XML_DESCRIPTION</description>
 	<files>
