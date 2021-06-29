@@ -22,5 +22,7 @@ This is the job plugin **Expire privacy consent** [plg_job_expiredconsent.zip](h
 This is the **webservices plugin Jobs** [plg_webservices_jobs.zip](https://github.com/alikon/testcom/files/6732610/plg_webservices_jobs.zip)
 
 This is the **console plugin Jobs** [plg_console_job.zip](https://github.com/alikon/testcom/files/6732614/plg_console_job.zip)
+ 
+This is the **system plugin scheduler** [plg_system_scheduler.zip](https://github.com/alikon/testcom/files/6735218/plg_system_scheduler.zip)
 
 
