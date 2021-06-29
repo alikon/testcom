@@ -19,8 +19,8 @@
 				<field
 					name="consentexpiration"
 					type="integer"
-					label="PLG_SYSTEM_PRIVACYCONSENT_CONSENTEXPIRATION_LABEL"
-					description="PLG_SYSTEM_PRIVACYCONSENT_CONSENTEXPIRATION_DESC"
+					label="PLG_JOB_EXPIREDCONSENT_CONSENTEXPIRATION_LABEL"
+					description="PLG_JOB_EXPIREDCONSENT_CONSENTEXPIRATION_DESC"
 					first="180"
 					last="720"
 					step="30"
