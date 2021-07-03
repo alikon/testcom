@@ -54,4 +54,5 @@
 	<updateservers>
 		<server type="extension" name="Jobs Component">https://raw.githubusercontent.com/alikon/testcom/main/manifest.xml</server>
 	</updateservers>
+	<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/changelog.xml</changelogurl>
 </extension>
