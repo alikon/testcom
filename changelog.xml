@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelogs>
     <changelog>
-        <element>com_lists</element>
+        <element>com_jobs</element>
         <type>component</type>
-        <version>4.0.0</version>
+        <version>0.0.1</version>
         <security>
             <item>Item A</item>
             <item>Item b</item>
@@ -34,7 +34,7 @@
         </note>
 </changelog>
 <changelog>
-	<element>com_lists</element>
+	<element>com_jobss</element>
 	<type>component</type>
 	<version>0.0.2</version>
 	<security>
