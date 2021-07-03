@@ -34,7 +34,7 @@
         </note>
 </changelog>
 <changelog>
-	<element>com_jobss</element>
+	<element>com_jobs</element>
 	<type>component</type>
 	<version>0.0.2</version>
 	<security>
