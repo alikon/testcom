@@ -87,7 +87,7 @@ class JobListCommand extends AbstractCommand
 
 		foreach ($list as $job)
 		{
-			$nextrun    = ' the next run will be as soon as possible';
+			$nextrun    = 'the next run will be as soon as possible';
 			$taskParams = json_decode($job->params, true);
 			$lastrun    = $taskParams['lastrun'];
 			$lastcount  = $taskParams['taskid'];
@@ -97,10 +97,10 @@ class JobListCommand extends AbstractCommand
 
 			if ((abs($now - $lastrun) < $timeout))
 			{
-				$nextrun = ' the next run is scheduled ' . $this->convert(abs($now - $lastrun - $timeout));
+				$nextrun = 'scheduled ' . $this->convert(abs($now - $lastrun - $timeout));
 			}
 
-			$text[] = 'Job: <fg=red;options=bold>' . $job->element . '</> has run ' . $lastcount . ' times' . $nextrun;
+			$text[] = 'Job: <fg=red;options=bold>' . $job->element . '</> ' . $nextrun;
 		}
 
 		$symfonyStyle->listing($text);
