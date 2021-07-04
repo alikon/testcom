@@ -40,6 +40,13 @@
 					readonly="true"
 					class="readonly"
 				/>
+				<field
+					name="id4"
+					type="text"
+					default="php cli/joomla.php jobs:run --jobname cleancache --force"
+					readonly="true"
+					class="readonly"
+				/>
 			</fieldset>
 		</fields>
 	</config>
