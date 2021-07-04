@@ -259,13 +259,13 @@ abstract class JobsPlugin extends CMSPlugin
 		}
 
 		$endTime    = microtime(true);
-		$this->snapshot['duration'] = sprintf('%0.2f', $endTime - $this->snapshot['startTime']);
+		$this->snapshot['duration'] = ($endTime - $this->snapshot['startTime']);
 
 		Log::add(
 			Text::sprintf('PLG_JOB_' . strtoupper($this->_name) . '_END', $this->_name) .
 			Text::sprintf('PLG_JOB_' . strtoupper($this->_name) . '_TASK', $taskid) .
 			Text::sprintf('PLG_JOB_' . strtoupper($this->_name) . '_PROCESS_RESULT', $this->snapshot['status']) .
-			Text::sprintf('PLG_JOB_' . strtoupper($this->_name) . '_PROCESS_COMPLETE', $this->snapshot['duration']),
+			Text::sprintf('PLG_JOB_' . strtoupper($this->_name) . '_PROCESS_COMPLETE', sprintf('%0.2f', $this->snapshot['duration'])),
 			Log::INFO,
 			'scheduler'
 		);
@@ -274,6 +274,18 @@ abstract class JobsPlugin extends CMSPlugin
 		$data2 = new Date('now +' . $seconds . ' seconds');
 		$data1 = $data1->toSql();
 		$data2 = $data2->toSql();
+
+		switch ($taskParams['unit']) {
+			case '60':
+				$unit = 'Minute';
+				break;
+			case '3600':
+				$unit = 'Hour';
+				break;
+			case '86400':
+				$unit = 'Day';
+				break;	
+		}
 
 		try
 		{
@@ -288,16 +300,20 @@ abstract class JobsPlugin extends CMSPlugin
 						$db->quoteName('exitcode'),
 						$db->quoteName('lastdate'),
 						$db->quoteName('nextdate'),
+						$db->quoteName('frequency'),
+						$db->quoteName('unit'),
 					]
 				)
-				->values(':taskname, :duration, :jobid, :taskid, :exitcode, :lastdate, :nextdate')
+				->values(':taskname, :duration, :jobid, :taskid, :exitcode, :lastdate, :nextdate, :frequency, :unit')
 				->bind(':taskname', $this->_name)
 				->bind(':duration', $this->snapshot['duration'])
 				->bind(':jobid', $params->extension_id, ParameterType::INTEGER)
 				->bind(':taskid', $taskid, ParameterType::INTEGER)
 				->bind(':exitcode', $this->snapshot['status'], ParameterType::INTEGER)
 				->bind(':lastdate', $data1)
-				->bind(':nextdate', $data2);
+				->bind(':nextdate', $data2)
+				->bind(':frequency', $taskParams['timeout'], ParameterType::INTEGER)
+				->bind(':unit', $unit);
 
 			$db->setQuery($query);
 			$db->execute();
