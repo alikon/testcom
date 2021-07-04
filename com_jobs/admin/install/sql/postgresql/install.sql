@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS "#__tasks" (
 	"exitcode" int2 NOT NULL,
 	"lastdate" timestamp NOT NULL,
 	"nextdate" timestamp NOT NULL,
+	"frequency" int8 NOT NULL,
+	"unit" varchar(100) NOT NULL,
 	CONSTRAINT #__tasks_pkey PRIMARY KEY (id)
 );
 
