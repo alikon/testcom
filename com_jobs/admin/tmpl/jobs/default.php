@@ -65,6 +65,9 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 						<th scope="col" class="w-1 d-none d-md-table-cell">
 							<?php echo HTMLHelper::_('searchtools.sort', 'COM_JOBS_HEADING_NEXTEXECUTION', 'a.nextdate', $listDirn, $listOrder); ?>
 						</th>
+						<th scope="col" class="w-1 d-none d-md-table-cell">
+							<?php echo Text::_('COM_JOBS_HEADING_FREQUENCY'); ?>
+						</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -102,6 +105,9 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 						</td>
 						<td class="d-none d-md-table-cell">
 							<?php echo HTMLHelper::_('date', $item->nextdate, Text::_('DATE_FORMAT_LC6')); ?>
+						</td>
+						<td class="d-none d-md-table-cell">
+							<?php echo Text::sprintf('COM_JOBS_RUNEVERY', $item->frequency, $item->unit) . '<br>'; ?>
 						</td>
 					</tr>
 					<input type="hidden" name="jobid[]" value="<?php echo $item->jobid; ?>">
