@@ -25,8 +25,6 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 <form action="<?php echo Route::_('index.php?option=com_jobs&view=jobs'); ?>" method="post" name="adminForm" id="adminForm">
 	<div id="j-main-container" class="j-main-container">
 		<?php echo LayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
-		
-
 		<?php if (empty($this->items)) : ?>
 			<div class="alert alert-info">
 				<span class="icon-info-circle" aria-hidden="true"></span><span class="sr-only"><?php echo Text::_('INFO'); ?></span>
@@ -82,15 +80,39 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 						<td class="d-none d-md-table-cell">
 							<?php echo (int) $item->id; ?>
 						</td>
-						<th scope="row" class="d-none d-md-table-cell">
+						<td class="d-none d-md-table-cell">
 							<?php if ($canEdit) : ?>
-								<a href="<?php echo Route::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . $item->jobid); ?>" title="<?php echo Text::_('JACTION_EDIT'); ?> <?php echo $this->escape($item->taskname); ?>">
-									<?php echo $this->escape(str_replace(Uri::root(), '', rawurldecode($item->taskname))); ?>
-								</a>
+								<?php 
+									$link = Route::_('index.php?option=com_plugins&client_id=0&task=plugin.edit&extension_id=' . $item->jobid . '&tmpl=component&layout=modal');
+									$href ='#plugin' . $item->jobid . 'Modal'
+								?>
+								<a title="<?php echo Text::_("JACTION_EDIT");?>" data-bs-toggle="modal" href="<?php echo $href; ?>"><?php echo $this->escape(str_replace(Uri::root(), '', rawurldecode($item->taskname))); ?></a>
+								<?php echo HTMLHelper::_(
+									'bootstrap.renderModal',
+									'plugin' . $item->jobid . 'Modal',
+									array(
+										'url'         => $link,
+										'title'       => $item->taskname,
+										'height'      => '400px',
+										'width'       => '800px',
+										'bodyHeight'  => '70',
+										'modalWidth'  => '80',
+										'closeButton' => false,
+										'backdrop'    => 'static',
+										'keyboard'    => false,
+										'footer'      => '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"'
+											. ' onclick="Joomla.iframeButtonClick({iframeSelector: \'#plugin' . $item->jobid . 'Modal\', buttonSelector: \'#closeBtn\'})">'
+											. Text::_('JLIB_HTML_BEHAVIOR_CLOSE') . '</button>'
+											. '<button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="Joomla.iframeButtonClick({iframeSelector: \'#plugin' . $item->jobid . 'Modal\', buttonSelector: \'#saveBtn\'})">'
+											. Text::_("JSAVE") . '</button>'
+											. '<button type="button" class="btn btn-success" onclick="Joomla.iframeButtonClick({iframeSelector: \'#plugin' . $item->jobid . 'Modal\', buttonSelector: \'#applyBtn\'}); return false;">'
+											. Text::_("JAPPLY") . '</button>'
+									)
+								);?>
 							<?php else : ?>
-									<?php echo $this->escape(str_replace(Uri::root(), '', rawurldecode($item->taskname))); ?>
+								<?php echo $this->escape(str_replace(Uri::root(), '', rawurldecode($item->taskname))); ?>
 							<?php endif; ?>
-						</th>
+						</td>
 						<td class="d-none d-md-table-cell">
 							<?php echo (int) $item->taskid; ?>
 						</td>
@@ -114,14 +136,10 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 					<?php endforeach; ?>
 				</tbody>
 			</table>
-
 			<?php // load the pagination. ?>
 			<?php echo $this->pagination->getListFooter(); ?>
-
 		<?php endif; ?>
-
 		<input type="hidden" name="task" value="">
-		
 		<input type="hidden" name="boxchecked" value="0">
 		<?php echo HTMLHelper::_('form.token'); ?>
 	</div>
