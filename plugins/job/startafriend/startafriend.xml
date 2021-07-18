@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="job" method="upgrade">
+	<name>plg_job_startafriend</name>
+	<author>Alikon</author>
+	<creationDate>July 2021</creationDate>
+	<copyright>Copyright (C) 2021 Alikon. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>nicola.galgano@community.joomla.org</authorEmail>
+	<authorUrl>www.alikonweb.it</authorUrl>
+	<version>0.0.1</version>
+	<description>PLG_JOB_STARTAFRIEND_XML_DESCRIPTION</description>
+	<files>
+		<filename plugin="startafriend">startafriend.php</filename>
+		<folder>language</folder>
+	</files>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field
+					name="url"
+					type="text"
+					label="PLG_STARTAFRIEND_CONTENT_URL_LABEL"
+					description="PLG_STARTAFRIEND_CONTENT_URL_DESC"
+					required="true"
+				/>
+				<field
+					name="key"
+					type="text"
+					label="PLG_STARTAFRIEND_CONTENT_KEY_LABEL"
+					description="PLG_STARTAFRIEND_CONTENT_KEY_DESC"
+					required="true"
+				/>
+				<field
+					name="timeout"
+					type="integer"
+					label="PLG_JOB_STARTAFRIEND_TIMEOUT_LABEL"
+					description="PLG_JOB_STARTAFRIEND_TIMEOUT_DESC"
+					first="0"
+					last="120"
+					step="1"
+					default="30"
+					filter="int"
+					validate="number"
+				/>
+				<field
+					name="lastrun"
+					type="hidden"
+					default="0"
+					filter="integer"
+				/>
+				<field
+					name="unit"
+					type="list"
+					label="PLG_JOB_STARTAFRIEND_UNIT_LABEL"
+					description="PLG_JOB_STARTAFRIEND_UNIT_DESC"
+					default="86400"
+					filter="integer"
+				>
+					<option value="60">PLG_JOB_STARTAFRIEND_MINUTE</option>
+					<option value="3600">PLG_JOB_STARTAFRIEND_HOUR</option>
+					<option value="86400">JDAY</option>
+				</field>
+				<field
+					name="taskid"
+					type="hidden"
+					default="0"
+					size="15"
+				/>
+			</fieldset>
+		</fields>
+	</config>
+</extension>
