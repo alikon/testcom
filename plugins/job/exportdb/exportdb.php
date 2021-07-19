@@ -18,17 +18,16 @@ use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Filesystem\File;
 use Joomla\Registry\Registry;
-//use Joomla\Component\Plugins\Administrator\Jobs\JobsPlugin;
 use Joomla\Component\Jobs\Administrator\Jobs\JobsPlugin;
 
 /**
- * Joomla! Log Rotation plugin
+ * Joomla! Export DB job plugin
  *
- * Rotate the log files created by Joomla core
+ * Export the DB to a file.
  *
  * @since  __DEPLOY_VERSION__
  */
-class PlgJobJobexportdb extends JobsPlugin
+class PlgJobExportdb extends JobsPlugin
 {
 	/**
 	 * Load the language file on instantiation.
@@ -83,7 +82,7 @@ class PlgJobJobexportdb extends JobsPlugin
 		// Execute the job EXPORTDB task
 		try
 		{
-			$this->jobexportdbTask();
+			$this->exportdbTask();
 		}
 		catch (\Exception $e)
 		{
@@ -103,7 +102,7 @@ class PlgJobJobexportdb extends JobsPlugin
 	 *
 	 * @since   __DEPLOY_VERSION__
 	 */
-	public function jobexportdbTask()
+	public function exportdbTask()
 	{
 		// Make sure the database supports exports before we get going
 		try

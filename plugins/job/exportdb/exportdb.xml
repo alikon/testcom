@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" group="job" method="upgrade">
-	<name>plg_job_jobexportdb</name>
+	<name>plg_job_exportdb</name>
 	<author>Alikon</author>
 	<creationDate>February 2020</creationDate>
 	<copyright>Copyright (C) 2021 Alikon. All rights reserved.</copyright>
@@ -8,9 +8,9 @@
 	<authorEmail>nicola.galgano@community.joomla.org</authorEmail>
 	<authorUrl>www.alikonweb.it</authorUrl>
 	<version>0.0.1</version>
-	<description>PLG_JOB_JOBEXPORTDB_XML_DESCRIPTION</description>
+	<description>PLG_JOB_EXPORTDB_XML_DESCRIPTION</description>
 	<files>
-		<filename plugin="jobexportdb">jobexportdb.php</filename>
+		<filename plugin="exportdb">exportdb.php</filename>
 		<folder>language</folder>
 	</files>
 	<config>
@@ -19,8 +19,8 @@
 				<field
 					name="directory"
 					type="folderlist"
-					label="PLG_JOB_JOBEXPORTDB_DIRECTORY_LABEL"
-					description="PLG_JOB_JOBEXPORTDB_DIRECTORY_DESC"
+					label="PLG_JOB_EXPORTDB_DIRECTORY_LABEL"
+					description="PLG_JOB_EXPORTDB_DIRECTORY_DESC"
 					directory="tmp"
 					hide_none="true"
 					recursive="true"
@@ -29,20 +29,20 @@
 				<field
 					name="unit"
 					type="list"
-					label="PLG_JOB_JOBEXPORTDB_UNIT_LABEL"
-					description="PLG_JOB_JOBEXPORTDB_UNIT_DESC"
+					label="PLG_JOB_EXPORTDB_UNIT_LABEL"
+					description="PLG_JOB_EXPORTDB_UNIT_DESC"
 					default="86400"
 					filter="integer"
 				>
-					<option value="60">PLG_JOB_JOBEXPORTDB_MINUTE</option>
-					<option value="3600">PLG_JOB_JOBEXPORTDB_HOUR</option>
+					<option value="60">PLG_JOB_EXPORTDB_MINUTE</option>
+					<option value="3600">PLG_JOB_EXPORTDB_HOUR</option>
 					<option value="86400">JDAY</option>
 				</field>
 				<field
 					name="timeout"
 					type="integer"
-					label="PLG_JOB_JOBEXPORTDB_TIMEOUT_LABEL"
-					description="PLG_JOB_JOBEXPORTDB_TIMEOUT_DESC"
+					label="PLG_JOB_EXPORTDB_TIMEOUT_LABEL"
+					description="PLG_JOB_EXPORTDB_TIMEOUT_DESC"
 					first="0"
 					last="120"
 					step="1"
@@ -66,6 +66,6 @@
 		</fields>
 	</config>
 	<updateservers>
-		<server type="extension" name="Jobs ExportDB">https://raw.githubusercontent.com/alikon/testcom/main/plugins/job/jobexportdb/manifest.xml</server>
+		<server type="extension" name="Jobs ExportDB">https://raw.githubusercontent.com/alikon/testcom/main/plugins/job/exportdb/manifest.xml</server>
 	</updateservers>
 </extension>

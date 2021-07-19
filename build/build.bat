@@ -23,7 +23,7 @@ cd ../../job/cleancache/
 zip -r ../../../build/packages/plg_job_cleancache.zip *
 
 REM Plugins
-cd ../jobexportdb/
+cd ../exportdb/
 zip -r ../../../build/packages/plg_job_exportdb.zip *
 
 REM Plugins
