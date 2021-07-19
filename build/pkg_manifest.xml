@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<extension type="package" method="upgrade">
+	<name>The Job Package</name>
+	<packagename>jobspackage</packagename>
+	<version>0.0.1</version>
+	<creationDate>May 2021</creationDate>
+	<copyright>Copyright (C) 2021 Alikon. All rights reserved.</copyright>
+	<packager>Alikon</packager>
+	<packagerurl>www.alikonweb.it</packagerurl>
+	<description>The Job package</description>
+	<update></update>
+	<files>
+		<file type="component" id="jobscomponent">com_jobs.zip</file>
+		<file type="plugin" id="webserviceplugin" group="webservices">plg_webservices_jobs.zip</file>
+		<file type="plugin" id="consoleplugin" group="console">plg_console_job.zip</file>
+		<file type="plugin" id="schedulerplugin" group="system">plg_system_scheduler.zip</file>
+		<file type="plugin" id="exportdbplugin" group="job">plg_job_exportdb.zip</file>
+		<file type="plugin" id="cleancacheplugin" group="job">plg_job_cleancache.zip</file>
+		<file type="plugin" id="logrotationplugin" group="job">plg_job_logrotation.zip</file>
+		<file type="plugin" id="consentexpirationplugin" group="job">plg_job_expiredconsent.zip</file>
+		<file type="plugin" id="startafriendplugin" group="job">plg_job_startafriend.zip</file>
+	</files>
+</extension>
