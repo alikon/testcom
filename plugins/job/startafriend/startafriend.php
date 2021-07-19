@@ -102,7 +102,7 @@ class PlgJobStartafriend extends JobsPlugin
 	 */
 	public function startAFriendTask()
 	{
-		$reposnse = '';
+		$response = '';
 		$options = new Registry;
 		$options->set('Content-Type', 'application/json');
 		
