@@ -9,7 +9,7 @@ PHP >= 7.2.5
 
 ## Installation
 
-Install the package [pkg_jobs.zip](https://github.com/alikon/testcom/files/6759560/pkg_jobs.zip)
+Install the package [pkg_jobs.zip](https://github.com/alikon/testcom/blob/main/build/packages/pkg_jobs.zip)
 
 the package include:
 
