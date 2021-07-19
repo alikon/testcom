@@ -13,26 +13,22 @@ Install the package [pkg_jobs.zip](https://github.com/alikon/testcom/blob/main/b
 
 the package include:
 
-The **Jobs** component [com_jobs.zip](https://github.com/alikon/testcom/files/6759561/com_jobs.zip)
+The **Jobs** component [com_jobs.zip](https://github.com/alikon/testcom/blob/main/build/packages/com_jobs.zip)
 
-The job plugin **ExportDB** [plg_job_exportdb.zip](https://github.com/alikon/testcom/files/6759562/plg_job_exportdb.zip)
+The job plugin **ExportDB** [plg_job_exportdb.zip](https://github.com/alikon/testcom/blob/main/build/packages/plg_job_exportdb.zip)
 
+The job plugin **Log rotation** [plg_job_logrotation.zip](https://github.com/alikon/testcom/blob/main/build/packages/plg_job_logrotation.zip)
 
-The job plugin **Log rotation** [plg_job_logrotation.zip](https://github.com/alikon/testcom/files/6759563/plg_job_logrotation.zip)
+The job plugin **Clean expired cache** [plg_job_cleancache.zip](https://github.com/alikon/testcom/blob/main/build/packages/plg_job_cleancache.zip)
 
+The job plugin **Expire privacy consent** [plg_job_expiredconsent.zip](https://github.com/alikon/testcom/blob/main/build/packages/plg_job_expiredconsent.zip)
 
-The job plugin **Clean expired cache** [plg_job_cleancache.zip](https://github.com/alikon/testcom/files/6759564/plg_job_cleancache.zip)
+The job plugin **Start a Friend** [plg_job_startafriend.zip](https://github.com/alikon/testcom/blob/main/build/packages/plg_job_startafriend.zip)
 
+The **webservices plugin Jobs** [plg_webservices_jobs.zip](https://github.com/alikon/testcom/blob/main/build/packages/plg_webservices_jobs.zip)
 
-The job plugin **Expire privacy consent** [plg_job_expiredconsent.zip](https://github.com/alikon/testcom/files/6759565/plg_job_expiredconsent.zip)
-
-
-The **webservices plugin Jobs** [plg_webservices_jobs.zip](https://github.com/alikon/testcom/files/6759566/plg_webservices_jobs.zip)
-
-
-The **console plugin Jobs** [plg_console_job.zip](https://github.com/alikon/testcom/files/6759567/plg_console_job.zip)
-
+The **console plugin Jobs** [plg_console_job.zip](https://github.com/alikon/testcom/blob/main/build/packages/plg_console_job.zip)
  
-The **system plugin scheduler** [plg_system_scheduler.zip](https://github.com/alikon/testcom/files/6759568/plg_system_scheduler.zip)
+The **system plugin scheduler** [plg_system_scheduler.zip](https://github.com/alikon/testcom/blob/main/build/packages/plg_system_scheduler.zip)
 
 
