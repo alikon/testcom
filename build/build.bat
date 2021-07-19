@@ -2,7 +2,7 @@ REM This will generate the zipfiles for Com_jobs in /build/packages
 
 rmdir /q /s packages
 mkdir packages
-echo d | xcopy pkg_manifest.xml packages/
+echo d | xcopy pkg_jobs.xml packages/
 
 REM Component com_jobs
 cd ../com_jobs/

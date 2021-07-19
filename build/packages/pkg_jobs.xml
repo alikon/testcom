@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <extension type="package" method="upgrade">
 	<name>The Job Package</name>
-	<packagename>jobspackage</packagename>
+	<packagename>jobs</packagename>
 	<version>0.0.1</version>
 	<creationDate>May 2021</creationDate>
 	<copyright>Copyright (C) 2021 Alikon. All rights reserved.</copyright>
