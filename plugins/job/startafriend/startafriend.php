@@ -102,13 +102,21 @@ class PlgJobStartafriend extends JobsPlugin
 	 */
 	public function startAFriendTask()
 	{
-		$content = [];
+		$reposnse = '';
 		$options = new Registry;
 		$options->set('Content-Type', 'application/json');
 		
-		$headers = array('Authorization' => 'Bearer ' . $this->params->get('key'));
+		if ($this->params->get('authorization') === 'Bearer')
+		{
+			$headers = array('Authorization' => 'Bearer ' . $this->params->get('key'));
+		}
 
-		// Don't let the request take longer than 120 seconds to avoid page timeout issues
+		if ($this->params->get('authorization') === 'X-Joomla-Token')
+		{
+			$headers = array('X-Joomla-Token' => $this->params->get('key'));
+		}
+
+		// Don't let the request take longer than 120 seconds to avoid timeout issues
 		try
 		{
 			$response = HttpFactory::getHttp($options)->get($this->params->get('url'), $headers, 120);
@@ -117,6 +125,12 @@ class PlgJobStartafriend extends JobsPlugin
 		{
 			$this->snapshot['status'] = self::JOB_KO_RUN;
 		}
+
+		if ($response->code !== 200)
+		{
+			$this->snapshot['status'] = self::JOB_KO_RUN;
+		}
+
 		return $response;
 	}
 

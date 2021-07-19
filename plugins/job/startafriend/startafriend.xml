@@ -19,17 +19,28 @@
 				<field
 					name="url"
 					type="text"
-					label="PLG_STARTAFRIEND_CONTENT_URL_LABEL"
-					description="PLG_STARTAFRIEND_CONTENT_URL_DESC"
+					label="PLG_JOB_STARTAFRIEND_URL_LABEL"
+					description="PLG_JOB_STARTAFRIEND_URL_DESC"
 					required="true"
 				/>
 				<field
 					name="key"
 					type="text"
-					label="PLG_STARTAFRIEND_CONTENT_KEY_LABEL"
-					description="PLG_STARTAFRIEND_CONTENT_KEY_DESC"
+					label="PLG_JOB_STARTAFRIEND_KEY_LABEL"
+					description="PLG_JOB_STARTAFRIEND_KEY_DESC"
 					required="true"
 				/>
+				<field
+					name="authorization"
+					type="list"
+					label="PLG_JOB_STARTAFRIEND_AUTH_LABEL"
+					description="PLG_JOB_STARTAFRIEND_AUTH_DESC"
+					default="Bearer"
+					required="true"
+				>
+					<option value="Bearer">PLG_JOB_STARTAFRIEND_BEARER</option>
+					<option value="X-Joomla-Token">PLG_JOB_STARTAFRIEND_JOOMLATOKEN</option>
+				</field>
 				<field
 					name="timeout"
 					type="integer"
