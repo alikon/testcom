@@ -16,6 +16,8 @@ use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Registry\Registry;
 use Joomla\Component\Jobs\Administrator\Jobs\JobsPlugin;
+use Joomla\Database\ParameterType;
+
 /**
  * Joomla! Job One plugin
  *
