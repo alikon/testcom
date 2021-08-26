@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.9" type="plugin" group="system" method="upgrade">
+	<name>plg_system_exportbutton</name>
+	<author>Alikon</author>
+	<creationDate>May 2021</creationDate>
+	<copyright>Copyright (C) 2021 Alikon. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>nicola.galgano@community.joomla.org</authorEmail>
+	<authorUrl>www.alikonweb.it</authorUrl>
+	<version>1.0.0</version>
+	<description>PLG_SYSTEM_EXPORTBUTTON_XML_DESCRIPTION</description>
+	<files>
+		<filename plugin="exportbutton">exportbutton.php</filename>
+	</files>
+	<languages folder="language">
+		<language tag="en-GB">en-GB.plg_system_exportbutton.ini</language>
+		<language tag="en-GB">en-GB.plg_system_exportbutton.sys.ini</language>
+	</languages>
+	<config>
+	</config>
+	<updateservers>
+		<server type="extension" name="Export Button Update Site">https://raw.githubusercontent.com/alikon/export4/main/exportbutton-manifest.xml</server>
+	</updateservers>
+</extension>
