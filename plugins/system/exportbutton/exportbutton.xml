@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="3.9" type="plugin" group="system" method="upgrade">
+<extension type="plugin" group="system" method="upgrade">
 	<name>plg_system_exportbutton</name>
 	<author>Alikon</author>
 	<creationDate>May 2021</creationDate>
@@ -11,12 +11,45 @@
 	<description>PLG_SYSTEM_EXPORTBUTTON_XML_DESCRIPTION</description>
 	<files>
 		<filename plugin="exportbutton">exportbutton.php</filename>
+		<folder>language</folder>
 	</files>
-	<languages folder="language">
-		<language tag="en-GB">en-GB.plg_system_exportbutton.ini</language>
-		<language tag="en-GB">en-GB.plg_system_exportbutton.sys.ini</language>
-	</languages>
 	<config>
+	<fields name="params">
+			<fieldset name="basic">
+				<field
+					name="url"
+					type="text"
+					label="PLG_SYSTEM_EXPORTBUTTON_URL_LABEL"
+					description="PLG_SYSTEM_EXPORTBUTTON_URL_DESC"
+					required="true"
+				/>
+				<field
+					name="authorization"
+					type="list"
+					label="PLG_SYSTEM_EXPORTBUTTON_AUTH_LABEL"
+					description="PLG_SYSTEM_EXPORTBUTTON_AUTH_DESC"
+					default="Bearer"
+					required="true"
+				>
+					<option value="Bearer">PLG_SYSTEM_EXPORTBUTTON_BEARER</option>
+					<option value="X-Joomla-Token">PLG_SYSTEM_EXPORTBUTTON_JOOMLATOKEN</option>
+				</field>
+				<field
+					name="key"
+					type="text"
+					label="PLG_SYSTEM_EXPORTBUTTON_KEY_LABEL"
+					description="PLG_SYSTEM_EXPORTBUTTON_KEY_DESC"
+					required="true"
+				/>
+				<field
+					name="catid"
+					type="number"
+					label="PLG_SYSTEM_EXPORTBUTTON_CATID_LABEL"
+					description="PLG_SYSTEM_EXPORTBUTTON_CATID_DESC"
+					required="true"
+				/>
+			</fieldset>
+		</fields>
 	</config>
 	<updateservers>
 		<server type="extension" name="Export Button Update Site">https://raw.githubusercontent.com/alikon/export4/main/exportbutton-manifest.xml</server>
