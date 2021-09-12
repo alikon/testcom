@@ -9,6 +9,7 @@
 	<authorUrl>www.alikonweb.it</authorUrl>
 	<version>0.0.1</version>
 	<description>COM_JOBS_XML_DESCRIPTION</description>
+	<scriptfile>script.php</scriptfile>
 	<install>
 		<sql>
 			<file driver="mysql" charset="utf8">install/sql/mysql/install.sql</file>
@@ -29,7 +30,15 @@
 	</update>
 	<namespace path="src">Joomla\Component\Jobs</namespace>
 	<administration>
-		<menu link="option=com_jobs">Jobs</menu>
+		<menu img="class:comment">
+			COM_JOBS
+			<params>
+				<dashboard>jobs</dashboard>
+			</params>
+		</menu>
+		<submenu>
+			<menu view="jobs">COM_JOBS_MENU_JOBS</menu>
+		</submenu>
 		<files folder="admin">
 			<filename>access.xml</filename>
 			<filename>config.xml</filename>
