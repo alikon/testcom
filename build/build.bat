@@ -42,6 +42,10 @@ REM Plugins
 cd ../../system/scheduler/
 zip -r ../../../build/packages/plg_system_scheduler.zip *
 
+REM Plugins
+cd ../../system/exportbutton/
+zip -r ../../../build/packages/plg_system_exportbutton.zip *
+
 REM Package
 cd ../../../build/packages/
 zip -r pkg_jobs.zip *
