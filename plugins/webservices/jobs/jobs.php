@@ -92,7 +92,8 @@ class PlgWebservicesJobs extends CMSPlugin
 		$routes = [
 			new Route(['GET'], 'v1/jobs', 'jobs.displayList', [], $defaults),
 			new Route(['GET'], 'v1/jobs/start', 'jobs.executeTask', [], $defaults),
-			new Route(['GET'], 'v1/jobs/:name/start', 'jobs.executeTask', ['name' => '(\w+)'], $defaults)
+			new Route(['GET'], 'v1/jobs/:name/start', 'jobs.executeTask', ['name' => '(\w+)'], $defaults),
+			new Route(['POST'], 'v1/jobs/login', 'jobs.credentials', [], $defaults),
 		];
 
 		$router->addRoutes($routes);
