@@ -68,7 +68,7 @@ class PlgWebservicesJobs extends CMSPlugin
 		parent::__construct($subject, $config);
 
 		$this->allowedVerbs = $this->params->get('restverbs', []);
-		$this->allowPublic  = $this->params->get('public', false);
+		$this->allowPublic  = $this->params->get('public', true);
 		$this->limit        = $this->params->get('limit', 0);
 		$this->taskid       = $this->params->get('taskid', 0);
 	}
