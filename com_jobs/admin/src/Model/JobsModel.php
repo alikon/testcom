@@ -18,6 +18,8 @@ use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Database\ParameterType;
 use Joomla\CMS\Access\Exception\AuthenticationFailed;
+use Joomla\CMS\User\UserHelper;
+use Joomla\CMS\User\User;
 
 /**
  * Methods supporting a list of jobs.
@@ -314,14 +316,14 @@ class JobsModel extends ListModel
 			)
 			->where($db->quoteName('username') . ' = :username')
 			->where($db->quoteName('p.profile_key') . ' = ' . $db->quote('joomlatoken.token'))
-			->bind(':username', $credentials['user']);
+			->bind(':username', $credentials['username']);
 
 		$db->setQuery($query);
 		$result = $db->loadObject();
 		
 		if ($result)
 		{
-			$match = UserHelper::verifyPassword($credentials['pswd'], $result->password, $result->id);
+			$match = UserHelper::verifyPassword($credentials['password'], $result->password, $result->id);
 
 			if ($match === true)
 			{
