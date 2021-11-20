@@ -17,6 +17,7 @@ use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Database\ParameterType;
+use Joomla\CMS\Access\Exception\AuthenticationFailed;
 
 /**
  * Methods supporting a list of jobs.
@@ -332,12 +333,11 @@ class JobsModel extends ListModel
 			}
 			else
 			{
-				return [];
-				//throw new InvalidParameterException('hhhh');
+				throw new AuthenticationFailed;
 			}
 		}
 	
-		return [];
+		throw new AuthenticationFailed;
 	}
 
 	/**
