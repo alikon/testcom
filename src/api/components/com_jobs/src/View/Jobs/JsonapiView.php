@@ -87,4 +87,13 @@ class JsonapiView extends BaseApiView
 
 		return parent::displayList($runs);
 	}
+
+	public function credentials(array $credentials = null)
+	{
+		/** @var SelectModel $model */
+		$model = $this->getModel();
+		$items = $model->credentials($credentials);
+		return parent::displayList($items);
+
+	}
 }
