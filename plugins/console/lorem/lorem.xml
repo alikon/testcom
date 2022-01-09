@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="console" method="upgrade">
+	<name>plg_console_lorem</name>
+	<version>0.0.1</version>
+	<creationDate>March 2021</creationDate>
+	<author>Alikon</author>
+	<authorEmail>nicola.galgano@community.joomla.org</authorEmail>
+	<authorUrl>www.alikonweb.it</authorUrl>
+	<copyright>Copyright (C) 2021 Alikon. All rights reserved.</copyright>
+	<license>GNU General Public License version 3, or later</license>
+	<description>PLG_CONSOLE_LOREM_XML_DESCRIPTION</description>
+	<namespace path="src">Joomla\Plugin\Console\Lorem</namespace>
+	<files>
+		<filename plugin="lorem">lorem.php</filename>
+		<folder>language</folder>
+		<folder>services</folder>
+		<folder>src</folder>
+	</files>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field
+					name="catid"
+					type="category"
+					label="JCATEGORY"
+					extension="com_content"
+					required="true"
+					filter="integer"
+					>
+					<option value="">JOPTION_SELECT_CATEGORY</option>
+				</field>
+				<field
+					name="authorid"
+					type="author"
+					label="PLG_CONSOLE_LOREM_CREATED_BY_LABEL"
+					multiple="false"
+					layout="joomla.form.field.list-fancy-select"
+				>
+				<option value="0">JNONE</option>
+				</field>
+				<field
+					name="spacer1"
+					type="spacer"
+					hr="true"
+				/>
+				<field
+					name="id0"
+					type="text"
+					default="php cli/joomla.php lorem:ipsum"
+					label="PLG_CONSOLE_LOREM"
+					readonly="true"
+					class="readonly"
+				/>
+				<field
+					name="id2"
+					type="text"
+					label="PLG_CONSOLE_LOREM_API"
+					default="https://loripsum.net"
+					readonly="true"
+					class="readonly"
+				/>
+			</fieldset>
+		</fields>
+	</config>
+	<updateservers>
+		<server type="extension" name="Lorem Console">https://raw.githubusercontent.com/alikon/testcom/main/plugins/console/lorem/manifest.xml</server>
+	</updateservers>
+</extension>
