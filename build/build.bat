@@ -14,6 +14,10 @@ REM Plugin console Job
 cd ../plugins/console/job/
 zip -r ../../../build/packages/plg_console_job.zip *
 
+REM Plugin console Job
+cd ../plugins/console/lorem/
+zip -r ../../../build/packages/plg_console_lorem.zip *
+
 REM Plugin webservices jobs
 cd ../../webservices/jobs/
 zip -r ../../../build/packages/plg_webservices_jobs.zip *

@@ -13,6 +13,7 @@
 		<file type="component" id="jobscomponent">com_jobs.zip</file>
 		<file type="plugin" id="webserviceplugin" group="webservices">plg_webservices_jobs.zip</file>
 		<file type="plugin" id="consoleplugin" group="console">plg_console_job.zip</file>
+		<file type="plugin" id="consolelorem" group="console">plg_console_lorem.zip</file>
 		<file type="plugin" id="schedulerplugin" group="system">plg_system_scheduler.zip</file>
 		<file type="plugin" id="exportdbplugin" group="job">plg_job_exportdb.zip</file>
 		<file type="plugin" id="cleancacheplugin" group="job">plg_job_cleancache.zip</file>
