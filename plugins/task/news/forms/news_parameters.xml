@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<form>
+	<fields name="params">
+		<fieldset name="task_params">
+			<field
+					name="url"
+					type="text"
+					label="PLG_JOB_GITHUB_URL_LABEL"
+					description="PLG_JOB_GITHUB_URL_DESC"
+					required="true"
+				/>
+				<field
+					name="key"
+					type="text"
+					label="PLG_JOB_GITHUB_KEY_LABEL"
+					description="PLG_JOB_GITHUB_KEY_DESC"
+					required="true"
+				/>
+				<field
+					name="authorization"
+					type="list"
+					label="PLG_JOB_GITHUB_AUTH_LABEL"
+					description="PLG_JOB_GITHUB_AUTH_DESC"
+					default="Bearer"
+					required="true"
+				>
+					<option value="Bearer">PLG_JOB_GITHUB_BEARER</option>
+					<option value="X-Joomla-Token">PLG_JOB_GITHUB_JOOMLATOKEN</option>
+				</field>
+				<field
+					name="title"
+					type="text"
+					label="JGLOBAL_TITLE"
+					size="40"
+					required="true"
+					maxlength="255"
+				/>
+				<field
+					name="catid"
+					type="category"
+					label="JCATEGORY"
+					multiple="false"
+					extension="com_content"
+					layout="joomla.form.field.list-fancy-select"
+					hint="JOPTION_SELECT_CATEGORY"
+				/>
+				<field
+					name="imageurl"
+					type="media"
+					label="PLG_JOB_GITHUB__FIELD_IMAGE_LABEL"
+					directory="headers"
+					hide_none="1"
+					size="30"
+				/>
+				<field
+					name="moduleid"
+					type="number"
+					label="JMODULE"
+					hint="JOPTION_SELECT_MODULE"
+					default="0"
+					filter="integer"
+					validate="number"
+				/>
+		</fieldset>
+	</fields>
+</form>
