@@ -1,2 +1,0 @@
-PLG_ACTIONLOG_JOOMLA_TASK="Task <a href='{tasklink}'>{taskname}</a> #{times} runned for {duration} seconds <span class='badge bg-success'>{action}</span>"
-PLG_ACTIONLOG_JOOMLA_TASK_RESUME="Task <a href='{tasklink}'>{taskname}</a> #{times} runned for {duration} seconds <span class='badge bg-secondary'>{action}</span>"
