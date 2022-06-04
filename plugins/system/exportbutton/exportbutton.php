@@ -65,6 +65,30 @@ class PlgSystemExportbutton extends CMSPlugin
 	 */
 	protected $verb = '';
 
+		/**
+	 * URL to send the data.
+	 *
+	 * @var    string
+	 * @since  __DEPLOY_VERSION__
+	 */
+	protected $options = '';
+
+	/**
+	 * URL to send the data.
+	 *
+	 * @var    string
+	 * @since  __DEPLOY_VERSION__
+	 */
+	protected $headers = [];
+
+	/**
+	 * URL to send the data.
+	 *
+	 * @var    string
+	 * @since  __DEPLOY_VERSION__
+	 */
+	protected $json = null;
+
 	/**
 	 * Render the button.
 	 *
@@ -109,36 +133,35 @@ class PlgSystemExportbutton extends CMSPlugin
 		$domain = $this->params->get('url', 'http://localhost');
 		$this->postUrl = $domain . '/api/index.php/v1/content/articles';
 		$this->getUrl = $domain . '/api/index.php/v1/content';
+		$this->options = new Registry;
+		$this->options->set('Content-Type', 'application/json');
+		
+		if ($this->params->get('authorization') === 'Bearer')
+		{
+			$this->headers = array('Authorization' => 'Bearer ' . $this->params->get('key'));
+		}
+
+		if ($this->params->get('authorization') === 'X-Joomla-Token')
+		{
+			$this->headers = array('X-Joomla-Token' => $this->params->get('key'));
+		}
 
 
 		// Get an instance of the generic articles model
-		JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_content/models', 'ArticleModel');
-		$model = JModelLegacy::getInstance('Article', 'ContentModel', array('ignore_request' => true));
+		$content = Factory::getApplication()->bootComponent('com_content')->getMVCFactory();
+		/** @var Joomla\Component\Content\Administrator\Model\ArticleModel $model */
+		$model = $content->createModel('Article', 'Administrator', ['ignore_request' => true]);
 
 		$item = $model->getItem($id);
 		$item->catid = $this->params->get('catid');
 		unset($item->created_by);
 
-		try
-		{
-			$response = $this->sendData2($item);
-		}
-		catch (\Exception $e)
+		if ($this->sendData2($item))
 		{
 			// There was an error sending data.
-			$this->app->enqueueMessage(Text::_('Connection' . $e->getMessage()), 'error');
-			$this->app->redirect(Route::_('index.php?option=com_content&view=article&layout=edit&id=' . $id, false), 500);
-			return;
-		}
- 
-		if ($response->code !== 200)
-		{
-			$this->app->enqueueMessage(Text::_($response->code . $response->body . ' - ' . $this->verb), 'error');
-			$this->app->redirect(Route::_('index.php?option=com_content&view=article&layout=edit&id=' . $id, false), $response->code);
-			return;
+			$this->app->enqueueMessage(Text::_('Exported to ' . $domain), 'success');
 		}
 
-		$this->app->enqueueMessage(Text::_('Exported:' . $this->verb), 'success');
 		$this->app->redirect(Route::_('index.php?option=com_content&view=article&layout=edit&id=' . $id, false), 200);		
 	}
 
@@ -152,31 +175,79 @@ class PlgSystemExportbutton extends CMSPlugin
 	 * @throws  RuntimeException  If there is an error sending the data.
 	 */
 	private function checkCategory($catid)
-	{
-		$options = new Registry;
-		$options->set('Content-Type', 'application/json');
-		
-		if ($this->params->get('authorization') === 'Bearer')
-		{
-			$headers = array('Authorization' => 'Bearer ' . $this->params->get('key'));
-		}
-
-		if ($this->params->get('authorization') === 'X-Joomla-Token')
-		{
-			$headers = array('X-Joomla-Token' => $this->params->get('key'));
-		}		
-		
+	{	
 		// Don't let the request take longer than 2 seconds to avoid page timeout issues
 		try
 		{
-			$response = HttpFactory::getHttp($options)->get($this->getUrl . '/categories/'. $catid, $headers, 3);
+			$response = HttpFactory::getHttp($this->options)->get($this->getUrl . '/categories/'. $catid, $this->headers, 5);
 		}
 		catch (\Exception $e)
 		{
-			throw $e;
+			$this->app->enqueueMessage(Text::_('CheckCat:' . $e->getMessage()), 'error');
+			return false;
 		}
 
-		return $response;
+		if ($response->code === 404)
+		{
+			$this->app->enqueueMessage(Text::_('Category not found' . $response->code), 'error');
+			return false;
+		}
+
+		if ($response->code !== 200)
+		{
+			$this->app->enqueueMessage(Text::_('CheckCat:' . $response->code), 'error');
+			return false;
+		}
+		
+		return true;
+	}
+
+	/**
+	 * Check category existence
+	 *
+	 * @return  boolean
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 *
+	 * @throws  RuntimeException  If there is an error sending the data.
+	 */
+	private function checkArticle($item)
+	{	
+		// Check if already exists
+		$title = $item->title;
+		$searchUrl = $this->getUrl . '/articles?filter[search]=' . urlencode($title);
+
+		try
+		{
+			$response = HttpFactory::getHttp($this->options)->get($searchUrl, $this->headers, 10);
+		}
+		catch (\Exception $e)
+		{
+			$this->app->enqueueMessage(Text::_('SearchArt:' . $e->getMessage()), 'error');
+			return false;
+		}
+
+
+		if ($response->code !== 200)
+		{
+			$this->app->enqueueMessage(Text::_('SearchArt:' . $response->code), 'error');
+			return false;
+		}
+
+		$this->verb ='post';
+		$this->json = json_decode($response->body);
+
+		if (count($this->json->data) > 0)
+		{
+			$this->verb ='patch';
+		}
+	
+		//var_dump(count($this->json->data));
+		//$json= json_decode($response->body);
+		//var_dump($json->meta->{"total-pages"});
+		//exit();
+		 
+		return true;
 	}
 
 	/**
@@ -191,87 +262,63 @@ class PlgSystemExportbutton extends CMSPlugin
 	private function sendData2($item)
 	{
 		$this->verb ='get';
-		$response = $this->checkCategory($item->catid);
 
-		if ($response->code !== 200)
+		if (!$this->checkCategory($item->catid))
 		{
-			return $response;
-		}
-	
-	
-		$options = new Registry;
-		$options->set('Content-Type', 'application/json');
-		
-		if ($this->params->get('authorization') === 'Bearer')
-		{
-			$headers = array('Authorization' => 'Bearer ' . $this->params->get('key'));
+			return false;
 		}
 
-		if ($this->params->get('authorization') === 'X-Joomla-Token')
+		if (!$this->checkArticle($item))
 		{
-			$headers = array('X-Joomla-Token' => $this->params->get('key'));
+			return false;
 		}
 
-		// Check if already exists
-		$title = $item->title;
-		$searchUrl = $this->getUrl . '/articles?filter[search]=' . urlencode($title);
-
-		try
-		{
-			$response = HttpFactory::getHttp($options)->get($searchUrl, $headers, 3);
-		}
-		catch (\Exception $e)
-		{
-			return;
-		}
-
-		if ($response->code !== 200)
-		{
-
-			return;
-		}
-
-		$json = json_decode($response->body);
 		$content = json_encode($item);
 
-		if (count($json->data) > 0)
+	
+		if ($this->verb === 'patch')
 		{
 			try
 			{
 				$this->verb ='patch';
-				$artid=$json->data[0]->id;
+				$artid = $this->json->data[0]->id;
 				//var_dump($content);
-				$response =  HttpFactory::getHttp($options)->patch($this->postUrl .'/' . $artid, $content, $headers, 3);
+				$response =  HttpFactory::getHttp($this->options)->patch($this->postUrl .'/' . $artid, $content, $this->headers, 15);
 			}
 			catch (\Exception $e)
 			{
 
-				return;
+				$this->app->enqueueMessage(Text::_('PatchArt:' . $e->getMessage()), 'error');
+				return false;
 			}
 
 			if ($response->code !== 200)
 			{
-				return response;
+				$this->app->enqueueMessage(Text::_('PatchArt:' . $response->code), 'error');
+				return false;
 			}
 
-			return $response;
+			return true;
 		}
 
 		try
 		{
 			$this->verb ='post';
-			$response = HttpFactory::getHttp($options)->post($this->postUrl, $content, $headers, 3);
+			$response = HttpFactory::getHttp($this->options)->post($this->postUrl, $content, $this->headers, 10);
 		}
 		catch (\Exception $e)
 		{		
-			throw new RuntimeException($e->getMessage(), $e->getCode());
+			//throw new RuntimeException($e->getMessage(), $e->getCode());
+			$this->app->enqueueMessage(Text::_('PostArt:' . $e->getMessage()), 'error');
+			return false;
 		}
-
+	
 		if ($response->code !== 200)
 		{		
-			return $response;
+			$this->app->enqueueMessage(Text::_('PostArt:' . $response->code), 'error');
+			return false;
 		}
 
-		return $response;
+		return true;
 	}
 }

@@ -48,6 +48,15 @@
 					description="PLG_SYSTEM_EXPORTBUTTON_CATID_DESC"
 					required="true"
 				/>
+				<!--
+				<field
+					name="categories"
+					type="ExternalCategoriesList"
+					label="PLG_SYSTEM_EXPORTBUTTON_CATID_LABEL"
+					description="PLG_SYSTEM_EXPORTBUTTON_CATID_DESC"
+					required="true"
+				/>
+				-->
 			</fieldset>
 		</fields>
 	</config>
