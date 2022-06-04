@@ -1,43 +1,55 @@
 <?php
 /**
  * @package     Joomla.Plugin
- * @subpackage  System.exportbutton
+ * @subpackage  export.content
  *
- * @copyright   Copyright (C) 2021 Alikon. All rights reserved.
+ * @copyright   Copyright (C) 2021 Alikon, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Application\CMSApplication;
-use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Router\Route;
-use Joomla\CMS\Toolbar\Toolbar;
 use Joomla\Registry\Registry;
+use Joomla\Event\SubscriberInterface;
+use Joomla\CMS\Toolbar\Toolbar;
+use Joomla\CMS\Toolbar\ToolbarFactoryInterface;
+use Joomla\CMS\Toolbar\ToolbarHelper;
 
 /**
- * Add a button to post a webservice
+ * Joomla! Export Content plugin
  *
- * @since  __DEPLOY_VERSION__
+ * An export content plugin
+ *
+ * @since  3.9
  */
 class PlgSystemExportbutton extends CMSPlugin
 {
 	/**
-	 * Application object
+	 * Load the language file on instantiation.
 	 *
-	 * @var    CMSApplication
+	 * @var    boolean
 	 * @since  __DEPLOY_VERSION__
+	 */
+	protected $autoloadLanguage = true;
+
+	/**
+	 * Application object.
+	 *
+	 * @var    ApplicationCms
+	 * @since  3.9
 	 */
 	protected $app;
 
 	/**
-	 * Database driver
+	 * Database object.
 	 *
 	 * @var    DatabaseDriver
-	 * @since  __DEPLOY_VERSION__
+	 * @since  3.9
 	 */
 	protected $db;
 
@@ -45,7 +57,7 @@ class PlgSystemExportbutton extends CMSPlugin
 	 * URL to get the data.
 	 *
 	 * @var    string
-	 * @since  __DEPLOY_VERSION__
+	 * @since  3.9
 	 */
 	protected $getUrl = '';
 
@@ -53,7 +65,7 @@ class PlgSystemExportbutton extends CMSPlugin
 	 * URL to send the data.
 	 *
 	 * @var    string
-	 * @since  __DEPLOY_VERSION__
+	 * @since  3.9
 	 */
 	protected $postUrl = '';
 
@@ -106,7 +118,8 @@ class PlgSystemExportbutton extends CMSPlugin
 
 			// Get an instance of the Toolbar
 			$toolbar = Toolbar::getInstance('toolbar');
-			
+			//$toolbar = Factory::getContainer()->get(ToolbarFactoryInterface::class)->createToolbar('toolbar');
+			//ToolbarHelper::custom('actionlogs.exportSelectedLogs', 'download', '', 'COM_ACTIONLOGS_EXPORT_CSV', true);
 			// Append button on Article
 			if ($input->getCmd('option') === 'com_content' && $input->getCmd('view') === 'article')
 			{
@@ -115,21 +128,29 @@ class PlgSystemExportbutton extends CMSPlugin
 				// Add your custom button here
 				$url = Route::_('index.php?option=com_ajax&group=system&plugin=exportbutton&format=json&id=' . $id);
 				$toolbar->appendButton('Link', 'upload', 'Export', $url);
+				//ToolbarHelper::custom('associations.clean', 'refresh', '', 'COM_ASSOCIATIONS_DELETE_ORPHANS', false, false);
+				/*
+				$toolbar->basicButton('upload')
+					->attributes(['data-url' => $url])
+					->task('history.delete')
+					->buttonClass('btn btn-danger')
+					->icon('icon-link')
+					->text('Export')
+					->listCheck(true);
+				*/
 			}
 		}
 	}
-
 	/**
-	 * First step to send the data. Content.
+	 * First step to enter the sampledata. Content.
 	 *
 	 * @return  array or void  Will be converted into the JSON response to the module.
 	 *
-	 * @since  __DEPLOY_VERSION__
+	 * @since  3.8.0
 	 */
 	public function onAjaxExportbutton()
 	{
 		$id  = $this->app->input->get('id');
-
 		$domain = $this->params->get('url', 'http://localhost');
 		$this->postUrl = $domain . '/api/index.php/v1/content/articles';
 		$this->getUrl = $domain . '/api/index.php/v1/content';
@@ -146,7 +167,7 @@ class PlgSystemExportbutton extends CMSPlugin
 			$this->headers = array('X-Joomla-Token' => $this->params->get('key'));
 		}
 
-
+		
 		// Get an instance of the generic articles model
 		$content = Factory::getApplication()->bootComponent('com_content')->getMVCFactory();
 		/** @var Joomla\Component\Content\Administrator\Model\ArticleModel $model */
@@ -166,11 +187,11 @@ class PlgSystemExportbutton extends CMSPlugin
 	}
 
 	/**
-	 * Check category existence
+	 * Send the data to the j4 server
 	 *
 	 * @return  boolean
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.9
 	 *
 	 * @throws  RuntimeException  If there is an error sending the data.
 	 */
@@ -207,7 +228,7 @@ class PlgSystemExportbutton extends CMSPlugin
 	 *
 	 * @return  boolean
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.9
 	 *
 	 * @throws  RuntimeException  If there is an error sending the data.
 	 */
