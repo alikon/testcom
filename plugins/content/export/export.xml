@@ -48,19 +48,10 @@
 					description="PLG_CONTENT_EXPORT_CATID_DESC"
 					required="true"
 				/>
-				<!--
-				<field
-					name="categories"
-					type="ExternalCategoriesList"
-					label="PLG_CONTENT_EXPORT_CATID_LABEL"
-					description="PLG_CONTENT_EXPORT_CATID_DESC"
-					required="true"
-				/>
-				-->
 			</fieldset>
 		</fields>
 	</config>
 	<updateservers>
-		<server type="extension" name="Export Button Update Site">https://raw.githubusercontent.com/alikon/export4/main/exportbutton-manifest.xml</server>
+		<server type="extension" name="Content - Export Article">https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/updateserver.xml</server>
 	</updateservers>
 </extension>
