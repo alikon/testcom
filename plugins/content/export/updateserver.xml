@@ -3,10 +3,11 @@
 	<update>
 		<name>Export Article</name>
 		<description>Joomla! Content - Export Article Plugin</description>
-		<element>plg_content_export</element>
+		<element>export</element>
 		<type>plugin</type>
 		<version>1.0.0</version>
 		<client>site</client>
+		<php_minimum>7.2</php_minimum>
 		<infourl title="Joomla! Content - Export Article Plugin">https://github.com/alikon/export4/releases/tag/1.0.0</infourl>
 		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/changelog.xml</changelogurl>
 		<downloads>
@@ -17,10 +18,11 @@
 	<update>
 		<name>Export Article</name>
 		<description>Joomla! Content - Export Article Plugin</description>
-		<element>plg_content_export</element>
+		<element>pexport</element>
 		<type>plugin</type>
 		<version>1.0.1</version>
 		<client>site</client>
+		<php_minimum>7.2</php_minimum>
 		<infourl title="Joomla! Content - Export Article Plugin">https://github.com/alikon/export4/releases/tag/1.0.0</infourl>
 		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/changelog.xml</changelogurl>
 		<downloads>
