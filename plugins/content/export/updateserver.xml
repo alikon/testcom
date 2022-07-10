@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <updates>
 	<update>
-		<name>Export Article</name>
+		<name>Content - Export Article</name>
 		<description>Joomla! Content - Export Article Plugin</description>
 		<element>export</element>
 		<type>plugin</type>
@@ -17,7 +17,7 @@
 		<targetplatform name="joomla" version="4.[012]" />
 	</update>
 	<update>
-		<name>Export Article</name>
+		<name>Content - Export Article</name>
 		<description>Joomla! Content - Export Article Plugin</description>
 		<element>export</element>
 		<type>plugin</type>
