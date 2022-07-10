@@ -8,7 +8,21 @@
 		<version>1.0.0</version>
 		<client>site</client>
 		<infourl title="Joomla! Content - Export Article Plugin">https://github.com/alikon/export4/releases/tag/1.0.0</infourl>
-        <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/changelog.xml</changelogurl>
+		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/changelog.xml</changelogurl>
+		<downloads>
+			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/plg_content_export-1.0.0.zip</downloadurl>
+		</downloads>
+		<targetplatform name="joomla" version="4.[012]" />
+	</update>
+	<update>
+		<name>Export Article</name>
+		<description>Joomla! Content - Export Article Plugin</description>
+		<element>plg_content_export</element>
+		<type>plugin</type>
+		<version>1.0.1</version>
+		<client>site</client>
+		<infourl title="Joomla! Content - Export Article Plugin">https://github.com/alikon/export4/releases/tag/1.0.0</infourl>
+		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/changelog.xml</changelogurl>
 		<downloads>
 			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/plg_content_export-1.0.0.zip</downloadurl>
 		</downloads>
