@@ -1,42 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelogs>
-    <changelog>
-        <element>plg_content_export</element>
-        <type>component</type>
-        <version>1.0.0</version>
-        <security>
-            <item>Item A</item>
-            <item>Item b</item>
-        </security>
-        <fix>
-            <item>Item A</item>
-            <item>Item b</item>
-        </fix>
-        <language>
-            <item>Item A</item>
-            <item>Item b</item>
-        </language>
-        <addition>
-            <item>Item A</item>
-            <item>Item b</item>
-        </addition>
-        <change>
-            <item>Item A</item>
-            <item>Item b</item>
-        </change>
-        <remove>
-            <item>Item A</item>
-            <item>Item b</item>
-        </remove>
-        <note>
-            <item>Item A</item>
-            <item>Item b</item>
-        </note>
+	<changelog>
+		<element>export</element>
+		<folder>content</folder>
+		<type>plugin</type>
+		<version>1.0.1</version>
+		<security>
+			<item>Item A</item>
+			<item>Item b</item>
+		</security>
+		<fix>
+			<item>Item A</item>
+			<item>Item b</item>
+		</fix>
+		<language>
+			<item>Item A</item>
+			<item>Item b</item>
+		</language>
+		<addition>
+			<item>Added the sha384 tag</item>
+			<item>Item b</item>
+		</addition>
+		<change>
+			<item>Item A</item>
+			<item>Item b</item>
+		</change>
+		<remove>
+			<item>Item A</item>
+			<item>Item b</item>
+		</remove>
+		<note>
+			<item>Item A</item>
+			<item>Item b</item>
+		</note>
 </changelog>
 <changelog>
-	<element>plg_content_export</element>
-	<type>component</type>
-	<version>1.0.1</version>
+	<element>export</element>
+	<folder>content</folder>
+	<type>plugin</type>
+	<version>1.0.2</version>
 	<security>
 		<item>Big issue</item>
 	</security>
