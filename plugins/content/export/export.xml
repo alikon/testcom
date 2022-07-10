@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="content" method="upgrade">
+	<name>plg_content_export</name>
+	<author>Alikon</author>
+	<creationDate>May 2021</creationDate>
+	<copyright>Copyright (C) 2021 Alikon. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>nicola.galgano@community.joomla.org</authorEmail>
+	<authorUrl>www.alikonweb.it</authorUrl>
+	<version>1.0.0</version>
+	<description>PLG_CONTENT_EXPORT_XML_DESCRIPTION</description>
+	<files>
+		<filename plugin="export">export.php</filename>
+		<folder>language</folder>
+	</files>
+	<config>
+	<fields name="params">
+			<fieldset name="basic">
+				<field
+					name="url"
+					type="text"
+					label="PLG_CONTENT_EXPORT_URL_LABEL"
+					description="PLG_CONTENT_EXPORT_URL_DESC"
+					required="true"
+				/>
+				<field
+					name="authorization"
+					type="list"
+					label="PLG_CONTENT_EXPORT_AUTH_LABEL"
+					description="PLG_CONTENT_EXPORT_AUTH_DESC"
+					default="Bearer"
+					required="true"
+				>
+					<option value="Bearer">PLG_CONTENT_EXPORT_BEARER</option>
+					<option value="X-Joomla-Token">PLG_CONTENT_EXPORT_JOOMLATOKEN</option>
+				</field>
+				<field
+					name="key"
+					type="text"
+					label="PLG_CONTENT_EXPORT_KEY_LABEL"
+					description="PLG_CONTENT_EXPORT_KEY_DESC"
+					required="true"
+				/>
+				<field
+					name="catid"
+					type="number"
+					label="PLG_CONTENT_EXPORT_CATID_LABEL"
+					description="PLG_CONTENT_EXPORT_CATID_DESC"
+					required="true"
+				/>
+				<!--
+				<field
+					name="categories"
+					type="ExternalCategoriesList"
+					label="PLG_CONTENT_EXPORT_CATID_LABEL"
+					description="PLG_CONTENT_EXPORT_CATID_DESC"
+					required="true"
+				/>
+				-->
+			</fieldset>
+		</fields>
+	</config>
+	<updateservers>
+		<server type="extension" name="Export Button Update Site">https://raw.githubusercontent.com/alikon/export4/main/exportbutton-manifest.xml</server>
+	</updateservers>
+</extension>
