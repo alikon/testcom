@@ -3,7 +3,7 @@
     <changelog>
         <element>plg_content_export</element>
         <type>component</type>
-        <version>0.0.1</version>
+        <version>1.0.0</version>
         <security>
             <item>Item A</item>
             <item>Item b</item>
@@ -36,7 +36,7 @@
 <changelog>
 	<element>plg_content_export</element>
 	<type>component</type>
-	<version>0.0.2</version>
+	<version>1.0.1</version>
 	<security>
 		<item>Big issue</item>
 	</security>

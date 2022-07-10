@@ -5,6 +5,7 @@
 		<description>Joomla! Content - Export Article Plugin</description>
 		<element>export</element>
 		<type>plugin</type>
+		<folder>content</folder>
 		<version>1.0.0</version>
 		<client>site</client>
 		<php_minimum>7.2</php_minimum>
@@ -21,6 +22,7 @@
 		<description>Joomla! Content - Export Article Plugin</description>
 		<element>export</element>
 		<type>plugin</type>
+		<folder>content</folder>
 		<version>1.0.1</version>
 		<client>site</client>
 		<php_minimum>7.2</php_minimum>
