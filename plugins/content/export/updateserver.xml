@@ -13,12 +13,13 @@
 		<downloads>
 			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/plg_content_export-1.0.0.zip</downloadurl>
 		</downloads>
+		<tags><tag>stable</tag></tags>
 		<targetplatform name="joomla" version="4.[012]" />
 	</update>
 	<update>
 		<name>Export Article</name>
 		<description>Joomla! Content - Export Article Plugin</description>
-		<element>pexport</element>
+		<element>export</element>
 		<type>plugin</type>
 		<version>1.0.1</version>
 		<client>site</client>
@@ -28,6 +29,7 @@
 		<downloads>
 			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/plg_content_export-1.0.0.zip</downloadurl>
 		</downloads>
+		<tags><tag>stable</tag></tags>
 		<targetplatform name="joomla" version="4.[012]" />
 	</update>
 </updates>
