@@ -52,6 +52,6 @@
 		</fields>
 	</config>
 	<updateservers>
-		<server type="extension" name="Content - Export Article">http://joomla-cms.loc/plugins/content/export/updateserver.xml</server>
+		<server type="extension" name="Content - Export Article"https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/updateserver.xml</server>
 	</updateservers>
 </extension>
