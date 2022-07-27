@@ -29,7 +29,7 @@
 		<infourl title="Joomla! Content - Export Article Plugin">https://github.com/alikon/export4/releases/tag/1.0.0</infourl>
 		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/changelog.xml</changelogurl>
 		<downloads>
-			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/plg_content_export-1.0.0.zip</downloadurl>
+			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/plg_content_export-1.0.1.zip</downloadurl>
 		</downloads>
 		<tags><tag>stable</tag></tags>
 		<targetplatform name="joomla" version="4.[012]" />
