@@ -9,7 +9,7 @@
 		<version>1.0.0</version>
 		<client>site</client>
 		<php_minimum>7.2</php_minimum>
-		<infourl title="Joomla! Content - Export Article Plugin">https://github.com/alikon/export4/releases/tag/1.0.0</infourl>
+		<infourl title="Joomla! Content - Export Article Plugin">https://www.alikonweb.it/extensions/content-plugin-export-article</infourl>
 		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/changelog.xml</changelogurl>
 		<downloads>
 			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/plg_content_export-1.0.0.zip</downloadurl>
@@ -26,7 +26,7 @@
 		<version>1.0.1</version>
 		<client>site</client>
 		<php_minimum>7.2</php_minimum>
-		<infourl title="Joomla! Content - Export Article Plugin">https://github.com/alikon/export4/releases/tag/1.0.0</infourl>
+		<infourl title="Joomla! Content - Export Article Plugin">https://www.alikonweb.it/extensions/content-plugin-export-article</infourl>
 		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/changelog.xml</changelogurl>
 		<downloads>
 			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/plg_content_export-1.0.1.zip</downloadurl>
