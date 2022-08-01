@@ -7,7 +7,7 @@
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>nicola.galgano@community.joomla.org</authorEmail>
 	<authorUrl>www.alikonweb.it</authorUrl>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<description>PLG_CONTENT_EXPORT_XML_DESCRIPTION</description>
 	<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/changelog.xml</changelogurl>
 	<files>
