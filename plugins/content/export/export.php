@@ -156,7 +156,7 @@ class PlgContentExport extends CMSPlugin
 		$item->catid = $this->params->get('catid');
 		unset($item->created_by);
 
-		if ($this->sendData2($item))
+		if ($this->sendData($item))
 		{
 			// There was an error sending data.
 			$this->app->enqueueMessage(Text::_('Exported to ' . $domain), 'success');
@@ -176,10 +176,10 @@ class PlgContentExport extends CMSPlugin
 	 */
 	private function checkCategory($catid)
 	{	
-		// Don't let the request take longer than 2 seconds to avoid page timeout issues
+		// Don't let the request take longer than n seconds to avoid page timeout issues
 		try
 		{
-			$response = HttpFactory::getHttp($this->options)->get($this->getUrl . '/categories/'. $catid, $this->headers, 5);
+			$response = HttpFactory::getHttp($this->options)->get($this->getUrl . '/categories/'. $catid, $this->headers, $this->params->get('timeout', 3));
 		}
 		catch (\Exception $e)
 		{
@@ -219,7 +219,7 @@ class PlgContentExport extends CMSPlugin
 
 		try
 		{
-			$response = HttpFactory::getHttp($this->options)->get($searchUrl, $this->headers, 10);
+			$response = HttpFactory::getHttp($this->options)->get($searchUrl, $this->headers, $this->params->get('timeout', 3));
 		}
 		catch (\Exception $e)
 		{
@@ -241,12 +241,7 @@ class PlgContentExport extends CMSPlugin
 		{
 			$this->verb ='patch';
 		}
-	
-		//var_dump(count($this->json->data));
-		//$json= json_decode($response->body);
-		//var_dump($json->meta->{"total-pages"});
-		//exit();
-		 
+
 		return true;
 	}
 
@@ -259,7 +254,7 @@ class PlgContentExport extends CMSPlugin
 	 *
 	 * @throws  RuntimeException  If there is an error sending the data.
 	 */
-	private function sendData2($item)
+	private function sendData($item)
 	{
 		$this->verb ='get';
 
@@ -282,8 +277,7 @@ class PlgContentExport extends CMSPlugin
 			{
 				$this->verb ='patch';
 				$artid = $this->json->data[0]->id;
-				//var_dump($content);
-				$response =  HttpFactory::getHttp($this->options)->patch($this->postUrl .'/' . $artid, $content, $this->headers, 15);
+				$response =  HttpFactory::getHttp($this->options)->patch($this->postUrl .'/' . $artid, $content, $this->headers, $this->params->get('timeout', 3));
 			}
 			catch (\Exception $e)
 			{
@@ -304,17 +298,16 @@ class PlgContentExport extends CMSPlugin
 		try
 		{
 			$this->verb ='post';
-			$response = HttpFactory::getHttp($this->options)->post($this->postUrl, $content, $this->headers, 10);
+			$response = HttpFactory::getHttp($this->options)->post($this->postUrl, $content, $this->headers, $this->params->get('timeout', 3));
 		}
 		catch (\Exception $e)
-		{		
-			//throw new RuntimeException($e->getMessage(), $e->getCode());
+		{
 			$this->app->enqueueMessage(Text::_('PostArt:' . $e->getMessage()), 'error');
 			return false;
 		}
 	
 		if ($response->code !== 200)
-		{		
+		{
 			$this->app->enqueueMessage(Text::_('PostArt:' . $response->code), 'error');
 			return false;
 		}
