@@ -20,8 +20,12 @@
 		<folder>content</folder>
 		<type>plugin</type>
 		<version>1.0.1</version>
-		<note>
-			<item>on todo list</item>
-		</note>
+		<addition>
+			<item>link GPL</item>
+   			<item>set timeout for requests</item>
+        </addition>
+		<change>
+            <item>link to Manual</item>
+        </change>
 	</changelog>
 </changelogs>
