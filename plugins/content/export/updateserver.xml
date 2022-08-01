@@ -32,6 +32,7 @@
 			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/plg_content_export-1.0.1.zip</downloadurl>
 		</downloads>
 		<tags><tag>stable</tag></tags>
+		<sha256>05157273aadd3045564ee44373ea3643b437fa5321d17993a3119b38b04578e2</sha256>
 		<targetplatform name="joomla" version="4.[012]" />
 	</update>
 </updates>
