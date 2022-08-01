@@ -9,6 +9,7 @@
 	<authorUrl>www.alikonweb.it</authorUrl>
 	<version>1.0.0</version>
 	<description>PLG_CONTENT_EXPORT_XML_DESCRIPTION</description>
+	<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/changelog.xml</changelogurl>
 	<files>
 		<filename plugin="export">export.php</filename>
 		<folder>language</folder>
@@ -52,6 +53,6 @@
 		</fields>
 	</config>
 	<updateservers>
-		<server type="extension" name="Content - Export Article"https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/updateserver.xml</server>
+		<server type="extension" name="Content - Export Article">https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/updateserver.xml</server>
 	</updateservers>
 </extension>
