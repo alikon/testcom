@@ -20,8 +20,8 @@
 		<folder>content</folder>
 		<type>plugin</type>
 		<version>1.0.1</version>
-		<security>
-		<item>Big issue</item>
-	</security>
-</changelog>
+		<note>
+			<item>on todo list</item>
+		</note>
+	</changelog>
 </changelogs>
