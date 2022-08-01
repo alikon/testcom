@@ -21,11 +21,12 @@
 		<type>plugin</type>
 		<version>1.0.1</version>
 		<addition>
-			<item>link GPL</item>
+			<item>sha256 cheksum</item>
    			<item>set timeout for requests</item>
         </addition>
 		<change>
-            <item>link to Manual</item>
+			<item>link to GPL License</item>
+			<item>link to Manual</item>
         </change>
 	</changelog>
 </changelogs>
