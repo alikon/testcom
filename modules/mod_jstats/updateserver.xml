@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <updates>
 	<update>
-		<name>Content - Export Article</name>
+		<name>Module - Joomla statistic bar chart</name>
 		<description>Joomla! Content - Export Article Plugin</description>
-		<element>export</element>
+		<element>mod_jstats</element>
 		<type>module</type>
 		<folder>content</folder>
 		<version>1.0.0</version>
@@ -18,9 +18,9 @@
 		<targetplatform name="joomla" version="4.[012]" />
 	</update>
 	<update>
-		<name>Content - Export Article</name>
+		<name>Module - Joomla statistic bar chart</name>
 		<description>Joomla! Content - Export Article Plugin</description>
-		<element>export</element>
+		<element>mod_jstats</element>
 		<type>module</type>
 		<folder>content</folder>
 		<version>1.0.1</version>
