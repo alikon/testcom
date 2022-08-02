@@ -1,4 +1,4 @@
-This is the source of Jobs, a Joomla task manager extension. Here you will find the component, some plugins of type Job, 2 CLI commands and 2 webservices entrypoint.
+This is the source of my Joomla extensions playground. Here you will find components, plugins, modules, CLI Commands webservices entrypoint.
 
 ## Requirements
 Joomla >= 4.0
@@ -7,7 +7,7 @@ MySQL >= 5.6.0 or PostgreSQL >= 11.0
 
 PHP >= 7.2.5
 
-## Installation
+~~## Installation
 
 Install the package [pkg_jobs.zip](https://github.com/alikon/testcom/blob/main/build/packages/pkg_jobs.zip)
 
@@ -29,6 +29,6 @@ The **webservices plugin Jobs** [plg_webservices_jobs.zip](https://github.com/al
 
 The **console plugin Jobs** [plg_console_job.zip](https://github.com/alikon/testcom/blob/main/build/packages/plg_console_job.zip)
  
-The **system plugin scheduler** [plg_system_scheduler.zip](https://github.com/alikon/testcom/blob/main/build/packages/plg_system_scheduler.zip)
+The **system plugin scheduler** [plg_system_scheduler.zip](https://github.com/alikon/testcom/blob/main/build/packages/plg_system_scheduler.zip)~~
 
 
