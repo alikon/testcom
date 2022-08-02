@@ -2,7 +2,7 @@
 <extension type="plugin" group="content" method="upgrade">
 	<name>plg_content_export</name>
 	<author>Alikon</author>
-	<creationDate>May 2021</creationDate>
+	<creationDate>July 2022</creationDate>
 	<copyright>Copyright (C) 2021 Alikon. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>nicola.galgano@community.joomla.org</authorEmail>
