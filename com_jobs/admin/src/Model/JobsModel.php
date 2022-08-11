@@ -151,8 +151,15 @@ class JobsModel extends ListModel
 		if (is_numeric($exitCode))
 		{
 			$exitCode = (int) $exitCode;
-			$query->where($db->quoteName('a.exitcode') . ' = :exitcode')
-				->bind(':exitcode', $exitCode, ParameterType::INTEGER);
+			if ($exitCode >=0)
+			{
+				$query->where($db->quoteName('a.exitcode') . ' = :exitcode')
+					->bind(':exitcode', $exitCode, ParameterType::INTEGER);
+			}
+			else
+			{
+				$query->whereNotIn($db->quoteName('a.exitcode'), [0, 123], ParameterType::INTEGER);
+			}
 		}
 
 		// Filter the items over the search string if set.

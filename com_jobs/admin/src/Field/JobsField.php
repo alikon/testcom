@@ -38,9 +38,9 @@ class JobsField extends ListField
 	 * @since  3.4
 	 */
 	protected $responseMap = array(
-		'0' => 'Executed',
-		'1' => 'Not scheduled',
-		'3' => 'Task Failure',
+		'0'   => 'Executed',
+		'123' => 'Will Resume',
+		'-1'  => 'Task Failure',
 
 	);
 

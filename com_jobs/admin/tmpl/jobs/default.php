@@ -15,6 +15,9 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
+//use Joomla\CMS\Date\Date;
+//use DateTimeZone;
+use Joomla\Component\Scheduler\Administrator\Task\Status;
 
 HTMLHelper::_('behavior.multiselect');
 
@@ -43,9 +46,6 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 							<?php echo HTMLHelper::_('grid.checkall'); ?>
 						</td>
 						<th scope="col" class="w-1 d-none d-md-table-cell">
-							<?php echo HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
-						</th>
-						<th scope="col" class="w-1 d-none d-md-table-cell">
 							<?php echo HTMLHelper::_('searchtools.sort', 'COM_JOBS_HEADING_JOBNAME', 'a.taskname', $listDirn, $listOrder); ?>
 						</th>
 						<th scope="col" class="w-1 d-none d-md-table-cell">
@@ -63,8 +63,14 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 						<th scope="col" class="w-1 d-none d-md-table-cell">
 							<?php echo HTMLHelper::_('searchtools.sort', 'COM_JOBS_HEADING_NEXTEXECUTION', 'a.nextdate', $listDirn, $listOrder); ?>
 						</th>
+						<!--
 						<th scope="col" class="w-1 d-none d-md-table-cell">
-							<?php echo Text::_('COM_JOBS_HEADING_FREQUENCY'); ?>
+							<?php //echo Text::_('COM_JOBS_HEADING_FREQUENCY');
+							 ?>
+						</th>
+						-->
+						<th scope="col" class="w-1 d-none d-md-table-cell">
+							<?php echo HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
 						</th>
 					</tr>
 				</thead>
@@ -78,12 +84,9 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 							<?php echo HTMLHelper::_('grid.id', $i, $item->id); ?>
 						</td>
 						<td class="d-none d-md-table-cell">
-							<?php echo (int) $item->id; ?>
-						</td>
-						<td class="d-none d-md-table-cell">
 							<?php if ($canEdit) : ?>
 								<?php 
-									$link = Route::_('index.php?option=com_plugins&client_id=0&task=plugin.edit&extension_id=' . $item->jobid . '&tmpl=component&layout=modal');
+									$link = Route::_('index.php?option=com_scheduler&view=tasks&filter[search]=id:' . $item->jobid . '&tmpl=component&layout=modal');
 									$href ='#plugin' . $item->jobid . 'Modal'
 								?>
 								<a title="<?php echo Text::_("JACTION_EDIT");?>" data-bs-toggle="modal" href="<?php echo $href; ?>"><?php echo $this->escape(str_replace(Uri::root(), '', rawurldecode($item->taskname))); ?></a>
@@ -103,10 +106,6 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 										'footer'      => '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"'
 											. ' onclick="Joomla.iframeButtonClick({iframeSelector: \'#plugin' . $item->jobid . 'Modal\', buttonSelector: \'#closeBtn\'})">'
 											. Text::_('JLIB_HTML_BEHAVIOR_CLOSE') . '</button>'
-											. '<button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="Joomla.iframeButtonClick({iframeSelector: \'#plugin' . $item->jobid . 'Modal\', buttonSelector: \'#saveBtn\'})">'
-											. Text::_("JSAVE") . '</button>'
-											. '<button type="button" class="btn btn-success" onclick="Joomla.iframeButtonClick({iframeSelector: \'#plugin' . $item->jobid . 'Modal\', buttonSelector: \'#applyBtn\'}); return false;">'
-											. Text::_("JAPPLY") . '</button>'
 									)
 								);?>
 							<?php else : ?>
@@ -117,19 +116,40 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 							<?php echo (int) $item->taskid; ?>
 						</td>
 						<td class="d-none d-md-table-cell">
-							<?php echo HTMLHelper::_('date', $item->lastdate, Text::_('DATE_FORMAT_LC6')); ?>
+							<?php echo HTMLHelper::_('date.relative', $item->lastdate, Text::_('DATE_FORMAT_LC6')); ?>
 						</td>
 						<td class="d-none d-md-table-cell">
 							<?php echo $item->duration; ?>
 						</td>
 						<td class="d-none d-md-table-cell">
-							<?php echo (int) $item->exitcode; ?>
+							<?php 
+								switch ($item->exitcode)
+								{
+									case '123':
+										echo "<span class='badge bg-secondary'>Task Will Resume: " . $item->exitcode . "</span>";
+										break;
+									case '0':
+										echo "<span class='badge bg-success'>Task Executed: " . $item->exitcode . "</span>";
+										break;
+									default:
+										echo "<span class='badge bg-danger'>Task Failed: " . $item->exitcode . "</span>";
+										break;
+								}
+								
+							?>
+
 						</td>
 						<td class="d-none d-md-table-cell">
 							<?php echo HTMLHelper::_('date', $item->nextdate, Text::_('DATE_FORMAT_LC6')); ?>
 						</td>
+						<!--
 						<td class="d-none d-md-table-cell">
-							<?php echo Text::sprintf('COM_JOBS_RUNEVERY', $item->frequency, $item->unit) . '<br>'; ?>
+							<?php //echo Text::sprintf('COM_JOBS_RUNEVERY', $item->frequency, $item->unit) . '<br>'; 
+							?>
+						</td>
+						-->
+						<td class="d-none d-md-table-cell">
+							<?php echo (int) $item->id; ?>
 						</td>
 					</tr>
 					<input type="hidden" name="jobid[]" value="<?php echo $item->jobid; ?>">
