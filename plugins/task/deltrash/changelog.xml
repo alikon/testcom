@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<changelogs>
+	<changelog>
+		<element>deltrash</element>
+		<folder>task</folder>
+		<type>plugin</type>
+		<version>1.0.0</version>
+		<addition>
+			<item>Export an article</item>
+		</addition>
+		<language>
+			<item>en-GB</item>
+		</language>
+		<note>
+			<item>Listed on Jooomla Extension Directory</item>
+		</note>
+</changelog>
+<changelog>
+	<element>deltrash</element>
+	<folder>task</folder>
+	<type>plugin</type>
+	<version>1.0.1</version>
+	<security>
+		<item>Big issue</item>
+	</security>
+	<change>
+			<item>Item A</item>
+			<item>Item b</item>
+	</change>
+</changelog>
+</changelogs>
