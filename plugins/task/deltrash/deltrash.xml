@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<extension type="plugin" group="task" method="upgrade">
+	<name>plg_task_deltrash</name>
+	<author>Alikon</author>
+	<creationDate>August 2021</creationDate>
+	<copyright>Copyright (C) 2021 Alikon. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>alikon@alikonweb.it</authorEmail>
+	<authorUrl>www.alikonweb.it</authorUrl>
+	<version>1.0.0</version>
+	<description>PLG_TASK_DELTRASH_XML_DESCRIPTION</description>
+	<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/task/deltrash/changelog.xml</changelogurl>
+	<files>
+		<filename plugin="deltrash">deltrash.php</filename>
+		<folder>language</folder>
+		<folder>forms</folder>
+	</files>
+	<updateservers>
+		<server type="extension" name="Task - Delete Trash">https://raw.githubusercontent.com/alikon/testcom/main/plugins/task/deltrash/updateserver.xml</server>
+	</updateservers>
+</extension>
