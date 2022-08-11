@@ -109,6 +109,12 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 		}
 
 		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_ARTICLES', $art), 'notice');
+
+		if (!$event->getArgument('params')->categories)
+		{
+			$this->endRoutine($event, Status::OK);
+			return Status::OK;
+		}
 		
 		$cmodel = $this->app->bootComponent('com_categories')
 			->getMVCFactory()
