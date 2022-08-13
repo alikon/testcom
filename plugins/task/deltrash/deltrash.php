@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     Joomla.Plugins
- * @subpackage  Task.SiteStatus
+ * @subpackage  Task.DelTrash
  *
  * @copyright   Copyright (C) 2021 Alikon. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
@@ -21,8 +21,7 @@ use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 
 /**
- * Task plugin with routines to change the offline status of the site. These routines can be used to control planned
- * maintenance periods and related operations.
+ * Task plugin with routines to delete the already trashed itens.
  *
  * @since  4.1.0
  */
