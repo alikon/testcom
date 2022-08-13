@@ -3,7 +3,7 @@
  * @package     Joomla.Plugins
  * @subpackage  Task.SiteStatus
  *
- * @copyright   (C) 2021 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright   Copyright (C) 2021 Alikon. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -90,7 +90,7 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 		$cat = 0;
 		$noleaf =0;
 
-		/** @var \Joomla\Component\Content\Administrator\Model\ArticleModel $model */
+		/** @var \Joomla\Component\Content\Administrator\Model\ArticlesModel $model */
 		$model = $this->app->bootComponent('com_content')
 			->getMVCFactory()->createModel('Articles', 'Administrator', ['ignore_request' => true]);
 		$model->setState('filter.published', -2);
