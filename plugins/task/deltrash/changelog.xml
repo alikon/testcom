@@ -6,26 +6,27 @@
 		<type>plugin</type>
 		<version>1.0.0</version>
 		<addition>
-			<item>Export an article</item>
+			<item>Deelete Trashed Articles</item>
 		</addition>
 		<language>
 			<item>en-GB</item>
 		</language>
+	</changelog>
+	<changelog>
+		<element>deltrash</element>
+		<folder>task</folder>
+		<type>plugin</type>
+		<version>1.0.1</version>
+		<addition>
+			<item>Delete Trashed Content Categories</item>
+			<item>Delete Trashed Modules</item>
+		</addition>
+		<change>
+			<item>Item A</item>
+			<item>Item b</item>
+		</change>
 		<note>
 			<item>Listed on Jooomla Extension Directory</item>
 		</note>
-</changelog>
-<changelog>
-	<element>deltrash</element>
-	<folder>task</folder>
-	<type>plugin</type>
-	<version>1.0.1</version>
-	<security>
-		<item>Big issue</item>
-	</security>
-	<change>
-			<item>Item A</item>
-			<item>Item b</item>
-	</change>
-</changelog>
+	</changelog>
 </changelogs>
