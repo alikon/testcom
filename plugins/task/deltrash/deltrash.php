@@ -176,11 +176,11 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 	private function setGrant() : void
 	{
 		// Get all usergroups with Super User access
-		$db     = $this->db;
-		$q      = $db->getQuery(true)
-		             ->select([$db->qn('id')])
-		             ->from($db->qn('#__usergroups'));
-		$groups = $db->setQuery($q)->loadColumn();
+		$db = $this->db;
+		$query = $db->getQuery(true)
+			->select([$db->qn('id')])
+			->from($db->qn('#__usergroups'));
+		$groups = $db->setQuery($query)->loadColumn();
 
 		// Get the groups that are Super Users
 		$groups = array_filter($groups, function ($gid) {
