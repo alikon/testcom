@@ -17,8 +17,10 @@ use Joomla\Component\Scheduler\Administrator\Event\ExecuteTaskEvent;
 use Joomla\Component\Scheduler\Administrator\Task\Status;
 use Joomla\Component\Scheduler\Administrator\Traits\TaskPluginTrait;
 use Joomla\Event\SubscriberInterface;
-use Joomla\Registry\Registry;
-use Joomla\Utilities\ArrayHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Access\Access;
+use Joomla\CMS\User\UserFactoryInterface;
+
 
 /**
  * Task plugin with routines to delete the already trashed itens.
@@ -49,6 +51,12 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 	 * @since 4.1.0
 	 */
 	protected $app;
+
+	/**
+	 * @var  DatabaseInterface
+	 * @since  4.1.0
+	 */
+	protected $db;
 
 	/**
 	 * Autoload the language file.
@@ -85,10 +93,64 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 	public function deleteTrash(ExecuteTaskEvent $event): int
 	{
 		$this->startRoutine($event);
-		$art = 0;
+
+		if (Factory::getApplication()->isClient('cli'))
+		{
+			$this->setGrant();
+		}
+
+		$this->delArticles();
+
+		if (!$event->getArgument('params')->categories)
+		{
+			$this->endRoutine($event, Status::OK);
+			return Status::OK;
+		}
+		
+		$this->delCategories();
+
+		$this->endRoutine($event, Status::OK);
+		return Status::OK;
+	}
+
+	private function delCategories() : void
+	{
 		$cat = 0;
 		$noleaf =0;
+		$cmodel = $this->app->bootComponent('com_categories')
+			->getMVCFactory()
+			->createModel('Categories', 'Administrator', ['ignore_request' => true]);
+		$cmodel->setState('filter.published', -2);
+		$cmodel->setState('filter.extension', 'com_content');
+		$cmodel->setState('category.extension', 'com_content');
+		// Extract the component name
+		$parts = explode('.', 'com_content');
+		$cmodel->setState('category.component', $parts[0]);
+		$this->app->input->set('extension', 'com_content');
 
+		$ctrashed = $cmodel->getItems();
+
+		$model = $this->app->bootComponent('com_categories')
+			->getMVCFactory()
+			->createModel('Category', 'Administrator', ['ignore_request' => true]);
+
+		foreach ($ctrashed as $item)
+		{
+			if (!$model->delete($item->id)) 
+			{
+				$noleaf++;
+			}
+
+			$cat++;
+		}
+
+		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_CATEGORIES_DELETED', $cat - $noleaf), 'notice');
+		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_NOLEAF', $noleaf), 'info');
+	}
+
+	private function delArticles() : void
+	{
+		$art = 0;
 		/** @var \Joomla\Component\Content\Administrator\Model\ArticlesModel $model */
 		$model = $this->app->bootComponent('com_content')
 			->getMVCFactory()->createModel('Articles', 'Administrator', ['ignore_request' => true]);
@@ -109,44 +171,28 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 
 		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_ARTICLES', $art), 'notice');
 
-		if (!$event->getArgument('params')->categories)
+	}
+
+	private function setGrant() : void
+	{
+		// Get all usergroups with Super User access
+		$db     = $this->db;
+		$q      = $db->getQuery(true)
+		             ->select([$db->qn('id')])
+		             ->from($db->qn('#__usergroups'));
+		$groups = $db->setQuery($q)->loadColumn();
+
+		// Get the groups that are Super Users
+		$groups = array_filter($groups, function ($gid) {
+			return Access::checkGroup($gid, 'core.admin');
+		});
+
+		foreach ($groups as $gid)
 		{
-			$this->endRoutine($event, Status::OK);
-			return Status::OK;
+			$uids = Access::getUsersByGroup($gid);
+			$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($uids[0]);
+			Factory::getSession()->set('user', $user);
+			break;
 		}
-		
-		$cmodel = $this->app->bootComponent('com_categories')
-			->getMVCFactory()
-			->createModel('Categories', 'Administrator', ['ignore_request' => true]);
-		$cmodel->setState('filter.published', -2);
-		$cmodel->setState('filter.extension', 'com_content');
-		$cmodel->setState('category.extension', 'com_content');
-		// Extract the component name
-		$parts = explode('.', 'com_content');
-		$cmodel->setState('category.component', $parts[0]);
-		$this->app->input->set('extension', 'com_content');
-
-
-		$ctrashed = $cmodel->getItems();
-
-		$model = $this->app->bootComponent('com_categories')
-			->getMVCFactory()
-			->createModel('Category', 'Administrator', ['ignore_request' => true]);
-
-		foreach ($ctrashed as $item)
-		{
-			if (!$model->delete($item->id)) 
-			{
-				$noleaf++;
-			}
-
-			$cat++;
-		}
-
-		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_CATEGORIES_DELETED', $cat - $noleaf), 'notice');
-		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_NOLEAF', $noleaf), 'info');
-
-		$this->endRoutine($event, Status::OK);
-		return Status::OK;
 	}
 }
