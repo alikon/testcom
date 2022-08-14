@@ -191,7 +191,7 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 		{
 			$uids = Access::getUsersByGroup($gid);
 			$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($uids[0]);
-			Factory::getSession()->set('user', $user);
+			$this->app->getSession()->set('user', $user);
 			break;
 		}
 	}
