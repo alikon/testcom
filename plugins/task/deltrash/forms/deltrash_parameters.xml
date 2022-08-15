@@ -3,16 +3,73 @@
 	<fields name="params">
 		<fieldset name="task_params">
 			<field
-			name="categories"
-			type="radio"
-			label="PLG_TASK_DELTRASH_CATEGORIES"
-			layout="joomla.form.field.radio.switcher"
-			default="0"
-			filter="integer"
+				name="articles"
+				type="radio"
+				label="PLG_TASK_DELTRASH_CONTENT"
+				layout="joomla.form.field.radio.switcher"
+				default="0"
+				filter="integer"
 			>
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
+			</field>
+			<field
+				name="categories"
+				type="radio"
+				label="PLG_TASK_DELTRASH_CATEGORIES"
+				layout="joomla.form.field.radio.switcher"
+				default="0"
+				filter="integer"
+			>
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+			</field>
+			<field
+				name="modules"
+				type="radio"
+				label="PLG_TASK_DELTRASH_MODULES"
+				layout="joomla.form.field.radio.switcher"
+				default="0"
+				filter="integer"
+			>
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+			</field>
+			<field
+				name="moduletype"
+				type="list"
+				label="PLG_TASK_DELTRASH_MODULES_FB"
+				multiple="true"
+				showon="modules:1"
+				validate="options"
+				layout="joomla.form.field.list-fancy-select"
+			>
+			<option value="site">JSITE</option>
+			<option value="admin">JADMINISTRATOR</option>
 		</field>
+			<field
+				name="redirects"
+				type="radio"
+				label="PLG_TASK_DELTRASH_REDIRECTS"
+				layout="joomla.form.field.radio.switcher"
+				default="0"
+				filter="integer"
+			>
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+			</field>
+			<field
+				name="redirectspurge"
+				type="radio"
+				label="PLG_TASK_DELTRASH_REDIRECTS_PURGE"
+				layout="joomla.form.field.radio.switcher"
+				default="0"
+				filter="integer"
+				showon="redirects:1"
+			>
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+			</field>
 		</fieldset>
 	</fields>
 </form>
