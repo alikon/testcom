@@ -23,7 +23,7 @@
 		<element>deltrash</element>
 		<type>plugin</type>
 		<folder>task</folder>
-		<version>1.0.1</version>
+		<version>1.1.0</version>
 		<client>site</client>
 		<php_minimum>7.2</php_minimum>
 		<infourl title="Joomla! Task - Delete trashed items Plugin">https://www.alikonweb.it/extensions/task-plugin-delete-trashed</infourl>
