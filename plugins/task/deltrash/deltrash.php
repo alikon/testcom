@@ -99,15 +99,27 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 			$this->setGrant();
 		}
 
-		$this->delArticles();
-
-		if (!$event->getArgument('params')->categories)
+		if ($event->getArgument('params')->articles ?? false)
 		{
-			$this->endRoutine($event, Status::OK);
-			return Status::OK;
+			$this->delArticles();
 		}
-		
-		$this->delCategories();
+
+		if ($event->getArgument('params')->categories ?? false)
+		{
+			$this->delCategories();
+		}
+
+		if ($event->getArgument('params')->modules ?? false)
+		{
+			$module = $event->getArgument('params')->moduletype ?? [];
+			$this->delModules($module);
+		}
+
+		if ($event->getArgument('params')->redirects ?? false)
+		{
+			$purge = $event->getArgument('params')->redirectspurge ?? false;
+			$this->delRedirects($purge);
+		}
 
 		$this->endRoutine($event, Status::OK);
 		return Status::OK;
@@ -173,12 +185,54 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 
 	}
 
+	private function delModules(Array $type = []) : void
+	{
+		$mod = 0;
+		$strashed = [];
+		$atrashed = [];
+
+		if (in_array('site', $type))
+		{
+			/** @var \Joomla\Component\Modules\Administrator\Model\ModuleModel $model */
+			$model = $this->app->bootComponent('com_modules')->getMVCFactory()
+				->createModel('Modules', 'Administrator', ['ignore_request' => true]);
+			$model->setState('filter.state', -2);
+			$strashed = $model->getItems();
+		}
+
+		if (in_array('admin', $type))
+		{
+			$gmodel = $this->app->bootComponent('com_modules')->getMVCFactory()
+				->createModel('Modules', 'Administrator', ['ignore_request' => true]);
+			$gmodel->setState('filter.client_id', 1);
+			$gmodel->setState('client_id', 1);
+			$gmodel->setState('filter.state', -2);
+			$atrashed = $gmodel->getItems();
+		}
+
+		$trashed = array_merge($strashed, $atrashed);
+		/** @var \Joomla\Component\Modules\Administrator\Model\ModuleModel $model */
+		$mmodel = $this->app->bootComponent('com_modules')->getMVCFactory()
+			->createModel('Module', 'Administrator', ['ignore_request' => true]);
+
+		foreach ($trashed as $item)
+		{
+			if ($mmodel->delete($item->id))
+			{
+				$mod++;
+			}
+		}
+
+		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_MODULES_DELETED', $mod), 'notice');
+
+	}
+
 	private function setGrant() : void
 	{
 		// Get all usergroups with Super User access
 		$db = $this->db;
 		$query = $db->getQuery(true)
-			->select([$db->qn('id')])
+			 ->select([$db->qn('id')])
 			->from($db->qn('#__usergroups'));
 		$groups = $db->setQuery($query)->loadColumn();
 
@@ -194,5 +248,34 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 			$this->app->getSession()->set('user', $user);
 			break;
 		}
+	}
+
+	private function delRedirects(Bool $purge = false) : void
+	{
+		$red = 0;
+		/** @var \Joomla\Component\Redirect\Administrator\Model\LinksModel $model */
+		$model = $this->app->bootComponent('com_redirect')
+			->getMVCFactory()->createModel('Links', 'Administrator', ['ignore_request' => true]);
+
+		if ($purge && $model->purge())
+		{
+			$this->logTask(Text::_('PLG_TASK_DELTRASH_REDIRECTS_PURGED'), 'notice');
+		}
+
+		$model->setState('filter.state', -2);
+		$trashed = $model->getItems();
+
+		$model = $this->app->bootComponent('com_redirect')
+			->getMVCFactory()->createModel('Link', 'Administrator', ['ignore_request' => true]);
+
+		foreach ($trashed as $item)
+		{
+			if ($model->delete($item->id))
+			{
+				$red++;
+			}
+		}
+
+		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_REDIRECTS_TRASHED', $red), 'notice');
 	}
 }
