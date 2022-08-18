@@ -32,6 +32,7 @@
 			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/plugins/task/deltrash/plg_task_deltrash-1.1.0.zip</downloadurl>
 		</downloads>
 		<tags><tag>alpha</tag></tags>
+		<sha256>a995696bc3698e4e40d1f8c74f174c34b60b487f307373a33fc7a5014764313c</sha256>
 		<targetplatform name="joomla" version="4.[0123]" />
 	</update>
 </updates>
