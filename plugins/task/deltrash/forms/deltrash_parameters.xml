@@ -38,7 +38,7 @@
 			<field
 				name="moduletype"
 				type="list"
-				label="PLG_TASK_DELTRASH_MODULES_FB"
+				label="PLG_TASK_DELTRASH_MODULES_TYPE"
 				multiple="true"
 				showon="modules:1"
 				validate="options"
