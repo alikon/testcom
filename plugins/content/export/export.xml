@@ -2,12 +2,12 @@
 <extension type="plugin" group="content" method="upgrade">
 	<name>plg_content_export</name>
 	<author>Alikon</author>
-	<creationDate>July 2022</creationDate>
+	<creationDate>August 2022</creationDate>
 	<copyright>Copyright (C) 2021 Alikon. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-	<authorEmail>nicola.galgano@community.joomla.org</authorEmail>
+	<authorEmail>alikon@alikonweb.it</authorEmail>
 	<authorUrl>www.alikonweb.it</authorUrl>
-	<version>1.0.1</version>
+	<version>1.1.0</version>
 	<description>PLG_CONTENT_EXPORT_XML_DESCRIPTION</description>
 	<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/changelog.xml</changelogurl>
 	<files>
@@ -48,6 +48,28 @@
 					label="PLG_CONTENT_EXPORT_CATID_LABEL"
 					description="PLG_CONTENT_EXPORT_CATID_DESC"
 					required="true"
+				/>
+				<field
+					name="state"
+					type="list"
+					label="JSTATUS"
+					class="form-select-color-state"
+					default="0"
+					validate="options"
+				>
+					<option value="1">JPUBLISHED</option>
+					<option value="0">JUNPUBLISHED</option>
+					<option value="2">JARCHIVED</option>
+					<option value="-2">JTRASHED</option>
+				</field>
+				<field
+					name="timeout"
+					type="integer"
+					label="PLG_CONTENT_EXPORT_TIMEOUT_LABEL"
+					first="3"
+					last="24"
+					step="1"
+					default="5"
 				/>
 			</fieldset>
 		</fields>

@@ -154,6 +154,7 @@ class PlgContentExport extends CMSPlugin
 
 		$item = $model->getItem($id);
 		$item->catid = $this->params->get('catid');
+		$item->state = $this->params->get('state', 0);
 		unset($item->created_by);
 
 		if ($this->sendData($item))
