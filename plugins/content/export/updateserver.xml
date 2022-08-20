@@ -35,4 +35,22 @@
 		<sha256>a995696bc3698e4e40d1f8c74f174c34b60b487f307373a33fc7a5014764313c</sha256>
 		<targetplatform name="joomla" version="4.[0123]" />
 	</update>
+	<update>
+		<name>Content - Export Article</name>
+		<description>Joomla! Content - Export Article Plugin</description>
+		<element>export</element>
+		<type>plugin</type>
+		<folder>content</folder>
+		<version>1.1.0</version>
+		<client>site</client>
+		<php_minimum>7.2</php_minimum>
+		<infourl title="Joomla! Content - Export Article Plugin">https://www.alikonweb.it/extensions/content-plugin-export-article</infourl>
+		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/changelog.xml</changelogurl>
+		<downloads>
+			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/plg_content_export-1.1.0.zip</downloadurl>
+		</downloads>
+		<tags><tag>beta</tag></tags>
+		<sha256>a995696bc3698e4e40d1f8c74f174c34b60b487f307373a33fc7a5014764313c</sha256>
+		<targetplatform name="joomla" version="4.[0123]" />
+	</update>
 </updates>
