@@ -2,7 +2,7 @@
 <extension type="plugin" group="task" method="upgrade">
 	<name>plg_task_deltrash</name>
 	<author>Alikon</author>
-	<creationDate>August 2021</creationDate>
+	<creationDate>August 2022</creationDate>
 	<copyright>Copyright (C) 2021 Alikon. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>alikon@alikonweb.it</authorEmail>
