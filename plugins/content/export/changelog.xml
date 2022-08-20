@@ -27,6 +27,15 @@
 		<change>
 			<item>link to GPL License</item>
 			<item>link to Manual</item>
-        </change>
+		</change>
+	</changelog>
+	<changelog>
+		<element>export</element>
+		<folder>content</folder>
+		<type>plugin</type>
+		<version>1.1.0</version>
+		<addition>
+   			<item>set article status</item>
+		</addition>
 	</changelog>
 </changelogs>
