@@ -35,4 +35,22 @@
 		<sha256>52ad4dd5a8322e3436366bf1faec91aecac83a45bc0a89faadf2ac10e243e292</sha256>
 		<targetplatform name="joomla" version="4.[0123]" />
 	</update>
+	<update>
+		<name>Task - Delete trashed items</name>
+		<description>Joomla! Task - Delete trashed items Plugin</description>
+		<element>deltrash</element>
+		<type>plugin</type>
+		<folder>task</folder>
+		<version>1.2.0</version>
+		<client>site</client>
+		<php_minimum>7.2</php_minimum>
+		<infourl title="Joomla! Task - Delete trashed items Plugin">https://www.alikonweb.it/extensions/task-plugin-delete-trashed</infourl>
+		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/changelog.xml</changelogurl>
+		<downloads>
+			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/plugins/task/deltrash/plg_task_deltrash-1.2.0.zip</downloadurl>
+		</downloads>
+		<tags><tag>beta</tag></tags>
+		<sha256>52ad4dd5a8322e3436366bf1faec91aecac83a45bc0a89faadf2ac10e243e292</sha256>
+		<targetplatform name="joomla" version="4.[0123]" />
+	</update>
 </updates>
