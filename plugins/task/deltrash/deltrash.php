@@ -121,6 +121,17 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 			$this->delRedirects($purge);
 		}
 
+		if ($event->getArgument('params')->tags ?? false)
+		{
+			$this->delTags();
+		}
+
+		if ($event->getArgument('params')->tasks ?? false)
+		{
+			$this->delTasks();
+		}
+
+		$this->delMenuItems();
 		$this->endRoutine($event, Status::OK);
 		return Status::OK;
 	}
@@ -277,5 +288,98 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 		}
 
 		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_REDIRECTS_TRASHED', $red), 'notice');
+	}
+
+	private function delTags() : void
+	{
+		$art = 0;
+		/** @var \Joomla\Component\Content\Administrator\Model\ArticlesModel $model */
+		$model = $this->app->bootComponent('com_tags')
+			->getMVCFactory()->createModel('Tags', 'Administrator', ['ignore_request' => true]);
+		$model->setState('filter.published', -2);
+		$atrashed = $model->getItems();
+
+		/** @var \Joomla\Component\Content\Administrator\Model\ArticleModel $model */
+		$amodel = $this->app->bootComponent('com_tags')
+			->getMVCFactory()->createModel('Tag', 'Administrator', ['ignore_request' => true]);
+
+		foreach ($atrashed as $item)
+		{
+			if ($amodel->delete($item->id))
+			{
+				$art++;
+			}
+		}
+
+		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_TAGS', $art), 'notice');
+
+	}
+
+	private function delTasks() : void
+	{
+		$art = 0;
+		/** @var \Joomla\Component\Content\Administrator\Model\ArticlesModel $model */
+		$model = $this->app->bootComponent('com_scheduler')
+			->getMVCFactory()->createModel('Tasks', 'Administrator', ['ignore_request' => true]);
+		$model->setState('filter.state', -2);
+		$atrashed = $model->getItems();
+
+		/** @var \Joomla\Component\Content\Administrator\Model\ArticleModel $model */
+		$amodel = $this->app->bootComponent('com_scheduler')
+			->getMVCFactory()->createModel('Task', 'Administrator', ['ignore_request' => true]);
+
+		foreach ($atrashed as $item)
+		{
+			if ($amodel->delete($item->id))
+			{
+				$art++;
+			}
+		}
+
+		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_TASKS', $art), 'notice');
+
+	}
+
+	private function delMenuItems(Array $type = []) : void
+	{
+		$art = 0;
+		$strashed = [];
+		$atrashed = [];
+
+		if (in_array('admin', $type))
+		{
+			/** @var \Joomla\Component\Content\Administrator\Model\ArticlesModel $model */
+			$model = $this->app->bootComponent('com_menus')
+				->getMVCFactory()->createModel('Items', 'Administrator', ['ignore_request' => true]);
+			$model->setState('filter.published', -2);
+			$model->setState('filter.client_id', 1);
+			$model->setState('client_id', 1);
+			$atrashed = $model->getItems();
+		}
+
+		if (in_array('site', $type))
+		{
+			/** @var \Joomla\Component\Content\Administrator\Model\ArticlesModel $model */
+			$model = $this->app->bootComponent('com_menus')
+				->getMVCFactory()->createModel('Items', 'Administrator', ['ignore_request' => true]);
+			$model->setState('filter.published', -2);
+			$strashed = $model->getItems();
+		}
+
+		$trashed = array_merge($strashed, $atrashed);
+		/** @var \Joomla\Component\Content\Administrator\Model\ArticleModel $model */
+		$mmodel = $this->app->bootComponent('com_menus')
+			->getMVCFactory()->createModel('Item', 'Administrator', ['ignore_request' => true]);
+
+		foreach ($trashed as $item)
+		{
+			if ($mmodel->delete($item->id))
+			{
+				$art++;
+			}
+		}
+
+		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_MENUITEMS', $art), 'notice');
+
 	}
 }
