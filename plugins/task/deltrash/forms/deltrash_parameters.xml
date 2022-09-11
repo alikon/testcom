@@ -25,6 +25,29 @@
 			<option value="1">JYES</option>
 			</field>
 			<field
+				name="menus"
+				type="radio"
+				label="PLG_TASK_DELTRASH_MENUITEMS_LABEL"
+				layout="joomla.form.field.radio.switcher"
+				default="0"
+				filter="integer"
+			>
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+			</field>
+			<field
+				name="menutype"
+				type="list"
+				label="PLG_TASK_DELTRASH_MENUITEMS_TYPE"
+				multiple="true"
+				showon="menus:1"
+				validate="options"
+				layout="joomla.form.field.list-fancy-select"
+			>
+			<option value="site">JSITE</option>
+			<option value="admin">JADMINISTRATOR</option>
+			</field>
+			<field
 				name="modules"
 				type="radio"
 				label="PLG_TASK_DELTRASH_MODULES"
@@ -46,7 +69,7 @@
 			>
 			<option value="site">JSITE</option>
 			<option value="admin">JADMINISTRATOR</option>
-		</field>
+			</field>
 			<field
 				name="redirects"
 				type="radio"
@@ -66,6 +89,28 @@
 				default="0"
 				filter="integer"
 				showon="redirects:1"
+			>
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+			</field>
+			<field
+				name="tags"
+				type="radio"
+				label="PLG_TASK_DELTRASH_TAGS_LABEL"
+				layout="joomla.form.field.radio.switcher"
+				default="0"
+				filter="integer"
+			>
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+			</field>
+			<field
+				name="tasks"
+				type="radio"
+				label="PLG_TASK_DELTRASH_TASKS_LABEL"
+				layout="joomla.form.field.radio.switcher"
+				default="0"
+				filter="integer"
 			>
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
