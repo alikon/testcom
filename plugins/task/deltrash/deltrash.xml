@@ -2,12 +2,12 @@
 <extension type="plugin" group="task" method="upgrade">
 	<name>plg_task_deltrash</name>
 	<author>Alikon</author>
-	<creationDate>August 2022</creationDate>
+	<creationDate>September 2022</creationDate>
 	<copyright>Copyright (C) 2021 Alikon. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>alikon@alikonweb.it</authorEmail>
 	<authorUrl>www.alikonweb.it</authorUrl>
-	<version>1.1.0</version>
+	<version>1.2.0</version>
 	<description>PLG_TASK_DELTRASH_XML_DESCRIPTION</description>
 	<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/task/deltrash/changelog.xml</changelogurl>
 	<files>
