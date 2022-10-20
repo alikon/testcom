@@ -35,9 +35,18 @@
 		<type>plugin</type>
 		<version>1.2.0</version>
 		<addition>
-			<item>Delete Trashed Menu Itemss</item>
+			<item>Delete Trashed Menu Items</item>
 			<item>Delete Trashed Tags</item>
 			<item>Delete Trashed Tasks</item>
+		</addition>
+	</changelog>
+	<changelog>
+		<element>deltrash</element>
+		<folder>task</folder>
+		<type>plugin</type>
+		<version>1.3.0</version>
+		<addition>
+			<item>Delete Trashed Contact Items</item>
 		</addition>
 	</changelog>
 </changelogs>
