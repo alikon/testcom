@@ -131,6 +131,11 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 			$this->delTasks();
 		}
 
+		if ($event->getArgument('params')->contacts ?? false)
+		{
+			$this->delContacts();
+		}
+
 		$this->delMenuItems();
 		$this->endRoutine($event, Status::OK);
 		return Status::OK;
@@ -382,4 +387,30 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_MENUITEMS', $art), 'notice');
 
 	}
+
+	private function delContacts() : void
+	{
+		$art = 0;
+		/** @var \Joomla\Component\Contact\Administrator\Model\ContactsModel $model */
+		$model = $this->app->bootComponent('com_contact')
+			->getMVCFactory()->createModel('Contacts', 'Administrator', ['ignore_request' => true]);
+		$model->setState('filter.published', -2);
+		$atrashed = $model->getItems();
+
+		/** @var \Joomla\Component\Contact\Administrator\Model\ContactModel $model */
+		$amodel = $this->app->bootComponent('com_contact')
+			->getMVCFactory()->createModel('Contact', 'Administrator', ['ignore_request' => true]);
+
+		foreach ($atrashed as $item)
+		{
+			if ($amodel->delete($item->id))
+			{
+				$art++;
+			}
+		}
+
+		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_CONTACTS_DELETED', $art), 'notice');
+
+	}
+
 }
