@@ -49,4 +49,16 @@
 			<item>Delete Trashed Contact Items</item>
 		</addition>
 	</changelog>
+	<changelog>
+		<element>deltrash</element>
+		<folder>task</folder>
+		<type>plugin</type>
+		<version>1.4.0</version>
+		<addition>
+			<item>Delete components Categories</item>
+		</addition>
+		<change>
+			<item>Log messages</item>
+		</change>
+	</changelog>
 </changelogs>
