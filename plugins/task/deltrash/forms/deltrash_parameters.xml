@@ -25,6 +25,19 @@
 			<option value="1">JYES</option>
 			</field>
 			<field
+				name="components"
+				type="sql"
+				label="Select a Component"
+				query="SELECT DISTINCT extension, substr(extension,5) as title FROM #__categories WHERE parent_id > 0 order by 1"
+				key_field="extension"
+				value_field="title"
+				required="true"
+				multiple="true"
+				showon="categories:1"
+			>
+			<option value="">Please select your option</option>
+			</field>
+			<field
 				name="contacts"
 				type="radio"
 				label="PLG_TASK_DELTRASH_CONTACTS"
