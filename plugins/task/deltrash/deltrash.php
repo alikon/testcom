@@ -106,7 +106,13 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 
 		if ($event->getArgument('params')->categories ?? false)
 		{
-			$this->delCategories();
+			$components = $event->getArgument('params')->components ?? [];
+
+			foreach ($components as $component)
+			{
+				$this->delCategories($component);
+			}
+			
 		}
 
 		if ($event->getArgument('params')->modules ?? false)
@@ -141,20 +147,20 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 		return Status::OK;
 	}
 
-	private function delCategories() : void
+	private function delCategories($component) : void
 	{
-		$cat = 0;
-		$noleaf =0;
+		$cat    = 0;
+		$noleaf = 0;
 		$cmodel = $this->app->bootComponent('com_categories')
 			->getMVCFactory()
 			->createModel('Categories', 'Administrator', ['ignore_request' => true]);
 		$cmodel->setState('filter.published', -2);
-		$cmodel->setState('filter.extension', 'com_content');
-		$cmodel->setState('category.extension', 'com_content');
+		$cmodel->setState('filter.extension', $component);
+		$cmodel->setState('category.extension', $component);
 		// Extract the component name
-		$parts = explode('.', 'com_content');
+		$parts = explode('.', $component);
 		$cmodel->setState('category.component', $parts[0]);
-		$this->app->input->set('extension', 'com_content');
+		$this->app->input->set('extension', $component);
 
 		$ctrashed = $cmodel->getItems();
 
@@ -172,8 +178,8 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 			$cat++;
 		}
 
-		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_CATEGORIES_DELETED', $cat - $noleaf), 'notice');
-		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_NOLEAF', $noleaf), 'info');
+		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_CATEGORIES_DELETED', $component, $cat - $noleaf), 'info');
+		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_NOLEAF', $component, $noleaf), 'info');
 	}
 
 	private function delArticles() : void
@@ -197,7 +203,7 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 			}
 		}
 
-		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_ARTICLES', $art), 'notice');
+		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_ARTICLES', $art), 'info');
 
 	}
 
@@ -239,7 +245,7 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 			}
 		}
 
-		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_MODULES_DELETED', $mod), 'notice');
+		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_MODULES_DELETED', $mod), 'info');
 
 	}
 
@@ -275,7 +281,7 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 
 		if ($purge && $model->purge())
 		{
-			$this->logTask(Text::_('PLG_TASK_DELTRASH_REDIRECTS_PURGED'), 'notice');
+			$this->logTask(Text::_('PLG_TASK_DELTRASH_REDIRECTS_PURGED'), 'info');
 		}
 
 		$model->setState('filter.state', -2);
@@ -292,7 +298,7 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 			}
 		}
 
-		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_REDIRECTS_TRASHED', $red), 'notice');
+		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_REDIRECTS_TRASHED', $red), 'info');
 	}
 
 	private function delTags() : void
@@ -316,7 +322,7 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 			}
 		}
 
-		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_TAGS', $art), 'notice');
+		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_TAGS', $art), 'info');
 
 	}
 
@@ -341,7 +347,7 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 			}
 		}
 
-		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_TASKS', $art), 'notice');
+		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_TASKS', $art), 'info');
 
 	}
 
@@ -384,7 +390,7 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 			}
 		}
 
-		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_MENUITEMS', $art), 'notice');
+		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_MENUITEMS', $art), 'info');
 
 	}
 
@@ -409,7 +415,7 @@ class PlgTaskdeltrash extends CMSPlugin implements SubscriberInterface
 			}
 		}
 
-		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_CONTACTS_DELETED', $art), 'notice');
+		$this->logTask(Text::sprintf('PLG_TASK_DELTRASH_CONTACTS_DELETED', $art), 'info');
 
 	}
 
