@@ -51,7 +51,7 @@
 					required="true"
 				/>
 				<field
-					name="directory"
+					name="folder"
 					type="folderlist"
 					label="MOD_DALLE_FOLDER_LABEL"
 					directory="images"
