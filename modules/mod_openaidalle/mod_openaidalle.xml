@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" client="administrator" method="upgrade">
+	<name>mod_openaidalle</name>
+	<author>Alikon</author>
+	<creationDate>July 2021</creationDate>
+	<copyright>(C) 2005 Alikonweb</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>alikon@joomalikonwe.it</authorEmail>
+	<authorUrl>www.joomla.org</authorUrl>
+	<version>1.0.0</version>
+	<description>MOD_DALLE_XML_DESCRIPTION</description>
+	<namespace path="src">Joomla\Module\Openaidalle</namespace>
+	<files>
+		<filename module="mod_openaidalle">mod_openaidalle.php</filename>
+		<folder>src</folder>
+		<folder>tmpl</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">language/en-GB/mod_openaidalle.ini</language>
+		<language tag="en-GB">language/en-GB/mod_openaidalle.sys.ini</language>
+	</languages>
+	<help key="Admin_Modules:_Custom" />
+	<config>
+		<fields name="params">
+			<fieldset name="options" label="COM_MODULES_BASIC_FIELDSET_LABEL">
+				<field
+					name="prompt"
+					type="textarea"
+					label="MOD_DALLE_PROMPT_LABEL"
+					rows="3"
+					cols="30"
+					filter="raw"
+					required="true"
+				/>
+				<field
+					name="dimension"
+					type="list"
+					label="MOD_DALLE_DIMENSION_LABEL"
+					default="256x256"
+					validate="options"
+					>
+					<option value="256x256">MOD_DALLE_256</option>
+					<option value="512x512">MOD_DALLE_512</option>
+					<option value="1024x1024">MOD_DALLE_1024</option>
+					
+				</field>
+				<field
+					name="apitoken"
+					type="text"
+					label="MOD_DALLE_APITOKEN_LABEL"
+					required="true"
+				/>
+				<field
+					name="directory"
+					type="folderlist"
+					label="MOD_DALLE_FOLDER_LABEL"
+					directory="images"
+					hide_none="true"
+					hide_default="true"
+					recursive="true"
+					validate="options"
+				>
+			</field>
+				
+			</fieldset>
+			<fieldset
+				name="advanced">
+				<field
+					name="layout"
+					type="modulelayout"
+					label="JFIELD_ALT_LAYOUT_LABEL"
+					class="form-select"
+ 				/>
+
+				<field
+					name="moduleclass_sfx"
+					type="textarea"
+					label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
+					rows="3"
+					validate="CssIdentifier"
+				/>
+
+				<field
+					name="cache"
+					type="list"
+					label="COM_MODULES_FIELD_CACHING_LABEL"
+					default="1"
+					filter="integer"
+					validate="options"
+					>
+					<option value="1">JGLOBAL_USE_GLOBAL</option>
+					<option value="0">COM_MODULES_FIELD_VALUE_NOCACHING</option>
+				</field>
+
+				<field
+					name="cache_time"
+					type="number"
+					label="COM_MODULES_FIELD_CACHE_TIME_LABEL"
+					default="900"
+					filter="integer"
+					min="1"
+					validate="number"
+				/>
+			</fieldset>
+		</fields>
+	</config>
+	<updateservers>
+		<server type="extension" name="Module - J Statistics">https://raw.githubusercontent.com/alikon/testcom/main/modules/mod_jstats/updateserver.xml</server>
+	</updateservers>
+</extension>
