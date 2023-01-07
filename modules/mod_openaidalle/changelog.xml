@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<changelogs>
+	<changelog>
+		<element>deltrash</element>
+		<folder>task</folder>
+		<type>module</type>
+		<version>1.0.0</version>
+		<addition>
+			<item>Generate image with Dalle-2</item>
+			<item>Save Dalle-2 image</item>
+		</addition>
+		<language>
+			<item>en-GB</item>
+		</language>
+		<note>
+			<item>You Need an API Token from Dalle-2</item>
+		</note>
+	</changelog>
+</changelogs>
