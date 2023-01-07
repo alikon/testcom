@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<updates>
+	<update>
+		<name>Module - OpenAI Dalle-2</name>
+		<description>Joomla! Module - OpenAI Dalle-2</description>
+		<element>mod_openaidalle</element>
+		<type>module</type>
+		<folder>content</folder>
+		<version>1.0.0</version>
+		<client>administrator</client>
+		<php_minimum>7.2</php_minimum>
+		<infourl title="Joomla! Module - OpenAI Dalle-2">https://www.alikonweb.it/extensions/content-plugin-export-article</infourl>
+		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/modules/mod_openaidalle/changelog.xml</changelogurl>
+		<downloads>
+			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/modules/mod_openaidalle/plg_content_export-1.0.0.zip</downloadurl>
+		</downloads>
+		<tags><tag>stable</tag></tags>
+		<targetplatform name="joomla" version="4.[0123]" />
+	</update>
+</updates>
