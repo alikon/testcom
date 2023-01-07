@@ -3,7 +3,7 @@
  * @package     Joomla.Administrator
  * @subpackage  mod_openaidalle
  *
- * @copyright   (C) 2009 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright   Copyright (C) 2021 Alikon. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -39,9 +39,13 @@ $folder    = $params->get('folder', '../images');
 			</p>
 			<p>
 			<div class="btn-group">
-				<div id="dall-e" class='btn btn-primary'><i class='icon-image fa-lg' aria-hidden='true'></i>&nbsp; Generate </div>
-				<div id="write-e" class='btn btn-danger' style="display: none"><i class='icon-flash fa-lg' aria-hidden='true'></i>&nbsp; Save </div>
-				<a download="info.txt" id="downloadlink" style="display: none">Download</a>
+				<div id="dall-e" class='btn btn-danger'><i class='icon-image fa-lg' aria-hidden='true'></i>&nbsp; Generate </div>
+				<div id="write-e" class='btn btn-success' style="display: none"><i class='icon-save fa-lg' aria-hidden='true'></i>&nbsp; Save </div>
+				<div class="blu">
+				<span id="save" style="display: none">
+					<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+				</span>
+			</div>
 			</div>
 			</p>
 		</div>
@@ -61,15 +65,8 @@ $js = <<< JS
 		//
 		function OpenaiFetchAPI() {
 			showLoader('load');
-			/* mock
-			setTimeout(() => { 
-				document.getElementById("dalle").src = 'data:image/png;base64,' + b64
-				document.getElementById("dalle").alt = 'Dall-e generated image'
-				hideLoader('load')
-				showLoader('write-e');
-				},
-			5000);
-			*/
+			// mock
+
 			var url = "https://api.openai.com/v1/images/generations";
 			var bearer = 'Bearer ' + "$token"
 
@@ -89,18 +86,23 @@ $js = <<< JS
 				return response.json()
 			}).then(data=>{
 				console.log('QUI',data.data[0].b64_json)
-				document.getElementById("dalle").src = 'data:image/png;base64,' + data.data[0].b64_json
+				document.getElementById("dalle").src = 'data:image/png;base' + '64,' + data.data[0].b64_json
 				hideLoader('load')
 				showLoader('write-e');
 			}).catch(error => {
 				console.log('Something bad happened ' + error.message)
+				hideLoader('load')
+				document.getElementById("saved-msg").innerHTML = 'Something bad happened ' + error.message
+					setTimeout(function(){
+						document.getElementById("saved-msg").innerHTML = '';
+					}, 5000);
 			});
 
 		}
 		//
 		function writeFile() {
 			b64 = document.getElementById("dalle").src
-			showLoader('load');
+			showLoader('save');
 			var url = "index.php?option=com_ajax&module=openaidalle&method=getData&format=json&dir=$folder";
 
 			fetch(url, {
@@ -123,7 +125,7 @@ $js = <<< JS
 						document.getElementById("saved-msg").innerHTML = '';
 					}, 3000);
 				}
-				hideLoader('load');
+				hideLoader('save');
 			}).catch(error => {
 				console.log('Something bad happened ' + error.message)
 			});
