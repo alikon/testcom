@@ -12,7 +12,7 @@
 		<infourl title="Joomla! Module - OpenAI Dalle-2">https://www.alikonweb.it/extensions/content-plugin-export-article</infourl>
 		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/modules/mod_openaidalle/changelog.xml</changelogurl>
 		<downloads>
-			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/modules/mod_openaidalle/plg_content_export-1.0.0.zip</downloadurl>
+			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/modules/mod_openaidalle/mod_openaidalle-1.0.0.zip</downloadurl>
 		</downloads>
 		<tags><tag>stable</tag></tags>
 		<targetplatform name="joomla" version="4.[0123]" />

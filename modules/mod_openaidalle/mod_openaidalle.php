@@ -3,7 +3,7 @@
  * @package     Joomla.Administrator
  * @subpackage  mod_openaidalle
  *
- * @copyright   (C) 2009 Open Source Matters, Inc. <https://www.joomla.org>
+  * @copyright   Copyright (C) 2021 Alikon. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
