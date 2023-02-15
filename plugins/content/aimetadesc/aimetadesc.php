@@ -64,13 +64,13 @@ class PlgContentAimetadesc extends CMSPlugin
                 $wa->addInlineScript("
                     document.addEventListener('DOMContentLoaded', () => {(function() {
                         const options = window.Joomla.getOptions('ai-metadesc');
-                        let apiKey    = options.apikey;
+                        let apiKey    = options.apiKey;
                         const text    = document.getElementById('jform_articletext').value
                         const strWithoutHTmlTags = text.replace(/(<([^>]+)>)/gi, '');
 
                         function cambia(){
-                            function aiResponse(aiObj) {
-                                output = aiObj.choices[0].text;
+                            function aiResponse(aiResp) {
+                                output = aiResp.choices[0].text;
                                 document.getElementById('jform_metadesc').value =  output.trim();
                                 hideLoader('loader')
                             }
@@ -104,7 +104,7 @@ class PlgContentAimetadesc extends CMSPlugin
                             fetch('https://api.openai.com/v1/completions', requestOptions)
                                 .then(response => response.json())
                                 .then(aiResponse)
-                                .catch(error => console.log('error', error));
+                                .catch(error => hideLoader('loader'));
                         }
 
                         var element = document.getElementById('toolbar-flash');
