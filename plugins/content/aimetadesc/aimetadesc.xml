@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="content" method="upgrade">
+	<name>plg_content_aimetadesc</name>
+	<author>Alikon</author>
+	<creationDate>February 2023</creationDate>
+	<copyright>Copyright (C) 2020 Alikon. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>alikon@alikonweb.it</authorEmail>
+	<authorUrl>www.alikonweb.it</authorUrl>
+	<version>1.0.0</version>
+	<description>PLG_CONTENT_AIMETADESC_XML_DESCRIPTION</description>
+	<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/aimetadesc/changelog.xml</changelogurl>
+	<files>
+		<filename plugin="aimetadesc">aimetadesc.php</filename>
+		<folder>language</folder>
+	</files>
+	<config>
+	<fields name="params">
+			<fieldset name="basic">
+				<field
+					name="apikey"
+					type="text"
+					label="PLG_CONTENT_AIMETADESC_APIKEY"
+					description="PLG_CONTENT_AIMETADESC_APIKEY_DESC"
+					required="true"
+					filter="safehtml" />
+			</fieldset>
+		</fields>
+	</config>
+	<updateservers>
+		<server type="extension" name="Content - OpeanAI Meta Description">https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/aimetadesc/updateserver.xml</server>
+	</updateservers>
+</extension>
