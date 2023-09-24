@@ -29,7 +29,7 @@
 		<infourl title="Joomla! Content - OpenAI Meta Description Plugin">https://www.alikonweb.it/extensions/content-plugin-chatgpt-meta-description</infourl>
 		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/aimetadesc/changelog.xml</changelogurl>
 		<downloads>
-			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/aimetadesc/plg_content_aimetadesc-1.0.0.zip</downloadurl>
+			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/aimetadesc/plg_content_aimetadesc-1.1.0.zip</downloadurl>
 		</downloads>
 		<tags><tag>stable</tag></tags>
 		<targetplatform name="joomla" version="4.[01234]" />
