@@ -17,4 +17,21 @@
 		<tags><tag>stable</tag></tags>
 		<targetplatform name="joomla" version="4.[0123]" />
 	</update>
+	<update>
+		<name>Content - OpenAI Meta Description</name>
+		<description>Joomla! Content - OpenAI Meta Description Plugin</description>
+		<element>aimetadesc</element>
+		<type>plugin</type>
+		<folder>content</folder>
+		<version>1.1.0</version>
+		<client>site</client>
+		<php_minimum>7.2</php_minimum>
+		<infourl title="Joomla! Content - OpenAI Meta Description Plugin">https://www.alikonweb.it/extensions/content-plugin-chatgpt-meta-description</infourl>
+		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/aimetadesc/changelog.xml</changelogurl>
+		<downloads>
+			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/aimetadesc/plg_content_aimetadesc-1.0.0.zip</downloadurl>
+		</downloads>
+		<tags><tag>stable</tag></tags>
+		<targetplatform name="joomla" version="4.[01234]" />
+	</update>
 </updates>
