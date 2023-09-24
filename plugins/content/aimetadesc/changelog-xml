@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<changelogs>
+	<changelog>
+		<element>aimetadesc</element>
+		<folder>content</folder>
+		<type>plugin</type>
+		<version>1.0.0</version>
+		<addition>
+			<item>Meta description with ChatGPT</item>
+		</addition>
+		<language>
+			<item>en-GB</item>
+		</language>
+		<note>
+			<item>Listed on Jooomla Extension Directory</item>
+		</note>
+	</changelog>
+	<changelog>
+		<element>aimetadesc</element>
+		<folder>content</folder>
+		<type>plugin</type>
+		<version>1.1.0</version>
+		<addition>
+			<item>use web asset manager</item>
+		</addition>
+	</changelog>
+</changelogs>
