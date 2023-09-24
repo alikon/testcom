@@ -60,58 +60,7 @@ class PlgContentAimetadesc extends CMSPlugin
                         'apiKey' => $apiKey,
                     ]
                 );
-
-                $wa->addInlineScript("
-                    document.addEventListener('DOMContentLoaded', () => {(function() {
-                        const options = window.Joomla.getOptions('ai-metadesc');
-                        let apiKey    = options.apiKey;
-                        const text    = document.getElementById('jform_articletext').value
-                        const strWithoutHTmlTags = text.replace(/(<([^>]+)>)/gi, '');
-
-                        function cambia(){
-                            function aiResponse(aiResp) {
-                                output = aiResp.choices[0].text;
-                                document.getElementById('jform_metadesc').value =  output.trim();
-                                hideLoader('loader')
-                            }
-
-                            function hideLoader(id){
-                                var loader = document.getElementById(id);
-                                loader.style.display = 'none';
-                            }
-
-                            document.getElementById('toolbar-flash')
-                                .insertAdjacentHTML('afterend', '<span id=\'loader\' class=\'spinner-border spinner-border-sm\' role=\'status\' aria-hidden=\'true\'></span>');
-
-                            let myHeaders = new Headers();
-                            myHeaders.append('Content-Type', 'application/json');
-                            myHeaders.append('Authorization', 'Bearer ' + apiKey);
-
-                            let raw = JSON.stringify({
-                                'prompt': strWithoutHTmlTags,
-                                'model': 'text-davinci-003',
-                                'max_tokens': 160,
-                                'temperature': 0.5
-                            });
-
-                            let requestOptions = {
-                                method: 'POST',
-                                headers: myHeaders,
-                                body: raw,
-                                redirect: 'follow'
-                            };
-
-                            fetch('https://api.openai.com/v1/completions', requestOptions)
-                                .then(response => response.json())
-                                .then(aiResponse)
-                                .catch(error => hideLoader('loader'));
-                        }
-
-                        var element = document.getElementById('toolbar-flash');
-                        element.addEventListener('click', cambia)
-                        })();
-                    });
-                ");
+                $wa->registerAndUseScript('plg_content_aimetadesc', 'plg_content_aimetadesc/aimetadesc.js', [], ['defer' => true], []);
             }
         }
     }
