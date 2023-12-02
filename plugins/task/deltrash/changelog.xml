@@ -61,4 +61,13 @@
 			<item>Log messages</item>
 		</change>
 	</changelog>
+	<changelog>
+		<element>deltrash</element>
+		<folder>task</folder>
+		<type>plugin</type>
+		<version>1.4.1</version>
+		<security>
+			<item>Joomla 4.4.1 + Joomla 5.0.1</item>
+		</security>
+	</changelog>
 </changelogs>

@@ -27,7 +27,7 @@
 		<client>site</client>
 		<php_minimum>7.2</php_minimum>
 		<infourl title="Joomla! Task - Delete trashed items Plugin">https://www.alikonweb.it/extensions/task-plugin-delete-trashed</infourl>
-		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/changelog.xml</changelogurl>
+		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/task/deltrash/changelog.xml</changelogurl>
 		<downloads>
 			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/plugins/task/deltrash/plg_task_deltrash-1.1.0.zip</downloadurl>
 		</downloads>
@@ -45,7 +45,7 @@
 		<client>site</client>
 		<php_minimum>7.2</php_minimum>
 		<infourl title="Joomla! Task - Delete trashed items Plugin">https://www.alikonweb.it/extensions/task-plugin-delete-trashed</infourl>
-		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/changelog.xml</changelogurl>
+		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/task/deltrash/changelog.xml</changelogurl>
 		<downloads>
 			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/plugins/task/deltrash/plg_task_deltrash-1.2.0.zip</downloadurl>
 		</downloads>
@@ -63,7 +63,7 @@
 		<client>site</client>
 		<php_minimum>7.2</php_minimum>
 		<infourl title="Joomla! Task - Delete trashed items Plugin">https://www.alikonweb.it/extensions/task-plugin-delete-trashed</infourl>
-		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/changelog.xml</changelogurl>
+		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/task/deltrash/changelog.xml</changelogurl>
 		<downloads>
 			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/plugins/task/deltrash/plg_task_deltrash-1.3.0.zip</downloadurl>
 		</downloads>
@@ -81,9 +81,27 @@
 		<client>site</client>
 		<php_minimum>7.2</php_minimum>
 		<infourl title="Joomla! Task - Delete trashed items Plugin">https://www.alikonweb.it/extensions/task-plugin-delete-trashed</infourl>
-		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/changelog.xml</changelogurl>
+		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/task/deltrash/changelog.xml</changelogurl>
 		<downloads>
 			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/plugins/task/deltrash/plg_task_deltrash-1.4.0.zip</downloadurl>
+		</downloads>
+		<tags><tag>stable</tag></tags>
+		<sha256>a88dacf172ac2e70c08982083312fcdb90bc30f3a00e93486ff73fa06f9fdfd2</sha256>
+		<targetplatform name="joomla" version="((4\.[01234])|(5\.0))" />
+	</update>
+	<update>
+		<name>Task - Delete trashed items</name>
+		<description>Joomla! Task - Delete trashed items Plugin</description>
+		<element>deltrash</element>
+		<type>plugin</type>
+		<folder>task</folder>
+		<version>1.4.1</version>
+		<client>site</client>
+		<php_minimum>7.2</php_minimum>
+		<infourl title="Joomla! Task - Delete trashed items Plugin">https://www.alikonweb.it/extensions/task-plugin-delete-trashed</infourl>
+		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/task/deltrash/changelog.xml</changelogurl>
+		<downloads>
+			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/plugins/task/deltrash/plg_task_deltrash-1.4.1.zip</downloadurl>
 		</downloads>
 		<tags><tag>stable</tag></tags>
 		<sha256>a88dacf172ac2e70c08982083312fcdb90bc30f3a00e93486ff73fa06f9fdfd2</sha256>
