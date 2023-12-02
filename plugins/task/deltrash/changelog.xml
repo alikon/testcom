@@ -60,9 +60,6 @@
 		<change>
 			<item>Log messages</item>
 		</change>
-		<security>
-			<item>Joomla 4.4.1 + Joomla 5.0.1</item>
-		</security>
 	</changelog>
 	<changelog>
 		<element>deltrash</element>
