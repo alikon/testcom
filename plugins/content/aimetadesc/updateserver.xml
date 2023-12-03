@@ -32,6 +32,6 @@
 			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/aimetadesc/plg_content_aimetadesc-1.1.0.zip</downloadurl>
 		</downloads>
 		<tags><tag>stable</tag></tags>
-		<targetplatform name="joomla" version="4.[01234]" />
+		<targetplatform name="joomla" version="((4\.[01234])|(5\.0))" />
 	</update>
 </updates>
