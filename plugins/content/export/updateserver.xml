@@ -59,7 +59,7 @@
 		<element>export</element>
 		<type>plugin</type>
 		<folder>content</folder>
-		<version>1.1.1</version>
+		<version>1.1.2</version>
 		<client>site</client>
 		<php_minimum>7.2</php_minimum>
 		<infourl title="Joomla! Content - Export Article Plugin">https://www.alikonweb.it/extensions/content-plugin-export-article</infourl>
