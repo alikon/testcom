@@ -69,7 +69,7 @@
 		</downloads>
 		<tags><tag>stable</tag></tags>
 		<sha256>9a4b5acff0e6a9472993a2bf8a57008e96852b8a647b4d06075132a5fb39b275</sha256>
-		<updCLI>true</updCLI>
+		<updatefromcli>true</updatefromcli>
 		<targetplatform name="joomla" version="((4\.[01234])|(5\.0))" />
 	</update>
 </updates>
