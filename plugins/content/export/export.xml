@@ -2,12 +2,12 @@
 <extension type="plugin" group="content" method="upgrade">
 	<name>plg_content_export</name>
 	<author>Alikon</author>
-	<creationDate>August 2023</creationDate>
+	<creationDate>December 2023</creationDate>
 	<copyright>Copyright (C) 2021 Alikon. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>alikon@alikonweb.it</authorEmail>
 	<authorUrl>www.alikonweb.it</authorUrl>
-	<version>1.2.0</version>
+	<version>2.0.0</version>
 	<description>PLG_CONTENT_EXPORT_XML_DESCRIPTION</description>
 	<namespace path="src">Joomla\Plugin\Content\Export</namespace>
 	<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/changelog.xml</changelogurl>
@@ -16,6 +16,9 @@
 		<folder>src</folder>
 		<folder>language</folder>
 	</files>
+	<media destination="plg_content_export" folder="media">
+		<folder>js</folder>
+	</media>
 	<config>
 	<fields name="params">
 			<fieldset name="basic">
