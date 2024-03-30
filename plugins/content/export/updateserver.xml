@@ -59,13 +59,32 @@
 		<element>export</element>
 		<type>plugin</type>
 		<folder>content</folder>
-		<version>1.1.2</version>
+		<version>1.1.1</version>
 		<client>site</client>
 		<php_minimum>7.2</php_minimum>
 		<infourl title="Joomla! Content - Export Article Plugin">https://www.alikonweb.it/extensions/content-plugin-export-article</infourl>
 		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/changelog.xml</changelogurl>
 		<downloads>
 			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/plg_content_export-1.1.1.zip</downloadurl>
+		</downloads>
+		<tags><tag>stable</tag></tags>
+		<sha256>9a4b5acff0e6a9472993a2bf8a57008e96852b8a647b4d06075132a5fb39b275</sha256>
+		<updatefromcli>false</updatefromcli>
+		<targetplatform name="joomla" version="((4\.[01234])|(5\.0))" />
+	</update>
+	<update>
+		<name>Content - Export Article</name>
+		<description>Joomla! Content - Export Article Plugin</description>
+		<element>export</element>
+		<type>plugin</type>
+		<folder>content</folder>
+		<version>1.2.0</version>
+		<client>site</client>
+		<php_minimum>7.2</php_minimum>
+		<infourl title="Joomla! Content - Export Article Plugin">https://www.alikonweb.it/extensions/content-plugin-export-article</infourl>
+		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/changelog.xml</changelogurl>
+		<downloads>
+			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/plg_content_export-1.2.0.zip</downloadurl>
 		</downloads>
 		<tags><tag>stable</tag></tags>
 		<sha256>9a4b5acff0e6a9472993a2bf8a57008e96852b8a647b4d06075132a5fb39b275</sha256>
