@@ -70,4 +70,13 @@
 			<item>Joomla 4.4.1 + Joomla 5.0.1</item>
 		</security>
 	</changelog>
+	<changelog>
+		<element>deltrash</element>
+		<folder>task</folder>
+		<type>plugin</type>
+		<version>1.5.0</version>
+		<change>
+			<item>Service provider</item>
+		</change>
+	</changelog>
 </changelogs>
