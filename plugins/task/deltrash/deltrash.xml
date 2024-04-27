@@ -2,16 +2,18 @@
 <extension type="plugin" group="task" method="upgrade">
 	<name>plg_task_deltrash</name>
 	<author>Alikon</author>
-	<creationDate>November 2022</creationDate>
+	<creationDate>March 2024</creationDate>
 	<copyright>Copyright (C) 2021 Alikon. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>alikon@alikonweb.it</authorEmail>
 	<authorUrl>www.alikonweb.it</authorUrl>
-	<version>1.4.1</version>
+	<version>1.5.0</version>
 	<description>PLG_TASK_DELTRASH_XML_DESCRIPTION</description>
+	<namespace path="src">Joomla\Plugin\Task\Deltrash</namespace>
 	<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/task/deltrash/changelog.xml</changelogurl>
 	<files>
-		<filename plugin="deltrash">deltrash.php</filename>
+		<folder plugin="deltrash">services</folder>
+		<folder>src</folder>
 		<folder>language</folder>
 		<folder>forms</folder>
 	</files>
