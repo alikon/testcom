@@ -91,4 +91,23 @@
 		<updatefromcli>false</updatefromcli>
 		<targetplatform name="joomla" version="((4\.[01234])|(5\.[012]))" />
 	</update>
+	<update>
+		<name>Content - Export Article</name>
+		<description>Joomla! Content - Export Article Plugin</description>
+		<element>export</element>
+		<type>plugin</type>
+		<folder>content</folder>
+		<version>2.0.0</version>
+		<client>site</client>
+		<php_minimum>7.2</php_minimum>
+		<infourl title="Joomla! Content - Export Article Plugin">https://www.alikonweb.it/extensions/content-plugin-export-article</infourl>
+		<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/changelog.xml</changelogurl>
+		<downloads>
+			<downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/plg_content_export-2.0.0.zip</downloadurl>
+		</downloads>
+		<tags><tag>stable</tag></tags>
+		<sha256>e444fe49a3ebc0dbcfb59d7d1a184136d4a82d83904e25021765fbf6b5df20b8</sha256>
+		<updatefromcli>false</updatefromcli>
+		<targetplatform name="joomla" version="((4\.[01234])|(5\.[012]))" />
+	</update>
 </updates>
