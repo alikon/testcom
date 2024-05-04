@@ -79,4 +79,13 @@
 			<item>Service provider</item>
 		</change>
 	</changelog>
+	<changelog>
+		<element>deltrash</element>
+		<folder>task</folder>
+		<type>plugin</type>
+		<version>1.6.0</version>
+		<change>
+			<item>Code clean</item>
+		</change>
+	</changelog>
 </changelogs>

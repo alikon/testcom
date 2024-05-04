@@ -13,6 +13,8 @@ namespace Joomla\Plugin\Task\Deltrash\Extension;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\User\User;
+use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Scheduler\Administrator\Event\ExecuteTaskEvent;
 use Joomla\Component\Scheduler\Administrator\Task\Status;
 use Joomla\Component\Scheduler\Administrator\Traits\TaskPluginTrait;
@@ -21,7 +23,6 @@ use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Access\Access;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\Table\Table;
 
@@ -95,8 +96,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      */
     public function deleteTrash(ExecuteTaskEvent $event): int
     {
-        $this->startRoutine($event);
-        $this->setGrant();
+        $this->createRootUser();
 
         if ($event->getArgument('params')->articles ?? false) {
             $this->delArticles();
@@ -137,13 +137,11 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             $this->delMenuItems($menus);
         }
 
-        $this->app->getSession()->set('user', null);
+        $user = User::getInstance($this->app->getIdentity()->id);
 
-        if ($this->app->getIdentity()) {
-            $this->app->loadIdentity();
-        }
+        // Trigger delete of user
+        $user->delete();
 
-        $this->endRoutine($event, Status::OK);
         return Status::OK;
     }
 
@@ -177,8 +175,13 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             $cat++;
         }
 
-        $cat - $noleaf > 0 ?? $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_CATEGORIES_DELETED', $component, $cat - $noleaf), 'info');
-        $noleaf > 0 ?? $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_NOLEAF', $component, $noleaf), 'info');
+        if ($cat - $noleaf > 0) {
+            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_CATEGORIES_DELETED', $component, $cat - $noleaf), 'info');
+        }
+
+        if ($noleaf > 0) {
+            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_NOLEAF', $component, $noleaf), 'info');
+        }
     }
 
     private function delArticles(): void
@@ -227,7 +230,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             $db->setQuery($query);
             $db->execute();
             // versions
-            $a= 'com_content.article.' . $item->id;
+            $a = 'com_content.article.' . $item->id;
             $query = $db->getQuery(true)
                 ->delete($db->quoteName('#__history'))
                 ->where($db->quoteName('item_id') . '= :ucmitemid')
@@ -251,7 +254,9 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             $amodel->clean();
         }
 
-        $art >0 ?? $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_ARTICLES', $art), 'info');
+        if ($art > 0) {
+            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_ARTICLES', $art), 'info');
+        }
     }
 
     private function delModules(array $type = []): void
@@ -289,32 +294,8 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             }
         }
 
-        $mod > 0 ?? $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_MODULES_DELETED', $mod), 'info');
-    }
-
-    private function setGrant(): void
-    {
-        // Get all usergroups with Super User access
-        $db = $this->db;
-        $query = $db->getQuery(true)
-            ->select([$db->qn('id')])
-            ->from($db->qn('#__usergroups'));
-        $groups = $db->setQuery($query)->loadColumn();
-
-        // Get the groups that are Super Users
-        $groups = array_filter($groups, function ($gid) {
-            return Access::checkGroup($gid, 'core.admin');
-        });
-
-        foreach ($groups as $gid) {
-            $uids = Access::getUsersByGroup($gid);
-            $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($uids[0]);
-            $this->app->getSession()->set('user', $user);
-
-            //if (!$this->app->getIdentity()) {
-                $this->app->loadIdentity($user);
-            //}
-            break;
+        if ($mod > 0) {
+            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_MODULES_DELETED', $mod), 'info');
         }
     }
 
@@ -341,7 +322,9 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             }
         }
 
-        $red > 0 ?? $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_REDIRECTS_TRASHED', $red), 'info');
+        if ($red > 0) {
+            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_REDIRECTS_TRASHED', $red), 'info');
+        }
     }
 
     private function delTags(): void
@@ -364,7 +347,9 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             }
         }
 
-        $art > 0 ?? $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_TAGS', $art), 'info');
+        if ($art > 0) {
+            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_TAGS', $art), 'info');
+        }
     }
 
     private function delTasks(): void
@@ -387,7 +372,9 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             }
         }
 
-        $art > 0 ?? $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_TASKS', $art), 'info');
+        if ($art > 0) {
+            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_TASKS', $art), 'info');
+        }
     }
 
     private function delMenuItems(array $type = []): void
@@ -426,7 +413,9 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             }
         }
 
-        $art > 0 ?? $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_MENUITEMS', $art), 'info');
+        if ($art > 0) {
+            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_MENUITEMS', $art), 'info');
+        }
     }
 
     private function delContacts(): void
@@ -449,6 +438,128 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             }
         }
 
-        $art > 0 ?? $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_CONTACTS_DELETED', $art), 'info');
+        if ($art > 0) {
+            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_CONTACTS_DELETED', $art), 'info');
+        }
+    }
+
+    /**
+     * Method to create a root user for the task.
+     *
+     * @param   object          $options  The session options.
+     * @param   DatabaseDriver  $db       Database connector object $db*.
+     *
+     * @return  boolean  True on success.
+     *
+     * @since   3.1
+     */
+    private function createRootUser() : bool
+    {
+        $options = new \stdClass();
+        $options->admin_password_plain = '123456789012';
+        $options->admin_user = 'cliagent';
+        $options->admin_username = 'cliagent';
+        $options->admin_email = 'aa@aa.it';
+
+        $cryptpass = UserHelper::hashPassword($options->admin_password_plain);
+
+        // Create the admin user.
+        date_default_timezone_set('UTC');
+        $installdate = date('Y-m-d H:i:s');
+        $db    = $this->getDatabase();
+        $query = $db->getQuery(true);
+
+        $query = $db->getQuery(true)
+            ->select($db->quoteName('id'))
+            ->from($db->quoteName('#__users'))
+            ->where($db->quoteName('username') . ' = ' . $db->quote($options->admin_username));
+
+        $db->setQuery($query);
+
+        try {
+            $result = $db->loadResult();
+        } catch (\RuntimeException $e) {
+            $this->logTask($e->getMessage(), 'error');
+
+            return false;
+        }
+
+        if ($result) {
+            $query->clear()
+                ->update($db->quoteName('#__users'))
+                ->set($db->quoteName('name') . ' = ' . $db->quote(trim($options->admin_user)))
+                ->set($db->quoteName('username') . ' = ' . $db->quote(trim($options->admin_username)))
+                ->set($db->quoteName('email') . ' = ' . $db->quote($options->admin_email))
+                ->set($db->quoteName('password') . ' = ' . $db->quote($cryptpass))
+                ->set($db->quoteName('block') . ' = 0')
+                ->set($db->quoteName('sendEmail') . ' = 1')
+                ->set($db->quoteName('registerDate') . ' = ' . $db->quote($installdate))
+                ->set($db->quoteName('lastvisitDate') . ' = NULL')
+                ->set($db->quoteName('activation') . ' = ' . $db->quote('0'))
+                ->set($db->quoteName('params') . ' = ' . $db->quote(''))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($result));
+        } else {
+
+            $columns = [
+                $db->quoteName('name'),
+                $db->quoteName('username'),
+                $db->quoteName('email'),
+                $db->quoteName('password'),
+                $db->quoteName('block'),
+                $db->quoteName('sendEmail'),
+                $db->quoteName('registerDate'),
+                $db->quoteName('lastvisitDate'),
+                $db->quoteName('activation'),
+                $db->quoteName('params'),
+            ];
+            $query->clear()
+                ->insert('#__users', true)
+                ->columns($columns)
+                ->values(
+                    $db->quote(trim($options->admin_user)) . ', ' . $db->quote(trim($options->admin_username)) . ', ' .
+                        $db->quote($options->admin_email) . ', ' . $db->quote($cryptpass) . ', ' .
+                        $db->quote('0') . ', ' . $db->quote('1') . ', ' . $db->quote($installdate) . ', NULL, ' .
+                        $db->quote('0') . ', ' . $db->quote('')
+                );
+        }
+        $db->setQuery($query);
+
+        try {
+            $db->execute();
+            $userId = $result ?? $db->insertid();
+        } catch (\RuntimeException $e) {
+            $this->logTask($e->getMessage(), 'error');
+
+            return false;
+        }
+
+        // Map the super user to the Super Users group
+        $query->clear()
+            ->select($db->quoteName('user_id'))
+            ->from($db->quoteName('#__user_usergroup_map'))
+            ->where($db->quoteName('user_id') . ' = ' . $db->quote($userId));
+
+        $db->setQuery($query);
+
+        if (!$db->loadResult()) {
+            $query->clear()
+                ->insert($db->quoteName('#__user_usergroup_map'), false)
+                ->columns([$db->quoteName('user_id'), $db->quoteName('group_id')])
+                ->values($db->quote($userId) . ', 8');
+            $db->setQuery($query);
+
+            try {
+                $db->execute();
+            } catch (\RuntimeException $e) {
+                $this->logTask($e->getMessage(), 'error');
+
+                return false;
+            }
+        }
+
+        $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
+        $this->app->loadIdentity($user);
+
+        return true;
     }
 }
