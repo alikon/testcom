@@ -12,9 +12,12 @@ namespace Joomla\Plugin\Task\Deltrash\Extension;
 
 use Joomla\CMS\Application\ApplicationHelper;
 use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Table\Table;
 use Joomla\CMS\User\User;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Scheduler\Administrator\Event\ExecuteTaskEvent;
 use Joomla\Component\Scheduler\Administrator\Task\Status;
@@ -23,9 +26,6 @@ use Joomla\Database\DatabaseAwareInterface;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
-use Joomla\CMS\Factory;
-use Joomla\CMS\User\UserFactoryInterface;
-use Joomla\CMS\Table\Table;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -41,7 +41,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      * @since 4.1.0
      */
     protected const TASKS_MAP = [
-        'plg_task_deltrash'             => [
+        'plg_task_deltrash' => [
             'langConstPrefix' => 'PLG_TASK_DELTRASH',
             'form'            => 'deltrash_parameters',
             'method'          => 'deleteTrash',
@@ -97,9 +97,11 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      */
     public function deleteTrash(ExecuteTaskEvent $event): int
     {
-        $userID = $event->getArgument('params')->user ?? 0;
+        $isTempUser = false;
+        $userID    = $event->getArgument('params')->user ?? 0;
         if (!$userID) {
-            $userID =  $this->createRootUser();
+            $userID    =  $this->createRootUser();
+            $isTempUser = true;
         }
         //createRootUser might fail
         if ($userID) {
@@ -147,7 +149,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             $this->delMenuItems($menus);
         }
 
-        if (!($event->getArgument('params')->user ?? 0)) {
+        if ($isTempUser) {
             $user = User::getInstance($this->app->getIdentity()->id);
             // Trigger delete of user
             $user->delete();
@@ -241,7 +243,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             $db->setQuery($query);
             $db->execute();
             // versions
-            $a = 'com_content.article.' . $item->id;
+            $a     = 'com_content.article.' . $item->id;
             $query = $db->getQuery(true)
                 ->delete($db->quoteName('#__history'))
                 ->where($db->quoteName('item_id') . '= :ucmitemid')
@@ -250,7 +252,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             $db->execute();
             // infamous workflow
             $extension = 'com_content.article';
-            $query = $db->getQuery(true)
+            $query     = $db->getQuery(true)
                 ->delete($db->quoteName('#__workflow_associations'))
                 ->where($db->quoteName('item_id') . '= :wrkflid')
                 ->where($db->quoteName('extension') . ' = :extension')
@@ -272,11 +274,11 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
 
     private function delModules(array $type = []): void
     {
-        $mod = 0;
+        $mod      = 0;
         $strashed = [];
         $atrashed = [];
 
-        if (in_array('site', $type)) {
+        if (\in_array('site', $type)) {
             /** @var \Joomla\Component\Modules\Administrator\Model\ModuleModel $model */
             $model = $this->app->bootComponent('com_modules')->getMVCFactory()
                 ->createModel('Modules', 'Administrator', ['ignore_request' => true]);
@@ -284,7 +286,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             $strashed = $model->getItems();
         }
 
-        if (in_array('admin', $type)) {
+        if (\in_array('admin', $type)) {
             $gmodel = $this->app->bootComponent('com_modules')->getMVCFactory()
                 ->createModel('Modules', 'Administrator', ['ignore_request' => true]);
             $gmodel->setState('filter.client_id', 1);
@@ -310,7 +312,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         }
     }
 
-    private function delRedirects(Bool $purge = false): void
+    private function delRedirects(bool $purge = false): void
     {
         $red = 0;
         /** @var \Joomla\Component\Redirect\Administrator\Model\LinksModel $model */
@@ -390,11 +392,11 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
 
     private function delMenuItems(array $type = []): void
     {
-        $art = 0;
+        $art      = 0;
         $strashed = [];
         $atrashed = [];
 
-        if (in_array('admin', $type)) {
+        if (\in_array('admin', $type)) {
             /** @var \Joomla\Component\Content\Administrator\Model\ArticlesModel $model */
             $model = $this->app->bootComponent('com_menus')
                 ->getMVCFactory()->createModel('Items', 'Administrator', ['ignore_request' => true]);
@@ -404,7 +406,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             $atrashed = $model->getItems();
         }
 
-        if (in_array('site', $type)) {
+        if (\in_array('site', $type)) {
             /** @var \Joomla\Component\Content\Administrator\Model\ArticlesModel $model */
             $model = $this->app->bootComponent('com_menus')
                 ->getMVCFactory()->createModel('Items', 'Administrator', ['ignore_request' => true]);
@@ -471,18 +473,18 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         //generate a randuser name and password
         $options->admin_password_plain = UserHelper::genRandomPassword();
         //getHash gives a 32 long string. That fits easily in the column
-        $options->admin_user =  ApplicationHelper::getHash(UserHelper::genRandomPassword());
+        $options->admin_user     =  ApplicationHelper::getHash(UserHelper::genRandomPassword());
         $options->admin_username = $options->admin_user;
-        $options->admin_email = 'aa@aa.it';
-     
+        $options->admin_email    = 'aa@aa.it';
+
 
         $cryptpass = UserHelper::hashPassword($options->admin_password_plain);
 
         // Create the admin user.
         date_default_timezone_set('UTC');
         $installdate = date('Y-m-d H:i:s');
-        $db    = $this->getDatabase();
-        $query = $db->getQuery(true);
+        $db          = $this->getDatabase();
+        $query       = $db->getQuery(true);
 
         $query = $db->getQuery(true)
             ->select($db->quoteName('id'))
@@ -514,7 +516,6 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
                 ->set($db->quoteName('params') . ' = ' . $db->quote(''))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($result));
         } else {
-
             $columns = [
                 $db->quoteName('name'),
                 $db->quoteName('username'),
@@ -571,7 +572,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
                 return false;
             }
         }
-      
+
 
 
         return $userId;
