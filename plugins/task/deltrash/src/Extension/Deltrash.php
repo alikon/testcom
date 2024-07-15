@@ -98,9 +98,9 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
     public function deleteTrash(ExecuteTaskEvent $event): int
     {
         $isTempUser = false;
-        $userID    = $event->getArgument('params')->user ?? false;
+        $userID     = $event->getArgument('params')->user ?? false;
         if (!$userID) {
-            $userID    =  $this->createRootUser();
+            $userID     =  $this->createRootUser();
             $isTempUser = true;
         }
         //createRootUser might fail
@@ -484,7 +484,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         date_default_timezone_set('UTC');
         $installdate = date('Y-m-d H:i:s');
         $db          = $this->getDatabase();
-    
+
         $query = $db->getQuery(true)
             ->select($db->quoteName('id'))
             ->from($db->quoteName('#__users'))
