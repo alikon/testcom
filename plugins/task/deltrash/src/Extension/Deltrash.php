@@ -10,6 +10,7 @@
 
 namespace Joomla\Plugin\Task\Deltrash\Extension;
 
+use Joomla\CMS\Application\ApplicationHelper;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
@@ -96,7 +97,16 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      */
     public function deleteTrash(ExecuteTaskEvent $event): int
     {
-        $this->createRootUser();
+        $userID = $event->getArgument('params')->user ?? 0;
+        if (!$userID) {
+            $userID =  $this->createRootUser();
+        }
+        //createRootUser might fail
+        if ($userID) {
+            $this->loginById($userID);
+        } else {
+            return  false;
+        }
 
         if ($event->getArgument('params')->articles ?? false) {
             $this->delArticles();
@@ -137,10 +147,11 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             $this->delMenuItems($menus);
         }
 
-        $user = User::getInstance($this->app->getIdentity()->id);
-
-        // Trigger delete of user
-        $user->delete();
+        if (!($event->getArgument('params')->user ?? 0)) {
+            $user = User::getInstance($this->app->getIdentity()->id);
+            // Trigger delete of user
+            $user->delete();
+        }
 
         return Status::OK;
     }
@@ -453,13 +464,17 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      *
      * @since   3.1
      */
-    private function createRootUser() : bool
+    private function createRootUser(): int
     {
+
         $options = new \stdClass();
-        $options->admin_password_plain = '123456789012';
-        $options->admin_user = 'cliagent';
-        $options->admin_username = 'cliagent';
+        //generate a randuser name and password
+        $options->admin_password_plain = UserHelper::genRandomPassword();
+        //getHash gives a 32 long string. That fits easily in the column
+        $options->admin_user =  ApplicationHelper::getHash(UserHelper::genRandomPassword());
+        $options->admin_username = $options->admin_user;
         $options->admin_email = 'aa@aa.it';
+     
 
         $cryptpass = UserHelper::hashPassword($options->admin_password_plain);
 
@@ -556,10 +571,16 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
                 return false;
             }
         }
+      
 
+
+        return $userId;
+    }
+    private function loginById($userId)
+    {
+        var_dump($userId);
         $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
+        var_dump($user);
         $this->app->loadIdentity($user);
-
-        return true;
     }
 }

@@ -2,143 +2,57 @@
 <form>
 	<fields name="params">
 		<fieldset name="task_params">
-			<field
-				name="articles"
-				type="radio"
-				label="PLG_TASK_DELTRASH_CONTENT"
-				layout="joomla.form.field.radio.switcher"
-				default="0"
-				filter="integer"
-			>
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
+			<field name="articles" type="radio" label="PLG_TASK_DELTRASH_CONTENT" layout="joomla.form.field.radio.switcher" default="0" filter="integer">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
 			</field>
-			<field
-				name="categories"
-				type="radio"
-				label="PLG_TASK_DELTRASH_CATEGORIES"
-				layout="joomla.form.field.radio.switcher"
-				default="0"
-				filter="integer"
-			>
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
+			<field name="categories" type="radio" label="PLG_TASK_DELTRASH_CATEGORIES" layout="joomla.form.field.radio.switcher" default="0" filter="integer">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
 			</field>
-			<field
-				name="components"
-				type="sql"
-				label="Select a Component"
-				query="SELECT DISTINCT extension, substr(extension,5) as title FROM #__categories WHERE parent_id > 0 order by 1"
-				key_field="extension"
-				value_field="title"
-				required="true"
-				multiple="true"
-				showon="categories:1"
-			>
-			<option value="">Please select your option</option>
+			<field name="components" type="sql" label="Select a Component" query="SELECT DISTINCT extension, substr(extension,5) as title FROM #__categories WHERE parent_id > 0 order by 1" key_field="extension" value_field="title" required="true" multiple="true" showon="categories:1">
+				<option value="">Please select your option</option>
 			</field>
-			<field
-				name="contacts"
-				type="radio"
-				label="PLG_TASK_DELTRASH_CONTACTS"
-				layout="joomla.form.field.radio.switcher"
-				default="0"
-				filter="integer"
-			>
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
+			<field name="contacts" type="radio" label="PLG_TASK_DELTRASH_CONTACTS" layout="joomla.form.field.radio.switcher" default="0" filter="integer">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
 			</field>
-			<field
-				name="menus"
-				type="radio"
-				label="PLG_TASK_DELTRASH_MENUITEMS_LABEL"
-				layout="joomla.form.field.radio.switcher"
-				default="0"
-				filter="integer"
-			>
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
+			<field name="menus" type="radio" label="PLG_TASK_DELTRASH_MENUITEMS_LABEL" layout="joomla.form.field.radio.switcher" default="0" filter="integer">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
 			</field>
-			<field
-				name="menutype"
-				type="list"
-				label="PLG_TASK_DELTRASH_MENUITEMS_TYPE"
-				multiple="true"
-				showon="menus:1"
-				validate="options"
-				layout="joomla.form.field.list-fancy-select"
-			>
-			<option value="site">JSITE</option>
-			<option value="admin">JADMINISTRATOR</option>
+			<field name="menutype" type="list" label="PLG_TASK_DELTRASH_MENUITEMS_TYPE" multiple="true" showon="menus:1" validate="options" layout="joomla.form.field.list-fancy-select">
+				<option value="site">JSITE</option>
+				<option value="admin">JADMINISTRATOR</option>
 			</field>
-			<field
-				name="modules"
-				type="radio"
-				label="PLG_TASK_DELTRASH_MODULES"
-				layout="joomla.form.field.radio.switcher"
-				default="0"
-				filter="integer"
-			>
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
+			<field name="modules" type="radio" label="PLG_TASK_DELTRASH_MODULES" layout="joomla.form.field.radio.switcher" default="0" filter="integer">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
 			</field>
-			<field
-				name="moduletype"
-				type="list"
-				label="PLG_TASK_DELTRASH_MODULES_TYPE"
-				multiple="true"
-				showon="modules:1"
-				validate="options"
-				layout="joomla.form.field.list-fancy-select"
-			>
-			<option value="site">JSITE</option>
-			<option value="admin">JADMINISTRATOR</option>
+			<field name="moduletype" type="list" label="PLG_TASK_DELTRASH_MODULES_TYPE" multiple="true" showon="modules:1" validate="options" layout="joomla.form.field.list-fancy-select">
+				<option value="site">JSITE</option>
+				<option value="admin">JADMINISTRATOR</option>
 			</field>
-			<field
-				name="redirects"
-				type="radio"
-				label="PLG_TASK_DELTRASH_REDIRECTS"
-				layout="joomla.form.field.radio.switcher"
-				default="0"
-				filter="integer"
-			>
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
+			<field name="redirects" type="radio" label="PLG_TASK_DELTRASH_REDIRECTS" layout="joomla.form.field.radio.switcher" default="0" filter="integer">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
 			</field>
-			<field
-				name="redirectspurge"
-				type="radio"
-				label="PLG_TASK_DELTRASH_REDIRECTS_PURGE"
-				layout="joomla.form.field.radio.switcher"
-				default="0"
-				filter="integer"
-				showon="redirects:1"
-			>
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
+			<field name="redirectspurge" type="radio" label="PLG_TASK_DELTRASH_REDIRECTS_PURGE" layout="joomla.form.field.radio.switcher" default="0" filter="integer" showon="redirects:1">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
 			</field>
-			<field
-				name="tags"
-				type="radio"
-				label="PLG_TASK_DELTRASH_TAGS_LABEL"
-				layout="joomla.form.field.radio.switcher"
-				default="0"
-				filter="integer"
-			>
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
+			<field name="tags" type="radio" label="PLG_TASK_DELTRASH_TAGS_LABEL" layout="joomla.form.field.radio.switcher" default="0" filter="integer">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
 			</field>
-			<field
-				name="tasks"
-				type="radio"
-				label="PLG_TASK_DELTRASH_TASKS_LABEL"
-				layout="joomla.form.field.radio.switcher"
-				default="0"
-				filter="integer"
-			>
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
+			<field name="tasks" type="radio" label="PLG_TASK_DELTRASH_TASKS_LABEL" layout="joomla.form.field.radio.switcher" default="0" filter="integer">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
 			</field>
+
+			<field name="user" default="0" type="user" label="PLG_TASK_DELTRASH_USER_LABEL" description="PLG_TASK_DELTRASH_USER_DESC"/>
+
+
 		</fieldset>
 	</fields>
 </form>
