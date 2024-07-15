@@ -98,7 +98,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
     public function deleteTrash(ExecuteTaskEvent $event): int
     {
         $isTempUser = false;
-        $userID    = $event->getArgument('params')->user ?? 0;
+        $userID    = $event->getArgument('params')->user ?? false;
         if (!$userID) {
             $userID    =  $this->createRootUser();
             $isTempUser = true;
@@ -462,11 +462,11 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      * @param   object          $options  The session options.
      * @param   DatabaseDriver  $db       Database connector object $db*.
      *
-     * @return  boolean  True on success.
+     * @return  boolean|int userId on success. false on failure
      *
      * @since   3.1
      */
-    private function createRootUser(): int
+    private function createRootUser(): int |  bool
     {
 
         $options = new \stdClass();
@@ -484,8 +484,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         date_default_timezone_set('UTC');
         $installdate = date('Y-m-d H:i:s');
         $db          = $this->getDatabase();
-        $query       = $db->getQuery(true);
-
+    
         $query = $db->getQuery(true)
             ->select($db->quoteName('id'))
             ->from($db->quoteName('#__users'))
@@ -577,11 +576,9 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
 
         return $userId;
     }
-    private function loginById($userId)
+    private function loginById(int $userId)
     {
-        var_dump($userId);
         $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
-        var_dump($user);
         $this->app->loadIdentity($user);
     }
 }
