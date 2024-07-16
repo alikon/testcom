@@ -98,10 +98,10 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
     public function deleteTrash(ExecuteTaskEvent $event): int
     {
         $isTempUser = false;
-        $userID     = $event->getArgument('params')->user ?? false;
+        $userID    = $event->getArgument('params')->user ?? false;
         if (!$userID) {
-            $userID     =  $this->createRootUser();
-            $isTempUser = true;
+            $userID    =  $this->createRootUser();
+            $isTempUser = $userID;
         }
         //createRootUser might fail
         if ($userID) {
@@ -149,8 +149,10 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             $this->delMenuItems($menus);
         }
 
-        if ($isTempUser) {
-            $user = User::getInstance($this->app->getIdentity()->id);
+        if ($isTempUser !== false) {
+            //the newly created user. 
+            //unlikeley but getIdentity() might return a different one if some plugin changes the user.
+            $user = User::getInstance($isTempUser);
             // Trigger delete of user
             $user->delete();
         }
@@ -576,7 +578,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
 
         return $userId;
     }
-    private function loginById(int $userId)
+    private function loginById(int $userId): void
     {
         $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
         $this->app->loadIdentity($user);
