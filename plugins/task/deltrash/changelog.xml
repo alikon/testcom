@@ -88,4 +88,13 @@
 			<item>Code clean</item>
 		</change>
 	</changelog>
+	<changelog>
+		<element>deltrash</element>
+		<folder>task</folder>
+		<type>plugin</type>
+		<version>1.7.0</version>
+		<change>
+			<item>Search super user</item>
+		</change>
+	</changelog>
 </changelogs>
