@@ -5,12 +5,18 @@
 	<creationDate>July 2021</creationDate>
 	<copyright>(C) 2005 Alikonweb</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-	<authorEmail>alikon@joomalikonwe.it</authorEmail>
+	<authorEmail>alikon@alikonweb.it</authorEmail>
 	<authorUrl>www.joomla.org</authorUrl>
-	<version>1.0.0</version>
+	<version>2.0.0</version>
 	<description>MOD_JSTATS_XML_DESCRIPTION</description>
+	<namespace path="src">Joomla\Module\Jstats</namespace>
+	<media destination="mod_jstats" folder="media">
+		<folder>js</folder>
+	</media>
+	<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/modules/mod_jstats/changelog.xml</changelogurl>
 	<files>
-		<filename module="mod_jstats">mod_jstats.php</filename>
+		<folder module="mod_jstats">services</folder>
+		<folder>src</folder>
 		<folder>tmpl</folder>
 	</files>
 	<languages>
@@ -59,6 +65,7 @@
 					>
 					<option value="php_version">MOD_JSTATS_FIELD_PHP</option>
 					<option value="cms_version">MOD_JSTATS_FIELD_CMS</option>
+					<option value="db_type">MOD_JSTATS_FIELD_DBT</option>
 				</field>
 				
 			</fieldset>
@@ -71,13 +78,7 @@
 					class="form-select"
  				/>
 
-				<field
-					name="moduleclass_sfx"
-					type="textarea"
-					label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
-					rows="3"
-					validate="CssIdentifier"
-				/>
+				
 
 				<field
 					name="cache"

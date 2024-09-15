@@ -10,5 +10,8 @@
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Helper\ModuleHelper;
+use Joomla\Module\Jstats\Site\Helper\GithubHelper;
+
+//$data = GithubHelper::getData();
 
 require ModuleHelper::getLayoutPath('mod_jstats', $params->get('layout', 'default'));
