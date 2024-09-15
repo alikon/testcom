@@ -5,76 +5,73 @@
 	<creationDate>July 2021</creationDate>
 	<copyright>(C) 2005 Alikonweb</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-	<authorEmail>alikon@joomla.org</authorEmail>
-	<authorUrl>www.joomla.org</authorUrl>
-	<version>1.0.0</version>
-	<description>MOD_CUSTOM_XML_DESCRIPTION</description>
+	<authorEmail>alikon@alikonweb.it</authorEmail>
+	<authorUrl>www.alikonweb.it</authorUrl>
+	<version>2.0.0</version>
+	<description>MOD_GITHUB_XML_DESCRIPTION</description>
 	<namespace path="src">Joomla\Module\Github</namespace>
+	<media destination="mod_github" folder="media">
+		<folder>js</folder>
+	</media>
+	<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/modules/mod_github/changelog.xml</changelogurl>
 	<files>
-		<filename module="mod_github">mod_github.php</filename>
+		<folder module="mod_github">services</folder>
 		<folder>src</folder>
 		<folder>tmpl</folder>
+		<folder>sql</folder>
 	</files>
+		<install>
+        <sql>
+            <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+            <file driver="postgresql" charset="utf8">sql/install.postgresql.utf8.sql</file>
+        </sql>
+    </install>
+    <uninstall>
+        <sql>
+            <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
+            <file driver="postgresql" charset="utf8">sql/uninstall.postgresql.utf8.sql</file>
+        </sql>
+    </uninstall>
 	<languages>
-		<language tag="en-GB">language/en-GB/mod_custom.ini</language>
-		<language tag="en-GB">language/en-GB/mod_custom.sys.ini</language>
+		<language tag="en-GB">language/en-GB/mod_github.ini</language>
+		<language tag="en-GB">language/en-GB/mod_github.sys.ini</language>
 	</languages>
 	<help key="Admin_Modules:_Custom" />
 	<config>
 		<fields name="params">
-			<fieldset name="options" label="COM_MODULES_BASIC_FIELDSET_LABEL">
-				<field
-					name="showoi"
-					type="radio"
-					label="COM_ACTIONLOGS_API_LOGGING_LABEL"
-					layout="joomla.form.field.radio.switcher"
-					default="0"
-					filter="integer"
-				>
-				<option value="0">JNO</option>
-				<option value="1">JYES</option>
-				</field>
-				<field
-					name="showci"
-					type="radio"
-					label="COM_ACTIONLOGS_API_LOGGING_LABEL"
-					layout="joomla.form.field.radio.switcher"
-					default="0"
-					filter="integer"
-				>
-				<option value="0">JNO</option>
-				<option value="1">JYES</option>
-				</field>
-				<field
-					name="showop"
-					type="radio"
-					label="COM_ACTIONLOGS_API_LOGGING_LABEL"
-					layout="joomla.form.field.radio.switcher"
-					default="0"
-					filter="integer"
-				>
-				<option value="0">JNO</option>
-				<option value="1">JYES</option>
-				</field>
-				<field
-					name="showcp"
-					type="radio"
-					label="COM_ACTIONLOGS_API_LOGGING_LABEL"
-					layout="joomla.form.field.radio.switcher"
-					default="0"
-					filter="integer"
-				>
-				<option value="0">JNO</option>
-				<option value="1">JYES</option>
-				</field>
+			<fieldset
+				name="advanced">
 				<field
 					name="layout"
 					type="modulelayout"
 					label="JFIELD_ALT_LAYOUT_LABEL"
 					class="form-select"
-				/>
+ 				/>
+				<field
+					name="cache"
+					type="list"
+					label="COM_MODULES_FIELD_CACHING_LABEL"
+					default="1"
+					filter="integer"
+					validate="options"
+					>
+					<option value="1">JGLOBAL_USE_GLOBAL</option>
+					<option value="0">COM_MODULES_FIELD_VALUE_NOCACHING</option>
+				</field>
 
+				<field
+					name="cache_time"
+					type="number"
+					label="COM_MODULES_FIELD_CACHE_TIME_LABEL"
+					default="900"
+					filter="integer"
+					min="1"
+					validate="number"
+				/>
 			</fieldset>
 		</fields>
 	</config>
+	<updateservers>
+		<server type="extension" name="Module - J Github">https://raw.githubusercontent.com/alikon/testcom/main/modules/mod_github/updateserver.xml</server>
+	</updateservers>
 </extension>
