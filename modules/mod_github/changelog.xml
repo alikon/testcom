@@ -1,0 +1,43 @@
+<changelogs>
+    <changelog>
+        <element>mod_github</element>
+        <type>module</type>
+        <version>2.0.0</version>
+        <security>
+            <item>Item A</item>
+            <item><![CDATA[<h2>You MUST replace this file</h2>]]></item>
+        </security>
+        <fix>
+            <item>Item A</item>
+            <item>Item b</item>
+        </fix>
+        <language>
+            <item>Item A</item>
+            <item>Item b</item>
+        </language>
+        <addition>
+            <item>Item A</item>
+            <item>Item b</item>
+        </addition>
+        <change>
+            <item>Item A</item>
+            <item>Item b</item>
+        </change>
+        <remove>
+            <item>Item A</item>
+            <item>Item b</item>
+        </remove>
+        <note>
+            <item>Item A</item>
+            <item>Item b</item>
+        </note>
+</changelog>
+<changelog>
+	<element>mod_github</element>
+	<type>module</type>
+	<version>2.0.1</version>
+	<security>
+		<item>Big issue</item>
+	</security>
+</changelog>
+</changelogs>
