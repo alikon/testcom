@@ -108,6 +108,6 @@
 		<tags><tag>stable</tag></tags>
 		<sha256>9aed8c950a73b86a38f19cc4629dd71ace35fdcc62215a41902bbea16d3c4b9d</sha256>
 		<updatefromcli>false</updatefromcli>
-		<targetplatform name="joomla" version="((4\.[01234])|(5\.[012]))" />
+		<targetplatform name="joomla" version="((4\.[01234])|(5\.[01234]))" />
 	</update>
 </updates>
