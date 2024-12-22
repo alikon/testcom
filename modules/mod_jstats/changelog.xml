@@ -6,13 +6,13 @@
 		<type>module</type>
 		<version>1.0.0</version>
 		<addition>
-			<item>Export an article</item>
+			<item>First edition personal use</item>
 		</addition>
 		<language>
 			<item>en-GB</item>
 		</language>
 		<note>
-			<item>Listed on Jooomla Extension Directory</item>
+			<item>Not listed on Jooomla Extension Directory</item>
 		</note>
 </changelog>
 <changelog>
@@ -20,12 +20,25 @@
 	<folder>content</folder>
 	<type>module</type>
 	<version>2.0.0</version>
-	<security>
-		<item>Big issue</item>
-	</security>
 	<change>
-			<item>Item A</item>
-			<item>Item b</item>
+		<item>More Joomla coding standard</item>
+		<item>Use ApexChart 4.3.0</item>
 	</change>
+	<note>
+		<item>Not listed on Jooomla Extension Directory</item>
+	</note>
+</changelog>
+<changelog>
+	<element>mod_jstats</element>
+	<folder>content</folder>
+	<type>module</type>
+	<version>2.1.0</version>
+	<change>
+		<item>Deferred scripts</item>
+		<item>Use ApexChart 4.3.0 locally</item>
+	</change>
+	<note>
+		<item>Not listed on Jooomla Extension Directory</item>
+	</note>
 </changelog>
 </changelogs>
