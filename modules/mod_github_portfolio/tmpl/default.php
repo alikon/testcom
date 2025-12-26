@@ -15,7 +15,7 @@ $wa->useScript('core');
 // Register & use dedicated JS asset
 $wa->registerAndUseScript(
     'mod_github_portfolio.github-portfolio',
-    'modules/mod_github_portfolio/media/js/github-portfolio.js',
+    'mod_github_portfolio/github-portfolio.js',
     [],
     ['defer' => true]
 );
