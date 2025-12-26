@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="module" client="site" method="upgrade">
+    <name>MOD_GITHUB_PORTFOLIO</name>
+    <author>Alikon</author>
+    <creationDate>2025-12-01</creationDate>
+    <version>1.0.0</version>
+    <description>MOD_GITHUB_PORTFOLIO_XML_DESCRIPTION</description>
+    <namespace path="src">Joomla\Module\GithubPortfolio</namespace>
+    <files>
+        <folder module="mod_github_portfolio">services</folder>
+        <folder>src</folder>
+        <folder>tmpl</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">language/en-GB/mod_github_portfolio.ini</language>
+        <language tag="en-GB">language/en-GB/mod_github_portfolio.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                    name="github_username"
+                    type="text"
+                    label="MOD_GITHUB_PORTFOLIO_FIELD_USERNAME_LABEL"
+                    description="MOD_GITHUB_PORTFOLIO_FIELD_USERNAME_DESC"
+                    default="alikon"
+                    required="true"
+                />
+                <field
+                    name="max_items"
+                    type="number"
+                    label="MOD_GITHUB_PORTFOLIO_FIELD_MAX_ITEMS_LABEL"
+                    description="MOD_GITHUB_PORTFOLIO_FIELD_MAX_ITEMS_DESC"
+                    default="6"
+                    min="1"
+                    max="30"
+                />
+                <field
+                    name="cache_time"
+                    type="number"
+                    label="MOD_GITHUB_PORTFOLIO_FIELD_CACHE_TIME_LABEL"
+                    description="MOD_GITHUB_PORTFOLIO_FIELD_CACHE_TIME_DESC"
+                    default="15"
+                    min="1"
+                />
+            </fieldset>
+        </fields>
+    </config>
+</extension>
