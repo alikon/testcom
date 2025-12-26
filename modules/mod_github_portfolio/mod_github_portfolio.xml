@@ -6,6 +6,9 @@
     <version>1.0.0</version>
     <description>MOD_GITHUB_PORTFOLIO_XML_DESCRIPTION</description>
     <namespace path="src">Joomla\Module\GithubPortfolio</namespace>
+    <media destination="mod_github_portfolio" folder="media">
+        <folder>js</folder>
+    </media>
     <files>
         <folder module="mod_github_portfolio">services</folder>
         <folder>src</folder>
