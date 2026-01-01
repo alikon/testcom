@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="system" method="upgrade">
+    <name>PLG_SYSTEM_SAFEMODE</name>
+    <author>Your Name</author>
+    <version>1.0.0</version>
+    <description>System Safemode Plugin</description>
+
+    <files>
+        <filename plugin="safemode">safemode.php</filename>
+        <folder>src</folder>
+    </files>
+
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+
+                <field
+                    name="enabled_ui"
+                    type="radio"
+                    label="Safemode"
+                    default="0"
+                    class="btn-group btn-group-yesno"
+                >
+                    <option value="1">On</option>
+                    <option value="0">Off</option>
+                </field>
+
+                <field
+                    name="dry_run"
+                    type="radio"
+                    label="Dry Run"
+                    default="0"
+                    class="btn-group btn-group-yesno"
+                >
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </field>
+
+            </fieldset>
+        </fields>
+    </config>
+</extension>
