@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="console" method="upgrade">
+    <name>PLG_CONSOLE_SAFEMODE</name>
+    <version>1.0.0</version>
+    <description>Console plugin for SafeMode CLI commands</description>
+
+    <!-- Correct namespace per Joomla docs -->
+    <namespace path="src">Joomla\Plugin\Console\Safemode</namespace>
+
+    <files>
+        <!-- Services directory must be included -->
+        <folder plugin="safemode">services</folder>
+        <!-- src directory for your plugin code -->
+        <folder>src</folder>
+    </files>
+</extension>
+
+
