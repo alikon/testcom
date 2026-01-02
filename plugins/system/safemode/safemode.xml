@@ -1,41 +1,53 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <extension type="plugin" group="system" method="upgrade">
-    <name>PLG_SYSTEM_SAFEMODE</name>
-    <author>Your Name</author>
+    <name>plg_system_safemode</name>
     <version>1.0.0</version>
-    <description>System Safemode Plugin</description>
-
+    <creationDate>2026</creationDate>
+    <author>Alikon</author>
+    <copyright>(C) 2026 Alikonweb</copyright>
+    <license>GNU General Public License version 2 or later</license>
+    <authorEmail>optimus4joomla@gmail.com</authorEmail>
+    <authorUrl>www.alikonweb.it</authorUrl>
+    <description>PLG_SYSTEM_SAFEMODE_XML_DESCRIPTION</description>
+    
+    <namespace path="src">Joomla\Plugin\System\Safemode</namespace>
+    
     <files>
-        <filename plugin="safemode">safemode.php</filename>
+        <folder plugin="safemode">services</folder>
         <folder>src</folder>
     </files>
-
+    
+    <languages folder="language">
+        <language tag="en-GB">en-GB/plg_system_safemode.ini</language>
+        <language tag="en-GB">en-GB/plg_system_safemode.sys.ini</language>
+    </languages>
+    
     <config>
         <fields name="params">
             <fieldset name="basic">
-
                 <field
                     name="enabled_ui"
                     type="radio"
-                    label="Safemode"
+                    label="PLG_SYSTEM_SAFEMODE_FIELD_ENABLED_UI_LABEL"
+                    description="PLG_SYSTEM_SAFEMODE_FIELD_ENABLED_UI_DESC"
                     default="0"
                     class="btn-group btn-group-yesno"
                 >
-                    <option value="1">On</option>
-                    <option value="0">Off</option>
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
                 </field>
-
+                
                 <field
                     name="dry_run"
                     type="radio"
-                    label="Dry Run"
+                    label="PLG_SYSTEM_SAFEMODE_FIELD_DRY_RUN_LABEL"
+                    description="PLG_SYSTEM_SAFEMODE_FIELD_DRY_RUN_DESC"
                     default="0"
                     class="btn-group btn-group-yesno"
                 >
-                    <option value="1">Yes</option>
-                    <option value="0">No</option>
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
                 </field>
-
             </fieldset>
         </fields>
     </config>
