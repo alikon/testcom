@@ -98,10 +98,15 @@ sed -i '2i require_once __DIR__ . "/../fix.php";' $JOOMLA_ROOT/administrator/ind
 
 # --- 8. Finalize and setup Cypress ---
 echo "--> Finalizing and setting up Cypress..."
-git update-index --assume-unchanged ./node_modules/.bin/cypress
+# Only run git-related commands if we're inside a git repo
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    git update-index --assume-unchanged ./node_modules/.bin/cypress || true
+fi
 chmod +x ./node_modules/.bin/cypress
 chown -R www-data:www-data $JOOMLA_ROOT
 npx cypress install
+# Navigate to workspace root where the file might be
+cd "$WORKSPACE_ROOT"
 cp cypress.config.dist.js cypress.config.js
 sed -i "/db_prefix: process.env.DB_PREFIX/a \    cmsPath: '${JOOMLA_ROOT}'," cypress.config.js
 sed -i "s|baseUrl: 'http://localhost/'|baseUrl: 'http://localhost'|" cypress.config.js
