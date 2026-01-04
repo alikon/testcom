@@ -14,15 +14,15 @@ class SafemodeConsolePlugin extends CMSPlugin implements SubscriberInterface
     {
         return [
             // Register commands BEFORE the CLI app executes
-            //ApplicationEvents::BEFORE_EXECUTE => 'registerCommands',
-            \Joomla\Application\ApplicationEvents::BEFORE_EXECUTE => 'registerCommands',
+            ApplicationEvents::BEFORE_EXECUTE => 'registerCommands',
+            //\Joomla\Application\ApplicationEvents::BEFORE_EXECUTE => 'registerCommands',
         ];
     }
 
     public function registerCommands(): void
     {
-        //$this->getApplication()->addCommand(new SafemodeCommand());
-        $app = $this->getApplication();
-        $app->addCommand(new SafemodeCommand());
+        $this->getApplication()->addCommand(new SafemodeCommand());
+        //$app = $this->getApplication();
+        //$app->addCommand(new SafemodeCommand());
     }
 }

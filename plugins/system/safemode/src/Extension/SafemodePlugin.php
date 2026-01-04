@@ -13,6 +13,7 @@ namespace Joomla\Plugin\System\Safemode\Extension;
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Language\Text;
 use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Plugin\System\Safemode\Helper\SafemodeHelper;
@@ -104,6 +105,8 @@ class SafemodePlugin extends CMSPlugin implements SubscriberInterface
         if (!$safeMode && $isActive) {
             // SafeMode should be OFF but it's ON - restore plugins
             $this->helper->restorePlugins($dryRun);
+            // Clear existing SafeMode banner messages when turning OFF
+            $this->clearSafeModeMessages();
         } elseif ($safeMode && !$isActive) {
             // SafeMode should be ON but it's OFF - disable plugins
             $this->helper->disablePlugins($dryRun);
@@ -111,7 +114,7 @@ class SafemodePlugin extends CMSPlugin implements SubscriberInterface
 
         // Show admin banner if SafeMode is active (check state again after potential changes)
         $currentlyActive = $this->helper->isSafeModeActive();
-        if ($safeMode || $currentlyActive) {
+        if ($currentlyActive) {
             $this->showAdminBanner();
         }
     }
@@ -129,5 +132,18 @@ class SafemodePlugin extends CMSPlugin implements SubscriberInterface
             'SafeMode is currently active. Non-core plugins are disabled.',
             'warning'
         );
+    }
+
+    /**
+     * Clear SafeMode banner messages
+     *
+     * @return  void
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    private function clearSafeModeMessages(): void
+    {
+        $this->getApplication()->getMessageQueue(true);
+        $this->getApplication()->enqueueMessage(Text::_(('PLG_SYSTEM_SAFEMODE_OFF'), 'warning'));
     }
 }

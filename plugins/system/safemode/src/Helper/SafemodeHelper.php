@@ -285,7 +285,9 @@ class SafemodeHelper
         }
 
         $names = array_map(fn($p) => $p->name, $plugins);
-        Log::add('SafeMode: disabling plugins: ' . implode(', ', $names), Log::INFO, 'safemode');
+        foreach ($names as $name) {
+            Log::add('SafeMode: disabling plugins: ' . $names , Log::INFO, 'safemode');
+        }
 
         if (!$dryRun) {
             $ids = array_column($plugins, 'extension_id');
@@ -326,7 +328,9 @@ class SafemodeHelper
         }
 
         $names = array_map(fn($p) => $p->name, $plugins);
-        Log::add('SafeMode: restoring plugins: ' . implode(', ', $names), Log::INFO, 'safemode');
+        foreach ($names as $name) {
+            Log::add('SafeMode: restoring plugins: ' . $names , Log::INFO, 'safemode');
+        }
 
         if (!$dryRun) {
             $restoreIds = array_column($plugins, 'extension_id');
@@ -402,3 +406,4 @@ class SafemodeHelper
         return $this->stateFile;
     }
 }
+
