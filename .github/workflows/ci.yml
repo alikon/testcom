@@ -88,7 +88,6 @@ jobs:
           echo "📦 Downloaded Joomla ${{ matrix.joomla-version }} from: ${{ steps.joomla-info.outputs.url }}"
           vendor/bin/robo build
           if ! unzip -t joomla.zip > /dev/null; then
-          unzip -t joomla.zip > /dev/null
             echo "ERROR: joomla.zip is invalid or not found."
             exit 1
           fi
