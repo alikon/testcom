@@ -184,6 +184,7 @@ jobs:
       - name: Run MySQL system tests
         run: |
           unzip -q joomla.zip -d joomla
+          cp cypress.config.dist.js cypress.config.js
           npx cypress run --browser chrome --e2e --config video=false
 
 # -------------------------------------------------
@@ -217,6 +218,7 @@ jobs:
       - name: Run MariaDB system tests
         run: |
           unzip -q joomla.zip -d joomla
+          cp cypress.config.dist.js cypress.config.js
           npx cypress run --browser chrome --e2e --config video=false
 
 # -------------------------------------------------
@@ -249,4 +251,5 @@ jobs:
       - name: Run PostgreSQL system tests
         run: |
           unzip -q joomla.zip -d joomla
+          cp cypress.config.dist.js cypress.config.js
           npx cypress run --browser chrome --e2e --config video=false
