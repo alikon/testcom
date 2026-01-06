@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<changelogs>
+	<changelog>
+		<element>export</element>
+		<folder>content</folder>
+		<type>plugin</type>
+		<version>1.0.0</version>
+		<addition>
+			<item>Export an article</item>
+		</addition>
+		<language>
+			<item>en-GB</item>
+		</language>
+		<note>
+			<item>Listed on Jooomla Extension Directory</item>
+		</note>
+	</changelog>
+	<changelog>
+		<element>export</element>
+		<folder>content</folder>
+		<type>plugin</type>
+		<version>1.0.1</version>
+		<addition>
+			<item>sha256 cheksum</item>
+			<item>set timeout for requests</item>
+		</addition>
+		<change>
+			<item>link to GPL License</item>
+			<item>link to Manual</item>
+		</change>
+	</changelog>
+	<changelog>
+		<element>export</element>
+		<folder>content</folder>
+		<type>plugin</type>
+		<version>1.1.0</version>
+		<addition>
+			<item>set article status</item>
+		</addition>
+	</changelog>
+	<changelog>
+		<element>export</element>
+		<folder>content</folder>
+		<type>plugin</type>
+		<version>1.1.1</version>
+		<security>
+			<item>Joomla 4.4.1 + Joomla 5.0.1</item>
+		</security>
+		<addition>
+			<item>language string</item>
+			<item>display version info</item>
+		</addition>
+	</changelog>
+	<changelog>
+		<element>export</element>
+		<folder>content</folder>
+		<type>plugin</type>
+		<version>1.2.0</version>
+		<addition>
+			<item>Service Provider</item>
+		</addition>
+	</changelog>
+	<changelog>
+		<element>export</element>
+		<folder>content</folder>
+		<type>plugin</type>
+		<version>2.0.0</version>
+		<addition>
+			<item>More Javascript</item>
+		</addition>
+	</changelog>
+</changelogs>

@@ -60,11 +60,11 @@ echo "--> Configuring Joomla..."
 php cli/joomla.php config:set debug=true error_reporting=maximum
 
 # Install extension if available
-#WEBLINKS_PKG="${WORKSPACE_ROOT}/dist/pkg-weblinks-current.zip"
-#if [ -f "$WEBLINKS_PKG" ]; then
-#    php cli/joomla.php extension:install --path="$WEBLINKS_PKG"
-#    cd $WORKSPACE_ROOT && vendor/bin/robo map $JOOMLA_ROOT
-#fi
+ALIKONWEB_PKG="${WORKSPACE_ROOT}/dist/pkg-alikonweb-current.zip"
+if [ -f "$ALIKONWEB_PKG" ]; then
+    php cli/joomla.php extension:install --path="$ALIKONWEB_PKG"
+    cd $WORKSPACE_ROOT && vendor/bin/robo map $JOOMLA_ROOT
+fi
 
 # --- 6. Download and prepare phpMyAdmin ---
 PMA_ROOT="/var/www/html/phpmyadmin"
