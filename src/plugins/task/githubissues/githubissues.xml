@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<extension version="4.1" type="plugin" group="task" method="upgrade">
+	<name>plg_task_githubissues</name>
+	<author>Alikon</author>
+	<creationDate>June 2022</creationDate>
+	<copyright>(C) 2022 Alikon.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>alikon@alikonweb.it</authorEmail>
+	<authorUrl>www.alikonweb.it</authorUrl>
+	<version>1.0.0</version>
+	<description>PLG_TASK_GITHUBISSUES_XML_DESCRIPTION</description>
+	<files>
+		<filename plugin="githubissues">githubissues.php</filename>
+		<folder>language</folder>
+		<folder>forms</folder>
+	</files>
+	<updateservers>
+		<server type="extension" name="Export Button Update Site">https://raw.githubusercontent.com/alikon/export4/main/exportbutton-manifest.xml</server>
+	</updateservers>
+</extension>
