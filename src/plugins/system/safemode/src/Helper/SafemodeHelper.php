@@ -286,7 +286,7 @@ class SafemodeHelper
 
         $names = array_map(fn($p) => $p->name, $plugins);
         foreach ($names as $name) {
-            Log::add('SafeMode: disabling plugins: ' . $names , Log::INFO, 'safemode');
+            Log::add('SafeMode: disabling plugins: ' . $name , Log::INFO, 'safemode');
         }
 
         if (!$dryRun) {
@@ -329,7 +329,7 @@ class SafemodeHelper
 
         $names = array_map(fn($p) => $p->name, $plugins);
         foreach ($names as $name) {
-            Log::add('SafeMode: restoring plugins: ' . $names , Log::INFO, 'safemode');
+            Log::add('SafeMode: restoring plugins: ' . $name , Log::INFO, 'safemode');
         }
 
         if (!$dryRun) {
