@@ -77,10 +77,8 @@ jobs:
           fi
 
           echo "📦 Joomla ${{ matrix.joomla-version }} URL: $URL"
-          {
-            echo "url=$URL"
-            echo "url_hash=$(echo -n "$URL" | md5sum | cut -d' ' -f1)"
-          } >> "$GITHUB_OUTPUT"
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "url_hash=$(echo -n "$URL" | md5sum | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
 
       - name: Cache Joomla Zip
         id: cache-joomla
