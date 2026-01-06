@@ -74,6 +74,9 @@ jobs:
 
       - uses: ./.github/actions/setup-cypress
 
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
       - name: Determine Nightly URL for Joomla ${{ matrix.joomla-version }}
         id: joomla-info
         shell: bash
