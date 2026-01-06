@@ -56,19 +56,31 @@ jobs:
 
       - name: Determine Nightly URL for Joomla ${{ matrix.joomla-version }}
         id: joomla-info
+        shell: bash
         run: |
-          URL=$(curl -s "https://api.github.com/repos/joomla/joomla-cms/releases" | \
-                grep -oP '"browser_download_url":\s*"[^"]*'"${{ matrix.joomla-version }}"'[^"]*Full_Package\.zip"' | \
-                sed 's/"browser_download_url":\s*"//;s/"$//' | \
-                head -1)
-          
-          if [ -z "$URL" ]; then
+          URL=$(
+            curl -s "https://api.github.com/repos/joomla/joomla-cms/releases" \
+            | jq -r --arg ver "${{ matrix.joomla-version }}" '
+                .[]
+                | .assets[]
+                | select(.browser_download_url
+                         | contains($ver)
+                         and endswith("Full_Package.zip"))
+                | .browser_download_url
+              ' \
+            | head -1
+          )
+
+          if [ -z "$URL" ] || [ "$URL" = "null" ]; then
             echo "::error::Could not find URL for version ${{ matrix.joomla-version }} in joomla/joomla-cms releases."
             exit 1
           fi
+
           echo "📦 Joomla ${{ matrix.joomla-version }} URL: $URL"
-          echo "url=$URL" >> $GITHUB_OUTPUT
-          echo "url_hash=$(echo -n "$URL" | md5sum | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+          {
+            echo "url=$URL"
+            echo "url_hash=$(echo -n "$URL" | md5sum | cut -d' ' -f1)"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Cache Joomla Zip
         id: cache-joomla
