@@ -2,6 +2,184 @@ name: CI Alikonweb extensions Playground
 
 on:
   push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  composer:
+    runs-on: ubuntu-latest
+    container:
+      image: "joomlaprojects/docker-images:php8.3"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-dependencies
+
+  phpcs:
+    runs-on: ubuntu-latest
+    needs: composer
+    container:
+      image: "joomlaprojects/docker-images:php8.3"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-dependencies
+      - name: Run PHP CS Fixer and PHPCS
+        run: |
+          ./vendor/bin/php-cs-fixer fix -vvv --dry-run --diff
+          ./vendor/bin/phpcs --extensions=php -p --standard=ruleset.xml src/
+
+  npm:
+    runs-on: ubuntu-latest
+    needs: phpcs
+    container:
+      image: "joomlaprojects/docker-images:php8.3"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-dependencies
+        with:
+          npm-cache: 'true'
+
+  prepare_tests:
+    runs-on: ubuntu-latest
+    needs: npm
+    strategy:
+      matrix:
+        joomla-version: ['5.4', '6.0', '6.1']
+    container:
+      image: "joomlaprojects/docker-images:cypress8.3"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-dependencies
+        with:
+          npm-cache: 'true'
+      - uses: ./.github/actions/setup-cypress
+
+      - name: Determine Nightly URL for Joomla ${{ matrix.joomla-version }}
+        id: joomla-info
+        shell: bash
+        run: |
+          URL=$(
+            curl -s "https://api.github.com/repos/joomla/joomla-cms/releases" \
+            | jq -r --arg ver "${{ matrix.joomla-version }}" '
+                .[]
+                | .assets[]
+                | select(.browser_download_url
+                         | contains($ver)
+                         and endswith("Full_Package.zip"))
+                | .browser_download_url
+              ' \
+            | head -1
+          )
+
+          if [ -z "$URL" ] || [ "$URL" = "null" ]; then
+            echo "::error::Could not find URL for version ${{ matrix.joomla-version }}"
+            exit 1
+          fi
+
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "url_hash=$(echo -n "$URL" | md5sum | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Joomla Zip
+        id: cache-joomla
+        uses: actions/cache@v4
+        with:
+          path: joomla.zip
+          key: joomla-core-${{ matrix.joomla-version }}-${{ steps.joomla-info.outputs.url_hash }}
+
+      - name: Download Joomla
+        if: steps.cache-joomla.outputs.cache-hit != 'true'
+        run: |
+          curl -LfsS "${{ steps.joomla-info.outputs.url }}" -o joomla.zip
+
+      - name: Build and Verify
+        run: |
+          vendor/bin/robo build
+          unzip -t joomla.zip > /dev/null
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts-j${{ matrix.joomla-version }}
+          path: |
+            dist/
+            joomla.zip
+          retention-days: 1
+
+  phpstan:
+    runs-on: ubuntu-latest
+    needs: prepare_tests
+    strategy:
+      matrix:
+        joomla-version: ['5.4', '6.0', '6.1']
+    container:
+      image: "joomlaprojects/docker-images:php8.3"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts-j${{ matrix.joomla-version }}
+      - uses: ./.github/actions/setup-dependencies
+      - name: Run PHPStan
+        continue-on-error: true
+        run: |
+          unzip -q joomla.zip -d joomla
+          ./vendor/bin/phpstan analyse src --level=5 --no-progress --no-interaction
+
+  system-tests:
+    runs-on: ubuntu-latest
+    needs: [prepare_tests, phpstan]
+    strategy:
+      fail-fast: false
+      matrix:
+        joomla-version: ['5.4', '6.0', '6.1']
+        php-version: ['8.2', '8.3', '8.4']
+        db: [mysql, mariadb, pgsql]
+        include:
+          - db: mysql
+            db-type: mysqli
+            db-host: mysql
+            db-prefix: mysql_
+            image: mysql:8.0
+            alter-user-cmd: |
+              apt-get update && apt-get install -y default-mysql-client
+              mysql -h mysql -u root -proot -e "ALTER USER 'joomla_ut'@'%' IDENTIFIED WITH mysql_native_password BY 'joomla_ut'; FLUSH PRIVILEGES;"
+          - db: mariadb
+            db-type: mysqli
+            db-host: mariadb
+            db-prefix: mariadb_
+            image: mariadb:10.4
+            alter-user-cmd: apt-get update && apt-get install -y mariadb-client
+          - db: pgsql
+            db-type: pgsql
+            db-host: postgres
+            db-prefix: pgsql_
+            image: postgres:12-alpine
+            alter-user-cmd: apt-get update && apt-get install -y postgresql-client
+        exclude:
+          - joomla-version: '5.4'
+            php-version: '8.4'
+          - joomla-version: '6.0'
+            php-version: '8.2'
+          - joomla-version: '6.1'
+            php-version: '8.2'
+
+    container:
+      image: "joomlaprojects/docker-images:cypress${{ matrix.php-version }}"
+
+    services:
+      mysql:
+        image: "${{ matrix.db == 'mysql' && matrix.image || 'mysql:8.0' }}"
+      mariadb:
+        image: "${{ matrix.db == 'mariadb' && matrix.image || 'mariadb:10.4' }}"
+      postgres:
+        image: "postgres:12-alpine"
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/downloname: CI Alikonweb extensions Playground
+
+on:
+  push:
     branches: [ main]
   pull_request:
     branches: [ main]
@@ -244,4 +422,16 @@ jobs:
         with:
           name: screenshots-j${{ matrix.joomla-version }}-${{ matrix.db }}-php${{ matrix.php-version }}
           path: tests/cypress/output/screenshot
-          retention-days: 7
+          retention-days: 7ad-artifact@v4
+        with:
+          name: build-artifacts-j${{ matrix.joomla-version }}
+      - uses: ./.github/actions/setup-dependencies
+        with:
+          npm-cache: 'true'
+      - uses: ./.github/actions/setup-cypress
+
+      - name: Run system tests
+        run: |
+          ${{ matrix.alter-user-cmd }}
+          unzip -q joomla.zip -d joomla
+          npx cypress run --browser=chrome --e2e --config video=false
