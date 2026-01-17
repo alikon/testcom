@@ -7,7 +7,7 @@ MySQL >= 5.6.0 or PostgreSQL >= 11.0
 
 PHP >= 7.2.5
 
-
+https://github.com/alikon/testcom/actions/workflows/cy.yml/badge.svg
 ~~## Installation~~
 
 ~~Install the package [pkg_jobs.zip](https://github.com/alikon/testcom/blob/main/build/packages/pkg_jobs.zip)~~
