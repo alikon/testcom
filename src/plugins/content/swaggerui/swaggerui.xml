@@ -2,6 +2,12 @@
 <extension type="plugin" group="content" method="upgrade" version="5.0">
     <name>plg_content_swaggerui</name>
     <version>1.0.0</version>
+	<author>Alikon</author>
+    <creationDate>2026-01</creationDate>
+    <copyright>(C) 2007 Alikonweb</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>alikon@alikonweb.it</authorEmail>
+    <authorUrl>www.alikonweb.it</authorUrl>
     <description>Embed Swagger UI in Joomla 5 articles using {swaggerui}</description>
 	<namespace path="src">Joomla\Plugin\Content\Swaggerui</namespace>
 	<files>
