@@ -1,5 +1,12 @@
 This is the source of my Joomla extensions playground. Here you will find components, plugins, modules, CLI Commands webservices entrypoint.
 
+Build Status
+------------
+
+| Actions                                                                                                                                         | PHP                                                                           | Node                                                                                 | npm                                                                              |
+|-------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|----------------------------------------------------------------------------------|
+| [![Build Status](https://github.com/alikon/testcom/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/alikon/testcom) | [![PHP](https://img.shields.io/badge/PHP-V8.1.0-green)](https://www.php.net/) | [![node-lts](https://img.shields.io/badge/Node-V20.0-green)](https://nodejs.org/en/) | [![npm](https://img.shields.io/badge/npm-v10.1.0-green)](https://nodejs.org/en/) |
+
 ## Requirements
 Joomla >= 4.0
 
@@ -7,7 +14,6 @@ MySQL >= 5.6.0 or PostgreSQL >= 11.0
 
 PHP >= 7.2.5
 
-https://github.com/alikon/testcom/actions/workflows/cy.yml/badge.svg
 ~~## Installation~~
 
 ~~Install the package [pkg_jobs.zip](https://github.com/alikon/testcom/blob/main/build/packages/pkg_jobs.zip)~~
