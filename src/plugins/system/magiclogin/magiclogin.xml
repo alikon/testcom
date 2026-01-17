@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension type="plugin" group="system" method="upgrade">
     <name>plg_system_magiclogin</name>
-    <author>Joomla! Project</author>
+    <author>Alikon</author>
     <creationDate>2026-01</creationDate>
     <copyright>(C) 2007 Alikonweb</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>

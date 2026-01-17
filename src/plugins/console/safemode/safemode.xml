@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" group="console" method="upgrade">
     <name>PLG_CONSOLE_SAFEMODE</name>
+    <author>Alikon</author>
+    <creationDate>2026-01</creationDate>
+    <copyright>(C) 2007 Alikonweb</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>alikon@alikonweb.it</authorEmail>
+    <authorUrl>www.alikonweb.it</authorUrl>
     <version>1.0.0</version>
     <description>Console plugin for SafeMode CLI commands</description>
 
