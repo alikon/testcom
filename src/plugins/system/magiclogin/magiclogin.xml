@@ -2,24 +2,22 @@
 <extension type="plugin" group="system" method="upgrade">
     <name>plg_system_magiclogin</name>
     <author>Joomla! Project</author>
-    <creationDate>2025-01</creationDate>
-    <copyright>(C) 2007 Open Source Matters, Inc.</copyright>
+    <creationDate>2026-01</creationDate>
+    <copyright>(C) 2007 Alikonweb</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-    <authorEmail>admin@joomla.org</authorEmail>
-    <authorUrl>www.joomla.org</authorUrl>
+    <authorEmail>alikon@alikonweb.it</authorEmail>
+    <authorUrl>www.alikonweb.it</authorUrl>
     <version>1.0.0</version>
-    <description>PLG_LOG_XML_DESCRIPTION</description>
+    <description>PLG_SYSTEM_MAGICLOGIN_XML_DESCRIPTION</description>
     <namespace path="src">Joomla\Plugin\System\MagicLogin</namespace>
+    <!-- Scripts to run on installation -->
+	<scriptfile>script.php</scriptfile>
     <files>
         <folder plugin="magiclogin">services</folder>
         <folder>src</folder>
+        <folder>language</folder>
     </files>
-    
-    <languages>
-        <language tag="en-GB">language/en-GB/plg_system_magiclogin.ini</language>
-        <language tag="en-GB">language/en-GB/plg_system_magiclogin.sys.ini</language>
-    </languages>
-    
+
     <config>
         <fields name="params">
             <fieldset name="basic">
@@ -33,4 +31,8 @@
             </fieldset>
         </fields>
     </config>
+    <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/system/magiclogin/changelog.xml</changelogurl>
+    <updateservers>
+		<server type="extension" name="System - Magic Login">https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/system/magiclogin/updateserver.xml</server>
+	</updateservers>
 </extension>
