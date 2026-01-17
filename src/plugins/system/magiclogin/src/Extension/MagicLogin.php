@@ -201,7 +201,7 @@ final class MagicLogin extends CMSPlugin implements SubscriberInterface
         $this->app->setHeader('X-Frame-Options', 'DENY');
         $this->app->setHeader('X-Content-Type-Options', 'nosniff');
 
-        $session = Factory::getApplication()->getSession();
+        $session = $this->app->getSession();
 
         $db               = $this->getDatabase();
         $currentIp        = $this->app->input->server->get('REMOTE_ADDR');
