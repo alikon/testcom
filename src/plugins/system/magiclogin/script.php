@@ -238,6 +238,7 @@ return new class () implements ServiceProviderInterface {
                             $db->execute();
 
                         }
+                        $query = $db->getQuery(true);
                         $query->clear()
                             ->insert($db->quoteName('#__mail_templates'))
                             ->columns($db->quoteName(['template_id', 'extension', 'language', 'subject', 'body', 'htmlbody', 'attachments', 'params']))
