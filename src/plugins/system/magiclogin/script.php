@@ -238,25 +238,25 @@ return new class () implements ServiceProviderInterface {
                             $db->execute();
 
                         }
+                        $query->clear()
+                            ->insert($db->quoteName('#__mail_templates'))
+                            ->columns($db->quoteName(['template_id', 'extension', 'language', 'subject', 'body', 'htmlbody', 'attachments', 'params']))
+                            ->values(':templateid, :extension, :language, :subject, :body, :htmlbody, :attachments, :params')
+                            ->bind(':templateid', 'plg_system_magiclogin.magiclink')
+                            ->bind(':extension', 'plg_system_magiclogin')
+                            ->bind(':language', '')
+                            ->bind(':subject', 'PLG_SYSTEM_MAGICLOGIN_EMAIL_SUBJECT')
+                            ->bind(':body', 'PLG_SYSTEM_MAGICLOGIN_EMAIL_BODY')
+                            ->bind(':htmlbody', 'PLG_SYSTEM_MAGICLOGIN_EMAIL_HTMLBODY')
+                            ->bind(':attachments', '')
+                            ->bind(':params', '{"tags":["sitename","username","magic_link","expiry_minutes"]}');
+
+                        $db->setQuery($query);
+                        $db->execute();
                     } catch (\Exception $e) {
                         Factory::getApplication()->enqueueMessage('Error creating #__magiclogin_tokens table: ' . $e->getMessage(), 'error');
                     }
 
-                    $query->clear()
-                        ->insert($db->quoteName('#__mail_templates'))
-                        ->columns($db->quoteName(['template_id', 'extension', 'language', 'subject', 'body', 'htmlbody', 'attachments', 'params']))
-                        ->values(':templateid, :extension, :language, :subject, :body, :htmlbody, :attachments, :params')
-                        ->bind(':templateid', 'plg_system_magiclogin.magiclink')
-                        ->bind(':extension', 'plg_system_magiclogin')
-                        ->bind(':language', '')
-                        ->bind(':subject', 'PLG_SYSTEM_MAGICLOGIN_EMAIL_SUBJECT')
-                        ->bind(':body', 'PLG_SYSTEM_MAGICLOGIN_EMAIL_BODY')
-                        ->bind(':htmlbody', 'PLG_SYSTEM_MAGICLOGIN_EMAIL_HTMLBODY')
-                        ->bind(':attachments', '')
-                        ->bind(':params', '{"tags":["sitename","username","magic_link","expiry_minutes"]}');
-
-                    $db->setQuery($query);
-                    $db->execute();
                 }
 
                 /**
