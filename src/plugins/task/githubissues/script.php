@@ -194,7 +194,7 @@ return new class () implements ServiceProviderInterface {
                     $adapter->extension->enabled = 1;
                     $adapter->extension->store();
 
-                    echo Text::_('PLG_SYSTEM_MAGICLOGIN_INSTALLERSCRIPT_POSTFLIGHT_INSTALL');
+                    echo Text::_('PLG_TASK_GITHUBISSUES_INSTALLERSCRIPT_POSTFLIGHT_INSTALL');
 
                     return true;
                 }
@@ -226,7 +226,7 @@ return new class () implements ServiceProviderInterface {
                                       `openi` smallint(6) NOT NULL DEFAULT 0,
                                       `closedi` smallint(6) NOT NULL DEFAULT 0,
                                       `openp` smallint(6) NOT NULL DEFAULT 0,
-                                      `closedp` smallint(6) NOT NULL DEFAULT 0
+                                      `closedp` smallint(6) NOT NULL DEFAULT 0,
                                       PRIMARY KEY (`id`),
                                       KEY `idx_execution` (`execution`)
                                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;';
