@@ -58,7 +58,12 @@ php installation/joomla.php install \
 # --- 5. Configure Joomla ---
 echo "--> Configuring Joomla..."
 php cli/joomla.php config:set debug=true error_reporting=maximum
-
+# Configure mail settings for Mailpit
+php cli/joomla.php config:set mailer=smtp
+php cli/joomla.php config:set smtphost=mailpit
+php cli/joomla.php config:set smtpport=1025
+php cli/joomla.php config:set smtpauth=0
+php cli/joomla.php config:set smtpsecure=none
 # Install extension if available
 ALIKONWEB_PKG="${WORKSPACE_ROOT}/dist/pkg-alikonweb-current.zip"
 if [ -f "$ALIKONWEB_PKG" ]; then
@@ -131,6 +136,10 @@ DETAILS_FILE="${WORKSPACE_ROOT}/codespace-details.txt"
     echo "  URL: Open the 'Web Server' port and add /phpmyadmin to the end."
     echo "  Username: joomla_ut"
     echo "  Password: joomla_ut"
+    echo ""
+    echo "Mailpit (Email Testing):"
+    echo "  URL: Open the 'Ports' tab, find 'Mailpit Web UI' (8025), and click the Globe icon"
+    echo "  All emails sent by Joomla will appear here for testing"
     echo ""
     echo "To use cypress testing:"
     echo "  Open 'Cypress GUI' port."
