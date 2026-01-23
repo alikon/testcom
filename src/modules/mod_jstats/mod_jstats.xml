@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" client="site" method="upgrade">
+	<name>MOD_JSTATS</name>
+	<author>Alikon</author>
+	<creationDate>July 2021</creationDate>
+	<copyright>(C) 2005 Alikonweb</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>alikon@alikonweb.it</authorEmail>
+	<authorUrl>www.joomla.org</authorUrl>
+	<version>2.1.0</version>
+	<description>MOD_JSTATS_XML_DESCRIPTION</description>
+	<namespace path="src">Joomla\Module\Jstats</namespace>
+	<media destination="mod_jstats" folder="media">
+		<folder>js</folder>
+	</media>
+	<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/modules/mod_jstats/changelog.xml</changelogurl>
+	<files>
+		<folder module="mod_jstats">services</folder>
+		<folder>src</folder>
+		<folder>tmpl</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">language/en-GB/mod_jstats.ini</language>
+		<language tag="en-GB">language/en-GB/mod_jstats.sys.ini</language>
+	</languages>
+	<help key="Admin_Modules:_Custom" />
+	<config>
+		<fields name="params">
+			<fieldset name="options" label="COM_MODULES_BASIC_FIELDSET_LABEL">
+				<field
+					name="timeframe0"
+					type="radio"
+					label="MOD_JSTATS_TIMEFRAME_LABEL"
+					description="MOD_JSTATS_TIMEFRAME_DESC"
+					layout="joomla.form.field.radio.switcher"
+					default="1"
+					filter="integer"
+					>
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+				<field
+					name="timeframe1"
+					type="list"
+					label="MOD_JSTATS_FIELD_PERIOD_LABEL"
+					description="MOD_JSTATS_FIELD_PERIOD_DESC"
+					default="alltime"
+					validate="options"
+					showon="timeframe0:1"
+					>
+					<option value="alltime">MOD_JSTATS_FIELD_ALL_TIME</option>
+					<option value="day">MOD_JSTATS_FIELD_LAST_DAY</option>
+					<option value="week">MOD_JSTATS_FIELD_LAST_WEEK</option>
+					<option value="month">MOD_JSTATS_FIELD_LAST_MONTH</option>
+					<option value="quarter">MOD_JSTATS_FIELD_LAST_QUARTER</option>
+					<option value="semester">MOD_JSTATS_FIELD_LAST_SEMESTER</option>
+					<option value="year">MOD_JSTATS_FIELD_LAST_YEAR</option>
+					<option value="2year">MOD_JSTATS_FIELD_LAST_2YEARS</option>
+				</field>
+				<field
+					name="endpoint"
+					type="list"
+					label="MOD_JSTATS_FIELD_ENDPOINT_LABEL"
+					description="MOD_JSTATS_FIELD_ENDPOINT_DESC"
+					default="php_version"
+					validate="options"
+					>
+					<option value="php_version">MOD_JSTATS_FIELD_PHP_VERSION</option>
+					<option value="cms_version">MOD_JSTATS_FIELD_CMS_VERSION</option>
+					<option value="db_type">MOD_JSTATS_FIELD_DB_TYPE</option>
+				</field>
+				
+			</fieldset>
+			<fieldset
+				name="advanced">
+				<field
+					name="layout"
+					type="modulelayout"
+					label="JFIELD_ALT_LAYOUT_LABEL"
+					class="form-select"
+ 				/>
+
+				
+
+				<field
+					name="cache"
+					type="list"
+					label="COM_MODULES_FIELD_CACHING_LABEL"
+					default="1"
+					filter="integer"
+					validate="options"
+					>
+					<option value="1">JGLOBAL_USE_GLOBAL</option>
+					<option value="0">COM_MODULES_FIELD_VALUE_NOCACHING</option>
+				</field>
+
+				<field
+					name="cache_time"
+					type="number"
+					label="COM_MODULES_FIELD_CACHE_TIME_LABEL"
+					default="900"
+					filter="integer"
+					min="1"
+					validate="number"
+				/>
+			</fieldset>
+		</fields>
+	</config>
+	<updateservers>
+		<server type="extension" name="Module - J Statistics">https://raw.githubusercontent.com/alikon/testcom/main/modules/mod_jstats/updateserver.xml</server>
+	</updateservers>
+</extension>
