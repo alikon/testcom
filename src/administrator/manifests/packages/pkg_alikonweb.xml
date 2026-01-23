@@ -15,6 +15,7 @@
     <description>PKG_ALIKONWEB_XML_DESCRIPTION</description>
     <files>
         <!-- The id for each extension is the element stored in the DB -->
+        <file type="module" id="mod_jstats" client="site">mod_jstats.zip</file>
         <file type="module" id="mod_backward" client="admin">mod_backward.zip</file>
         <file type="module" id="mod_github_portfolio" client="site">mod_github_portfolio.zip</file>
         <file type="plugin" id="safemode" group="console">plg_console_safemode.zip</file>
