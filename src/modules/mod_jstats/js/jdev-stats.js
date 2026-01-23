@@ -7,7 +7,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         //
-        var colors = [
+        const colors = [
             '#FF0019',
             '#008FFB',
             '#00E396',
@@ -18,7 +18,7 @@
             '#26a69a',
             
         ];
-        var options = {
+        const options = {
             series: [],
             chart: {
                 height: 350,
@@ -55,7 +55,7 @@
                 }
             }
         };
-        var options2 = {
+        const options2 = {
             series: [],
             chart: {
                 height: 350,
@@ -92,7 +92,7 @@
             }
         };
 
-        var options3 = {
+        const options3 = {
             series: [],
             chart: {
                 height: 350,
@@ -128,10 +128,10 @@
                 }
             }
         };
-    
-        var chart = new ApexCharts(document.querySelector("#chart"), options);
-        var chart2 = new ApexCharts(document.querySelector("#chart"), options2);
-        var chart3 = new ApexCharts(document.querySelector("#chart"), options3);
+
+        const chart = new ApexCharts(document.querySelector("#chart"), options);
+        const chart2 = new ApexCharts(document.querySelector("#chart"), options2);
+        const chart3 = new ApexCharts(document.querySelector("#chart"), options3);
         const timeElement = document.querySelector(".ice-cream");
         const seriesElement = document.querySelector(".series");
         updateQuote(chart, chart2, chart3, 360, seriesElement.value);
@@ -289,7 +289,7 @@
             console.log('mysql', mysql);
             chart.updateSeries([{
                 name: 'Used',
-                data: [mysql.toFixed(2), ,mysqli.toFixed(2), pgsql.toFixed(2)]
+                data: [mysql.toFixed(2), mysqli.toFixed(2), pgsql.toFixed(2)]
             }])
         }
         //
