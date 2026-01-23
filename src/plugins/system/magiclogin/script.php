@@ -238,19 +238,28 @@ return new class () implements ServiceProviderInterface {
                             $db->execute();
 
                         }
+                        $templateId   = 'plg_system_magiclogin.magiclink';
+                        $extension   = 'plg_system_magiclogin';
+                        $language    = '';
+                        $subject     = 'PLG_SYSTEM_MAGICLOGIN_EMAIL_SUBJECT';
+                        $body        = 'PLG_SYSTEM_MAGICLOGIN_EMAIL_BODY';
+                        $htmlbody    = 'PLG_SYSTEM_MAGICLOGIN_EMAIL_HTMLBODY';
+                        $attachments = '';
+                        $params      = '{"tags":["sitename","username","magic_link","expiry_minutes"]}';
+
                         $query = $db->getQuery(true);
                         $query->clear()
                             ->insert($db->quoteName('#__mail_templates'))
                             ->columns($db->quoteName(['template_id', 'extension', 'language', 'subject', 'body', 'htmlbody', 'attachments', 'params']))
                             ->values(':templateid, :extension, :language, :subject, :body, :htmlbody, :attachments, :params')
-                            ->bind(':templateid', 'plg_system_magiclogin.magiclink')
-                            ->bind(':extension', 'plg_system_magiclogin')
-                            ->bind(':language', '')
-                            ->bind(':subject', 'PLG_SYSTEM_MAGICLOGIN_EMAIL_SUBJECT')
-                            ->bind(':body', 'PLG_SYSTEM_MAGICLOGIN_EMAIL_BODY')
-                            ->bind(':htmlbody', 'PLG_SYSTEM_MAGICLOGIN_EMAIL_HTMLBODY')
-                            ->bind(':attachments', '')
-                            ->bind(':params', '{"tags":["sitename","username","magic_link","expiry_minutes"]}');
+                            ->bind(':templateid', $templateId)
+                            ->bind(':extension', $extension)
+                            ->bind(':language', $language)
+                            ->bind(':subject', $subject)
+                            ->bind(':body', $body)
+                            ->bind(':htmlbody', $htmlbody)
+                            ->bind(':attachments', $attachments)
+                            ->bind(':params', $params);
 
                         $db->setQuery($query);
                         $db->execute();

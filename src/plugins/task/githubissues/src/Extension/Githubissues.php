@@ -7,6 +7,8 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
+namespace Joomla\Plugin\Task\Githubissues\Extension;
+
 // Restrict direct access
 defined('_JEXEC') or die;
 
@@ -17,6 +19,8 @@ use Joomla\Component\Scheduler\Administrator\Event\ExecuteTaskEvent;
 use Joomla\Component\Scheduler\Administrator\Task\Status as TaskStatus;
 use Joomla\Component\Scheduler\Administrator\Traits\TaskPluginTrait;
 use Joomla\Event\SubscriberInterface;
+use Joomla\Database\DatabaseAwareInterface;
+use Joomla\Database\DatabaseAwareTrait;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\Registry\Registry;
 use Joomla\CMS\Factory;
@@ -27,8 +31,9 @@ use Joomla\CMS\Factory;
  *
  * @since  4.1.0
  */
-class PlgTaskGithubIssues extends CMSPlugin implements SubscriberInterface
+final class Githubissues extends CMSPlugin implements SubscriberInterface,  DatabaseAwareInterface
 {
+    use DatabaseAwareTrait;
     use TaskPluginTrait;
 
     /**
