@@ -24,5 +24,6 @@
         <file type="plugin" id="swaggerui" group="content">plg_content_swaggerui.zip</file>
         <file type="plugin" id="export" group="content">plg_content_export.zip</file>
         <file type="plugin" id="deltrash" group="task">plg_task_deltrash.zip</file>
+        <file type="plugin" id="githubissues" group="task">plg_task_githubissues.zip</file>
     </files>
 </extension>

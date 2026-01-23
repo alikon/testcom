@@ -1,8 +1,9 @@
+
 <?php
 
 /**
  * @package    Joomla.Plugin
- * @subpackage System.magiclogin
+ * @subpackage Task.Githubissues
  *
  * @author     Alikon <alikon@alikonweb.it>
  *
@@ -193,7 +194,7 @@ return new class () implements ServiceProviderInterface {
                     $adapter->extension->enabled = 1;
                     $adapter->extension->store();
 
-                    echo Text::_('PLG_SYSTEM_MAGICLOGIN_INSTALLERSCRIPT_POSTFLIGHT_INSTALL');
+                    echo Text::_('PLG_TASK_GITHUBISSUES_INSTALLERSCRIPT_POSTFLIGHT_INSTALL');
 
                     return true;
                 }
@@ -211,66 +212,36 @@ return new class () implements ServiceProviderInterface {
                         $query = $db->getQuery(true)
                             ->select('COUNT(*)')
                             ->from($db->quoteName('information_schema.tables'))
-                            ->where($db->quoteName('table_name') . ' = ' . $db->quote('#__magiclogin_tokens'))
+                            ->where($db->quoteName('table_name') . ' = ' . $db->quote('#__github_issues'))
                             ->where($db->quoteName('table_schema') . ' = DATABASE()');
 
                         $db->setQuery($query);
                         $tableExists = $db->loadResult();
 
                         if (!$tableExists) {
-                            // Create the #__magiclogin_tokens table 
-                            $query = 'CREATE TABLE IF NOT EXISTS `#__magiclogin_tokens` (
-                                      `id` int(11) NOT NULL AUTO_INCREMENT,
-                                      `user_id` int(11) NOT NULL,
-                                      `token` varchar(255) NOT NULL,
-                                      `expires` datetime NOT NULL,
-                                      `created` timestamp DEFAULT CURRENT_TIMESTAMP,
-                                      `ip_address` varchar(45),
-                                      `user_agent` text,
+                            // Create the #__github_issues table 
+                            $query = 'CREATE TABLE IF NOT EXISTS `#__github_issues` (
+                                      `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+                                      `execution` datetime DEFAULT NULL ,
+                                      `openi` smallint(6) NOT NULL DEFAULT 0,
+                                      `closedi` smallint(6) NOT NULL DEFAULT 0,
+                                      `openp` smallint(6) NOT NULL DEFAULT 0,
+                                      `closedp` smallint(6) NOT NULL DEFAULT 0,
                                       PRIMARY KEY (`id`),
-                                      UNIQUE KEY `token` (`token`),
-                                      KEY `user_id` (`user_id`),
-                                      KEY `expires` (`expires`),
-                                      KEY `ip_address` (`ip_address`)
+                                      KEY `idx_execution` (`execution`)
                                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;';
 
                             $db->setQuery($query);
                             $db->execute();
 
                         }
-                        $templateId   = 'plg_system_magiclogin.magiclink';
-                        $extension   = 'plg_system_magiclogin';
-                        $language    = '';
-                        $subject     = 'PLG_SYSTEM_MAGICLOGIN_EMAIL_SUBJECT';
-                        $body        = 'PLG_SYSTEM_MAGICLOGIN_EMAIL_BODY';
-                        $htmlbody    = 'PLG_SYSTEM_MAGICLOGIN_EMAIL_HTMLBODY';
-                        $attachments = '';
-                        $params      = '{"tags":["sitename","username","magic_link","expiry_minutes"]}';
-
-                        $query = $db->getQuery(true);
-                        $query->clear()
-                            ->insert($db->quoteName('#__mail_templates'))
-                            ->columns($db->quoteName(['template_id', 'extension', 'language', 'subject', 'body', 'htmlbody', 'attachments', 'params']))
-                            ->values(':templateid, :extension, :language, :subject, :body, :htmlbody, :attachments, :params')
-                            ->bind(':templateid', $templateId)
-                            ->bind(':extension', $extension)
-                            ->bind(':language', $language)
-                            ->bind(':subject', $subject)
-                            ->bind(':body', $body)
-                            ->bind(':htmlbody', $htmlbody)
-                            ->bind(':attachments', $attachments)
-                            ->bind(':params', $params);
-
-                        $db->setQuery($query);
-                        $db->execute();
                     } catch (\Exception $e) {
-                        Factory::getApplication()->enqueueMessage('Error creating #__magiclogin_tokens table: ' . $e->getMessage(), 'error');
+                        Factory::getApplication()->enqueueMessage('Error creating #__github_issues table: ' . $e->getMessage(), 'error');
                     }
-
                 }
 
                 /**
-                 * Drop the #__magiclogin_tokens table.
+                 * Drop the #__github_issues table.
                  *
                  * @return void
                  */
@@ -279,12 +250,12 @@ return new class () implements ServiceProviderInterface {
                     try {
                         $db = Factory::getContainer()->get(DatabaseDriver::class);
 
-                        // Drop the #__magiclogin_tokens table
-                        $query = 'DROP TABLE IF EXISTS #__magiclogin_tokens';
+                        // Drop the #__github_issues table
+                        $query = 'DROP TABLE IF EXISTS #__github_issues';
                         $db->setQuery($query);
                         $db->execute();
                     } catch (\Exception $e) {
-                        Factory::getApplication()->enqueueMessage('Error dropping #__magiclogin_tokens table: ' . $e->getMessage(), 'error');
+                        Factory::getApplication()->enqueueMessage('Error dropping #__github_issues table: ' . $e->getMessage(), 'error');
                     }
                 }
             }
