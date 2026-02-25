@@ -11,6 +11,10 @@
             "label": "Web Server (Joomla & phpmyadmin)",
             "onAutoForward": "silent"
         },
+        "5432": {
+            "label": "postgres",
+            "onAutoForward": "silent"
+        },
         "6080": {
             "label": "Cypress GUI",
             "onAutoForward": "silent"
@@ -20,7 +24,7 @@
             "onAutoForward": "openPreview"
         }
     },
-    "forwardPorts": [80, 443, 6080, 8025],
+    "forwardPorts": [80, 443, 5432, 6080, 8025],
     "postCreateCommand": "bash ./.devcontainer/post-create.sh",
     "customizations": {
         "vscode": {
