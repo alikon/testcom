@@ -46,12 +46,15 @@ php installation/joomla.php install \
     --admin-username="$ADMIN_USER" \
     --admin-password="$ADMIN_PASS" \
     --admin-email="$ADMIN_EMAIL" \
-    --db-type="mysqli" \
-    --db-host="mysql" \
+#    --db-type="mysqli" \
+#    --db-host="mysql" \
+    --db-type="pgsql" \
+    --db-host="db_pgsql" \
     --db-name="$DB_NAME" \
     --db-user="$DB_USER" \
     --db-pass="$DB_PASS" \
-    --db-prefix="mysql_" \
+#    --db-prefix="mysql_" \
+    --db-prefix="pgsql_" \
     --db-encryption="0" \
     --public-folder=""
 
