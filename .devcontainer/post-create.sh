@@ -17,11 +17,44 @@ JOOMLA_ROOT="/var/www/html"
 
 git config --global --add safe.directory $WORKSPACE_ROOT
 
-# --- 1. Wait for MariaDB ---
-echo "--> Waiting for MariaDB..."
-while ! mysqladmin ping -h"mysql" --silent; do
-    sleep 1
-done
+# --- 1. Detect active DB profile ---
+echo "--> Detecting active database profile..."
+
+PROFILE=$(grep -E '^PROFILE=' .env | cut -d '=' -f2)
+
+if [ -z "$PROFILE" ]; then
+    echo "❌ ERROR: PROFILE non definito nel file .env"
+    exit 1
+fi
+
+echo "--> Active profile: $PROFILE"
+
+if [ "$PROFILE" = "mysql" ]; then
+    DB_TYPE="mysqli"
+    DB_HOST="mysql"
+    DB_PREFIX="mysql_"
+
+    echo "--> Waiting for MySQL..."
+    until mysqladmin ping -h"$DB_HOST" --silent; do
+        sleep 1
+    done
+
+elif [ "$PROFILE" = "pgsql" ]; then
+    DB_TYPE="pgsql"
+    DB_HOST="db_pgsql"
+    DB_PREFIX="pgsql_"
+
+    echo "--> Waiting for PostgreSQL..."
+    until pg_isready -h "$DB_HOST" -U "$DB_USER" >/dev/null 2>&1; do
+        sleep 1
+    done
+
+else
+    echo "❌ ERROR: Profilo sconosciuto: $PROFILE"
+    exit 1
+fi
+
+echo "--> Database is ready!"
 
 # --- 2. Install Dependencies ---
 echo "--> Installing dependencies..."
@@ -46,27 +79,26 @@ php installation/joomla.php install \
     --admin-username="$ADMIN_USER" \
     --admin-password="$ADMIN_PASS" \
     --admin-email="$ADMIN_EMAIL" \
-#    --db-type="mysqli" \
-#    --db-host="mysql" \
-    --db-type="pgsql" \
-    --db-host="db_pgsql" \
+    --db-type="$DB_TYPE" \
+    --db-host="$DB_HOST" \
     --db-name="$DB_NAME" \
     --db-user="$DB_USER" \
     --db-pass="$DB_PASS" \
-#    --db-prefix="mysql_" \
-    --db-prefix="pgsql_" \
+    --db-prefix="$DB_PREFIX" \
     --db-encryption="0" \
     --public-folder=""
 
 # --- 5. Configure Joomla ---
 echo "--> Configuring Joomla..."
 php cli/joomla.php config:set debug=true error_reporting=maximum
+
 # Configure mail settings for Mailpit
 php cli/joomla.php config:set mailer=smtp
 php cli/joomla.php config:set smtphost=mailpit
 php cli/joomla.php config:set smtpport=1025
 php cli/joomla.php config:set smtpauth=0
 php cli/joomla.php config:set smtpsecure=none
+
 # Install extension if available
 ALIKONWEB_PKG="${WORKSPACE_ROOT}/dist/pkg-alikonweb-current.zip"
 if [ -f "$ALIKONWEB_PKG" ]; then
@@ -98,22 +130,19 @@ if (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] === 'localhost:80') {
 }
 EOF
 
-# Include fix in both entry points
 cp $JOOMLA_ROOT/fix.php $JOOMLA_ROOT/administrator/fix.php
 sed -i '2i require_once __DIR__ . "/fix.php";' $JOOMLA_ROOT/index.php
 sed -i '2i require_once __DIR__ . "/../fix.php";' $JOOMLA_ROOT/administrator/index.php
 
-
 # --- 8. Finalize and setup Cypress ---
 echo "--> Finalizing and setting up Cypress..."
-# Only run git-related commands if we're inside a git repo
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     git update-index --assume-unchanged ./node_modules/.bin/cypress || true
 fi
 chmod +x ./node_modules/.bin/cypress
 chown -R www-data:www-data $JOOMLA_ROOT
 npx cypress install
-# Navigate to workspace root where the file might be
+
 cd "$WORKSPACE_ROOT"
 cp cypress.config.dist.js cypress.config.js
 sed -i "/db_prefix: process.env.DB_PREFIX/a \    cmsPath: '${JOOMLA_ROOT}'," cypress.config.js
@@ -121,38 +150,24 @@ sed -i "s|baseUrl: 'http://localhost/'|baseUrl: 'http://localhost'|" cypress.con
 service apache2 restart
 
 # Save details
-
 DETAILS_FILE="${WORKSPACE_ROOT}/codespace-details.txt"
 {
     echo ""
     echo "---"
     echo "✅ Setup complete! Your environment is ready."
     echo ""
-    echo "This information has been saved to codespace-details.txt"
-    echo ""
     echo "Joomla Admin Login:"
-    echo "  URL: Open the 'Web Server' port and add /administrator to the end."
     echo "  Username: $ADMIN_USER"
     echo "  Password: $ADMIN_PASS"
     echo ""
     echo "phpMyAdmin Login:"
-    echo "  URL: Open the 'Web Server' port and add /phpmyadmin to the end."
     echo "  Username: joomla_ut"
     echo "  Password: joomla_ut"
     echo ""
-    echo "Mailpit (Email Testing):"
-    echo "  URL: Open the 'Ports' tab, find 'Mailpit Web UI' (8025), and click the Globe icon"
-    echo "  All emails sent by Joomla will appear here for testing"
+    echo "Mailpit Web UI available on port 8025"
     echo ""
-    echo "To use cypress testing:"
-    echo "  Open 'Cypress GUI' port."
-    echo "  Run Interactive Cypress using 'npx cypress open' and you should see cypress interface when you visit 'Cypress GUI' port page."
-    echo "  You can also run Headless tests in the terminal using 'npx cypress run'"
+    echo "Cypress ready to use"
     echo ""
-    echo "Xdebug for PHP Debugging:"
-    echo "  Xdebug is pre-configured and ready to use."
-    echo "  To start a debugging session, open the 'Run and Debug' view in VS Code,"
-    echo "  select 'Listen for Xdebug', and click the play button."
-    echo "  The debugger will listen on port 9003."
+    echo "Xdebug ready on port 9003"
     echo "---"
 } | tee "$DETAILS_FILE"
