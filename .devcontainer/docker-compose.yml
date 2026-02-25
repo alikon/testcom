@@ -15,6 +15,7 @@ services:
 
   mysql:
     image: mysql:8.0
+    profiles: ["mysql", "default"]
     command: --default-authentication-plugin=mysql_native_password
     restart: unless-stopped
     environment:
@@ -24,6 +25,20 @@ services:
       MYSQL_PASSWORD: joomla_ut
     volumes:
       - "mysql-data:/var/lib/mysql"
+
+  db_pgsql:
+    image: postgres:16
+    profiles: ["pgsql"]
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: test_joomla
+      POSTGRES_USER: joomla_ut
+      POSTGRES_PASSWORD: joomla_ut
+    volumes:
+      - db_pgsql_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
   mailpit:
     image: axllent/mailpit:latest
     restart: unless-stopped
@@ -31,3 +46,4 @@ services:
       - "8025:8025"
 volumes:
   mysql-data:
+  db_pgsql_data:
