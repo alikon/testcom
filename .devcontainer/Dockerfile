@@ -17,6 +17,10 @@ RUN apt-get update && apt-get install -y \
     # MySQL client AND server
     default-mysql-client \
     default-mysql-server \
+    # PostgreSQL client AND server        ← AGGIUNTO
+    postgresql \
+    postgresql-client \
+    libpq-dev \                         
     # Cypress dependencies
     xvfb \
     libgtk2.0-0 \
@@ -30,7 +34,7 @@ RUN apt-get update && apt-get install -y \
     xauth \
     && \
     # Install the required PHP extensions for Zip and MySQL
-    docker-php-ext-install zip mysqli && \
+    docker-php-ext-install zip mysqli pdo pdo_pgsql pgsql && \
     # Install Node.js (LTS version)
     curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
     apt-get install -y nodejs && \
