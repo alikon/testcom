@@ -20,7 +20,14 @@ git config --global --add safe.directory $WORKSPACE_ROOT
 # --- 1. Detect active DB profile ---
 echo "--> Detecting active database profile..."
 
-PROFILE=$(grep -E '^PROFILE=' .env | cut -d '=' -f2)
+ENV_FILE="$WORKSPACE_ROOT/.devcontainer/.env"
+
+if [ ! -f "$ENV_FILE" ]; then
+    echo "❌ ERROR: File .env non trovato in $ENV_FILE"
+    exit 1
+fi
+
+PROFILE=$(grep -E '^PROFILE=' "$ENV_FILE" | cut -d '=' -f2)
 
 if [ -z "$PROFILE" ]; then
     echo "❌ ERROR: PROFILE non definito nel file .env"
@@ -34,27 +41,43 @@ if [ "$PROFILE" = "mysql" ]; then
     DB_HOST="mysql"
     DB_PREFIX="mysql_"
 
-    echo "--> Waiting for MySQL..."
-    until mysqladmin ping -h"$DB_HOST" --silent; do
+    echo "--> Waiting for MySQL (max 60s)..."
+    for i in {1..60}; do
+        if mysqladmin ping -h"$DB_HOST" --silent; then
+            echo "--> MySQL is ready!"
+            break
+        fi
         sleep 1
     done
+
+    if ! mysqladmin ping -h"$DB_HOST" --silent; then
+        echo "❌ ERROR: MySQL non risponde dopo 60 secondi"
+        exit 1
+    fi
 
 elif [ "$PROFILE" = "pgsql" ]; then
     DB_TYPE="pgsql"
     DB_HOST="db_pgsql"
     DB_PREFIX="pgsql_"
 
-    echo "--> Waiting for PostgreSQL..."
-    until pg_isready -h "$DB_HOST" -U "$DB_USER" >/dev/null 2>&1; do
+    echo "--> Waiting for PostgreSQL (max 60s)..."
+    for i in {1..60}; do
+        if pg_isready -h "$DB_HOST" -U "$DB_USER" >/dev/null 2>&1; then
+            echo "--> PostgreSQL is ready!"
+            break
+        fi
         sleep 1
     done
+
+    if ! pg_isready -h "$DB_HOST" -U "$DB_USER" >/dev/null 2>&1; then
+        echo "❌ ERROR: PostgreSQL non risponde dopo 60 secondi"
+        exit 1
+    fi
 
 else
     echo "❌ ERROR: Profilo sconosciuto: $PROFILE"
     exit 1
 fi
-
-echo "--> Database is ready!"
 
 # --- 2. Install Dependencies ---
 echo "--> Installing dependencies..."
@@ -92,21 +115,19 @@ php installation/joomla.php install \
 echo "--> Configuring Joomla..."
 php cli/joomla.php config:set debug=true error_reporting=maximum
 
-# Configure mail settings for Mailpit
 php cli/joomla.php config:set mailer=smtp
 php cli/joomla.php config:set smtphost=mailpit
 php cli/joomla.php config:set smtpport=1025
 php cli/joomla.php config:set smtpauth=0
 php cli/joomla.php config:set smtpsecure=none
 
-# Install extension if available
 ALIKONWEB_PKG="${WORKSPACE_ROOT}/dist/pkg-alikonweb-current.zip"
 if [ -f "$ALIKONWEB_PKG" ]; then
     php cli/joomla.php extension:install --path="$ALIKONWEB_PKG"
     cd $WORKSPACE_ROOT && vendor/bin/robo map $JOOMLA_ROOT
 fi
 
-# --- 6. Download and prepare phpMyAdmin ---
+# --- 6. phpMyAdmin ---
 PMA_ROOT="/var/www/html/phpmyadmin"
 echo "--> Downloading phpMyAdmin into $PMA_ROOT..."
 PMA_VERSION=5.2.1
@@ -134,7 +155,7 @@ cp $JOOMLA_ROOT/fix.php $JOOMLA_ROOT/administrator/fix.php
 sed -i '2i require_once __DIR__ . "/fix.php";' $JOOMLA_ROOT/index.php
 sed -i '2i require_once __DIR__ . "/../fix.php";' $JOOMLA_ROOT/administrator/index.php
 
-# --- 8. Finalize and setup Cypress ---
+# --- 8. Cypress ---
 echo "--> Finalizing and setting up Cypress..."
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     git update-index --assume-unchanged ./node_modules/.bin/cypress || true
@@ -149,7 +170,6 @@ sed -i "/db_prefix: process.env.DB_PREFIX/a \    cmsPath: '${JOOMLA_ROOT}'," cyp
 sed -i "s|baseUrl: 'http://localhost/'|baseUrl: 'http://localhost'|" cypress.config.js
 service apache2 restart
 
-# Save details
 DETAILS_FILE="${WORKSPACE_ROOT}/codespace-details.txt"
 {
     echo ""

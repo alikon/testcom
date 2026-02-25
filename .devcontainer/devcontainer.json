@@ -3,11 +3,13 @@
     "dockerComposeFile": "docker-compose.yml",
     "service": "app",
     "workspaceFolder": "/workspaces/testcom",
+
     "features": {
         "ghcr.io/devcontainers/features/desktop-lite:1": {}
     },
+
     "portsAttributes": {
-        "443" : {
+        "443": {
             "label": "Web Server (Joomla & phpmyadmin)",
             "onAutoForward": "silent"
         },
@@ -24,9 +26,11 @@
             "onAutoForward": "openPreview"
         }
     },
+
     "forwardPorts": [80, 443, 5432, 6080, 8025],
-    "postStartCommand": "docker compose --profile ${PROFILE} up -d",
-    "postCreateCommand": "bash ./.devcontainer/post-create.sh",
+
+    "postCreateCommand": "docker compose --profile ${PROFILE} up -d && bash ./.devcontainer/post-create.sh",
+
     "customizations": {
         "vscode": {
             "extensions": [
@@ -50,5 +54,6 @@
             }
         }
     },
+
     "remoteUser": "root"
 }
