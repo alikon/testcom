@@ -25,6 +25,7 @@
         }
     },
     "forwardPorts": [80, 443, 5432, 6080, 8025],
+    "postStartCommand": "docker compose --profile ${PROFILE} up -d",
     "postCreateCommand": "bash ./.devcontainer/post-create.sh",
     "customizations": {
         "vscode": {
