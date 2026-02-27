@@ -12,6 +12,8 @@ services:
       - "6080:6080"
     command: sleep infinity
     privileged: true
+    networks:
+      - internal
 
   mysql:
     image: mysql:8.0
@@ -27,6 +29,8 @@ services:
       - "mysql-data:/var/lib/mysql"
     ports:
       - "3306:3306"
+    networks:
+      - internal
 
   db_pgsql:
     image: postgres:16
@@ -40,12 +44,21 @@ services:
       - db_pgsql_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - internal
 
   mailpit:
     image: axllent/mailpit:latest
     restart: unless-stopped
     ports:
       - "8025:8025"
+    networks:
+      - internal
+
 volumes:
   mysql-data:
   db_pgsql_data:
+
+networks:
+  internal:
+    driver: bridge

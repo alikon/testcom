@@ -62,6 +62,11 @@ if [ "$PROFILE" = "mysql" ]; then
         echo "--> MySQL not ready yet (attempt $i)..."
         sleep 2
     done
+    if ! mysql -h"$DB_HOST" -u"$DB_USER" -p"$DB_PASS" -e "SELECT 1;" >/dev/null 2>&1; then
+        echo "❌ ERROR: MySQL non raggiungibile dopo 60 tentativi"
+        exit 1
+    fi
+
 
 elif [ "$PROFILE" = "pgsql" ]; then
     DB_TYPE="pgsql"
