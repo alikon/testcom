@@ -11,6 +11,7 @@ services:
     volumes:
       - ..:/workspaces/testcom:cached
       - ./xdebug.ini:/usr/local/etc/php/conf.d/99-xdebug.ini
+      - joomla-html:/var/www/html
     ports:
       - "80:80"
       - "443:443"
@@ -37,7 +38,6 @@ services:
       MYSQL_PASSWORD: joomla_ut
     volumes:
       - mysql-data:/var/lib/mysql
-    # Nessun ports: — non serve in Codespaces, evita conflitti con porta host
     networks:
       - internal
     healthcheck:
@@ -49,7 +49,6 @@ services:
 
   db_pgsql:
     image: postgres:16
-    profiles: ["pgsql"]
     restart: unless-stopped
     environment:
       POSTGRES_DB: test_joomla
@@ -57,7 +56,6 @@ services:
       POSTGRES_PASSWORD: joomla_ut
     volumes:
       - db_pgsql_data:/var/lib/postgresql/data
-    # Nessun ports: — stessa ragione
     networks:
       - internal
     healthcheck:
@@ -79,3 +77,4 @@ services:
 volumes:
   mysql-data:
   db_pgsql_data:
+  joomla-html:

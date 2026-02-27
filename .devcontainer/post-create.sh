@@ -4,7 +4,6 @@ set -e
 
 echo "--- Starting Post-Creation Setup ---"
 
-# Configuration variables
 DB_NAME="test_joomla"
 DB_USER="joomla_ut"
 DB_PASS="joomla_ut"
@@ -19,9 +18,6 @@ git config --global --add safe.directory "$WORKSPACE_ROOT"
 
 # --- 1. Detect active DB profile ---
 echo "--> Detecting active database profile..."
-
-# PROFILE è iniettato da containerEnv nel devcontainer.json
-# Fallback a mysql se non definito
 PROFILE="${PROFILE:-mysql}"
 echo "--> Active profile: $PROFILE"
 
@@ -30,42 +26,22 @@ if [ "$PROFILE" = "mysql" ]; then
     DB_HOST="mysql"
     DB_PREFIX="mysql_"
 
-    echo "--> Waiting for MySQL container to be reachable (max 300s)..."
-    
-    # Step 1: aspetta che la porta TCP sia aperta
-    echo "--> Step 1: waiting for TCP port 3306 on $DB_HOST..."
-    for i in $(seq 1 60); do
-        if timeout 2s bash -c "cat < /dev/null > /dev/tcp/$DB_HOST/3306" 2>/dev/null; then
-            echo "--> Port 3306 is open after $i attempts"
-            break
-        fi
-        echo "--> TCP not open yet (attempt $i/60)..."
-        sleep 3
-    done
-
-    # Step 2: aspetta che MySQL accetti connessioni autenticate
-    echo "--> Step 2: waiting for MySQL to accept connections..."
+    echo "--> Waiting for MySQL (max 300s)..."
     for i in $(seq 1 60); do
         if mysql -h"$DB_HOST" -u"$DB_USER" -p"$DB_PASS" -e "SELECT 1;" >/dev/null 2>&1; then
             echo "--> MySQL is ready after $i attempts!"
             break
         fi
-        # Mostra l'errore reale per capire cosa sta succedendo
         MYSQL_ERR=$(mysql -h"$DB_HOST" -u"$DB_USER" -p"$DB_PASS" -e "SELECT 1;" 2>&1 | head -1)
         echo "--> Not ready yet (attempt $i/60): $MYSQL_ERR"
-        sleep 3
+        sleep 5
     done
 
     if ! mysql -h"$DB_HOST" -u"$DB_USER" -p"$DB_PASS" -e "SELECT 1;" >/dev/null 2>&1; then
-        echo "❌ ERROR: MySQL non raggiungibile"
-        echo "--- Debug info ---"
-        echo "Hostname resolution:"
-        getent hosts "$DB_HOST" || echo "  Cannot resolve $DB_HOST"
-        echo "Network interfaces:"
-        ip addr show 2>/dev/null || ifconfig 2>/dev/null || echo "  ip/ifconfig not available"
-        echo "Docker networks:"
+        echo "❌ ERROR: MySQL non raggiungibile dopo 300 secondi"
+        echo "--- Debug ---"
+        getent hosts "$DB_HOST" || echo "Cannot resolve $DB_HOST"
         cat /etc/hosts
-        echo "------------------"
         exit 1
     fi
 
@@ -77,10 +53,10 @@ elif [ "$PROFILE" = "pgsql" ]; then
     echo "--> Waiting for PostgreSQL (max 60s)..."
     for i in $(seq 1 60); do
         if pg_isready -h "$DB_HOST" -U "$DB_USER" >/dev/null 2>&1; then
-            echo "--> PostgreSQL is ready!"
+            echo "--> PostgreSQL is ready after $i attempts!"
             break
         fi
-        echo "--> PostgreSQL not ready yet (attempt $i/60)..."
+        echo "--> Not ready yet (attempt $i/60)..."
         sleep 1
     done
 
@@ -111,73 +87,72 @@ else
 fi
 
 # --- 4. Install Joomla ---
-echo "--> Installing Joomla..."
-rm -f "$JOOMLA_ROOT/index.html"
-cd "$JOOMLA_ROOT"
+# Controlla se Joomla è già installato nel volume (rebuild del codespace)
+if [ -f "$JOOMLA_ROOT/configuration.php" ]; then
+    echo "--> Joomla already installed in volume, skipping download."
+else
+    echo "--> Installing Joomla..."
+    rm -f "$JOOMLA_ROOT/index.html"
+    cd "$JOOMLA_ROOT"
 
-echo "--> Downloading Joomla nightly..."
-curl -o joomla.tar.zst -L https://developer.joomla.org/download-nightly.php/stable/debug/full/joomla.tar.zst
-tar xfa joomla.tar.zst
-rm joomla.tar.zst
+    echo "--> Downloading Joomla nightly..."
+    curl -o joomla.tar.zst -L https://developer.joomla.org/download-nightly.php/stable/debug/full/joomla.tar.zst
+    tar xfa joomla.tar.zst
+    rm joomla.tar.zst
 
-echo "--> Running Joomla installer..."
-php installation/joomla.php install \
-    --site-name="Joomla CMS Test" \
-    --admin-user="$ADMIN_REAL_NAME" \
-    --admin-username="$ADMIN_USER" \
-    --admin-password="$ADMIN_PASS" \
-    --admin-email="$ADMIN_EMAIL" \
-    --db-type="$DB_TYPE" \
-    --db-host="$DB_HOST" \
-    --db-name="$DB_NAME" \
-    --db-user="$DB_USER" \
-    --db-pass="$DB_PASS" \
-    --db-prefix="$DB_PREFIX" \
-    --db-encryption="0" \
-    --public-folder=""
+    echo "--> Running Joomla installer..."
+    php installation/joomla.php install \
+        --site-name="Joomla CMS Test" \
+        --admin-user="$ADMIN_REAL_NAME" \
+        --admin-username="$ADMIN_USER" \
+        --admin-password="$ADMIN_PASS" \
+        --admin-email="$ADMIN_EMAIL" \
+        --db-type="$DB_TYPE" \
+        --db-host="$DB_HOST" \
+        --db-name="$DB_NAME" \
+        --db-user="$DB_USER" \
+        --db-pass="$DB_PASS" \
+        --db-prefix="$DB_PREFIX" \
+        --db-encryption="0" \
+        --public-folder=""
 
-# --- 5. Configure Joomla ---
-echo "--> Configuring Joomla..."
-php cli/joomla.php config:set debug=true error_reporting=maximum
+    # --- 5. Configure Joomla ---
+    echo "--> Configuring Joomla..."
+    php cli/joomla.php config:set debug=true error_reporting=maximum
+    php cli/joomla.php config:set mailer=smtp
+    php cli/joomla.php config:set smtphost=mailpit
+    php cli/joomla.php config:set smtpport=1025
+    php cli/joomla.php config:set smtpauth=0
+    php cli/joomla.php config:set smtpsecure=none
 
-php cli/joomla.php config:set mailer=smtp
-php cli/joomla.php config:set smtphost=mailpit
-php cli/joomla.php config:set smtpport=1025
-php cli/joomla.php config:set smtpauth=0
-php cli/joomla.php config:set smtpsecure=none
+    # --- 6. Install extension if present ---
+    ALIKONWEB_PKG="${WORKSPACE_ROOT}/dist/pkg-alikonweb-current.zip"
+    if [ -f "$ALIKONWEB_PKG" ]; then
+        echo "--> Installing Alikonweb extension..."
+        php "$JOOMLA_ROOT/cli/joomla.php" extension:install --path="$ALIKONWEB_PKG"
+        cd "$WORKSPACE_ROOT" && vendor/bin/robo map "$JOOMLA_ROOT"
+    fi
 
-# --- 6. Install extension if present ---
-ALIKONWEB_PKG="${WORKSPACE_ROOT}/dist/pkg-alikonweb-current.zip"
-if [ -f "$ALIKONWEB_PKG" ]; then
-    echo "--> Installing Alikonweb extension..."
-    php "$JOOMLA_ROOT/cli/joomla.php" extension:install --path="$ALIKONWEB_PKG"
-    cd "$WORKSPACE_ROOT" && vendor/bin/robo map "$JOOMLA_ROOT"
-fi
+    # --- 7. phpMyAdmin (solo mysql) ---
+    if [ "$PROFILE" = "mysql" ]; then
+        PMA_ROOT="/var/www/html/phpmyadmin"
+        PMA_VERSION="5.2.1"
+        echo "--> Installing phpMyAdmin $PMA_VERSION..."
+        mkdir -p "$PMA_ROOT"
+        curl -sL -o /tmp/phpmyadmin.tar.gz \
+            "https://files.phpmyadmin.net/phpMyAdmin/${PMA_VERSION}/phpMyAdmin-${PMA_VERSION}-all-languages.tar.gz"
+        tar xf /tmp/phpmyadmin.tar.gz --strip-components=1 -C "$PMA_ROOT"
+        rm /tmp/phpmyadmin.tar.gz
+        cp "$PMA_ROOT/config.sample.inc.php" "$PMA_ROOT/config.inc.php"
+        sed -i "s/\['host'\] = 'localhost'/['host'] = 'mysql'/" "$PMA_ROOT/config.inc.php"
+        BLOWFISH=$(openssl rand -base64 32 | tr -d '=+/' | head -c 32)
+        sed -i "s/\['blowfish_secret'\] = ''/['blowfish_secret'] = '$BLOWFISH'/" "$PMA_ROOT/config.inc.php"
+    fi
 
-# --- 7. phpMyAdmin (solo se profilo mysql) ---
-if [ "$PROFILE" = "mysql" ]; then
-    PMA_ROOT="/var/www/html/phpmyadmin"
-    PMA_VERSION="5.2.1"
-    echo "--> Installing phpMyAdmin $PMA_VERSION..."
-    mkdir -p "$PMA_ROOT"
-    curl -sL -o /tmp/phpmyadmin.tar.gz \
-        "https://files.phpmyadmin.net/phpMyAdmin/${PMA_VERSION}/phpMyAdmin-${PMA_VERSION}-all-languages.tar.gz"
-    tar xf /tmp/phpmyadmin.tar.gz --strip-components=1 -C "$PMA_ROOT"
-    rm /tmp/phpmyadmin.tar.gz
-    cp "$PMA_ROOT/config.sample.inc.php" "$PMA_ROOT/config.inc.php"
-    # Imposta host mysql e disabilita autenticazione per sviluppo
-    sed -i "s/\['host'\] = 'localhost'/['host'] = 'mysql'/" "$PMA_ROOT/config.inc.php"
-    # Genera un blowfish secret casuale
-    BLOWFISH=$(openssl rand -base64 32 | tr -d '=+/' | head -c 32)
-    sed -i "s/\['blowfish_secret'\] = ''/['blowfish_secret'] = '$BLOWFISH'/" "$PMA_ROOT/config.inc.php"
-fi
-
-# --- 8. Codespaces proxy fix ---
-echo "--> Applying Codespaces reverse-proxy fix..."
-
-cat > "$JOOMLA_ROOT/fix.php" << 'EOF'
+    # --- 8. Codespaces proxy fix ---
+    echo "--> Applying Codespaces reverse-proxy fix..."
+    cat > "$JOOMLA_ROOT/fix.php" << 'EOF'
 <?php
-// Fix per GitHub Codespaces reverse proxy
 if (isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
     $_SERVER['HTTP_HOST']   = $_SERVER['HTTP_X_FORWARDED_HOST'];
     $_SERVER['SERVER_NAME'] = $_SERVER['HTTP_X_FORWARDED_HOST'];
@@ -186,20 +161,15 @@ if (isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
 }
 EOF
 
-cp "$JOOMLA_ROOT/fix.php" "$JOOMLA_ROOT/administrator/fix.php"
-
-# Aggiungi require solo se non già presente
-if ! grep -q "fix.php" "$JOOMLA_ROOT/index.php"; then
+    cp "$JOOMLA_ROOT/fix.php" "$JOOMLA_ROOT/administrator/fix.php"
     sed -i '2i require_once __DIR__ . "/fix.php";' "$JOOMLA_ROOT/index.php"
-fi
-if ! grep -q "fix.php" "$JOOMLA_ROOT/administrator/index.php"; then
     sed -i '2i require_once __DIR__ . "/../fix.php";' "$JOOMLA_ROOT/administrator/index.php"
-fi
 
-# --- 9. Permessi ---
-echo "--> Setting permissions..."
-chown -R www-data:www-data "$JOOMLA_ROOT"
-chmod -R 755 "$JOOMLA_ROOT"
+    # --- 9. Permessi ---
+    echo "--> Setting permissions..."
+    chown -R www-data:www-data "$JOOMLA_ROOT"
+    chmod -R 755 "$JOOMLA_ROOT"
+fi
 
 # --- 10. Cypress ---
 echo "--> Setting up Cypress..."
@@ -214,13 +184,12 @@ npx cypress install
 
 cp cypress.config.dist.js cypress.config.js
 
-# URL base: usa l'URL pubblico del Codespace se disponibile, altrimenti localhost
 if [ -n "$CODESPACE_NAME" ] && [ -n "$GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN" ]; then
     BASE_URL="https://${CODESPACE_NAME}-80.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
-    echo "--> Codespace detected, using baseUrl: $BASE_URL"
+    echo "--> Codespace detected, baseUrl: $BASE_URL"
 else
     BASE_URL="http://localhost"
-    echo "--> Local environment, using baseUrl: $BASE_URL"
+    echo "--> Local environment, baseUrl: $BASE_URL"
 fi
 
 sed -i "s|baseUrl: 'http://localhost[^']*'|baseUrl: '${BASE_URL}'|" cypress.config.js
@@ -252,9 +221,9 @@ DETAILS_FILE="${WORKSPACE_ROOT}/codespace-details.txt"
     echo "  Password: $DB_PASS"
     echo ""
     fi
-    echo "Mailpit Web UI: porta 8025"
-    echo "Cypress:        pronto"
-    echo "Xdebug:         porta 9003"
+    echo "Mailpit:  porta 8025"
+    echo "Cypress:  pronto"
+    echo "Xdebug:   porta 9003"
     echo "================================================"
 } | tee "$DETAILS_FILE"
 
