@@ -30,18 +30,42 @@ if [ "$PROFILE" = "mysql" ]; then
     DB_HOST="mysql"
     DB_PREFIX="mysql_"
 
-    echo "--> Waiting for MySQL (max 120s)..."
+    echo "--> Waiting for MySQL container to be reachable (max 300s)..."
+    
+    # Step 1: aspetta che la porta TCP sia aperta
+    echo "--> Step 1: waiting for TCP port 3306 on $DB_HOST..."
     for i in $(seq 1 60); do
-        if mysql -h"$DB_HOST" -u"$DB_USER" -p"$DB_PASS" -e "SELECT 1;" >/dev/null 2>&1; then
-            echo "--> MySQL is ready!"
+        if timeout 2s bash -c "cat < /dev/null > /dev/tcp/$DB_HOST/3306" 2>/dev/null; then
+            echo "--> Port 3306 is open after $i attempts"
             break
         fi
-        echo "--> MySQL not ready yet (attempt $i/60)..."
-        sleep 2
+        echo "--> TCP not open yet (attempt $i/60)..."
+        sleep 3
+    done
+
+    # Step 2: aspetta che MySQL accetti connessioni autenticate
+    echo "--> Step 2: waiting for MySQL to accept connections..."
+    for i in $(seq 1 60); do
+        if mysql -h"$DB_HOST" -u"$DB_USER" -p"$DB_PASS" -e "SELECT 1;" >/dev/null 2>&1; then
+            echo "--> MySQL is ready after $i attempts!"
+            break
+        fi
+        # Mostra l'errore reale per capire cosa sta succedendo
+        MYSQL_ERR=$(mysql -h"$DB_HOST" -u"$DB_USER" -p"$DB_PASS" -e "SELECT 1;" 2>&1 | head -1)
+        echo "--> Not ready yet (attempt $i/60): $MYSQL_ERR"
+        sleep 3
     done
 
     if ! mysql -h"$DB_HOST" -u"$DB_USER" -p"$DB_PASS" -e "SELECT 1;" >/dev/null 2>&1; then
-        echo "❌ ERROR: MySQL non raggiungibile dopo 120 secondi"
+        echo "❌ ERROR: MySQL non raggiungibile"
+        echo "--- Debug info ---"
+        echo "Hostname resolution:"
+        getent hosts "$DB_HOST" || echo "  Cannot resolve $DB_HOST"
+        echo "Network interfaces:"
+        ip addr show 2>/dev/null || ifconfig 2>/dev/null || echo "  ip/ifconfig not available"
+        echo "Docker networks:"
+        cat /etc/hosts
+        echo "------------------"
         exit 1
     fi
 

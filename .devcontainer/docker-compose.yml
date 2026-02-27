@@ -28,7 +28,6 @@ services:
 
   mysql:
     image: mysql:8.0
-    profiles: ["mysql"]
     command: --default-authentication-plugin=mysql_native_password
     restart: unless-stopped
     environment:
