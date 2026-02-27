@@ -4,7 +4,7 @@
     "service": "app",
     "workspaceFolder": "/workspaces/testcom",
 
-    // Per MySQL:
+    // Per MySQL (default):
     "runServices": ["app", "mysql", "mailpit"],
     "containerEnv": {
         "PROFILE": "mysql"
@@ -19,11 +19,11 @@
     },
 
     "portsAttributes": {
-        "80":   { "label": "Web Server",   "onAutoForward": "silent" },
+        "80":   { "label": "Web Server",       "onAutoForward": "silent" },
         "443":  { "label": "Web Server HTTPS", "onAutoForward": "silent" },
-        "6080": { "label": "Cypress GUI",  "onAutoForward": "silent" },
-        "8025": { "label": "Mailpit",      "onAutoForward": "openPreview" },
-        "9003": { "label": "Xdebug",       "onAutoForward": "silent" }
+        "6080": { "label": "Cypress GUI",      "onAutoForward": "silent" },
+        "8025": { "label": "Mailpit",          "onAutoForward": "openPreview" },
+        "9003": { "label": "Xdebug",           "onAutoForward": "silent" }
     },
     "forwardPorts": [80, 443, 6080, 8025, 9003],
 

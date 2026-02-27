@@ -87,9 +87,8 @@ else
 fi
 
 # --- 4. Install Joomla ---
-# Controlla se Joomla è già installato nel volume (rebuild del codespace)
 if [ -f "$JOOMLA_ROOT/configuration.php" ]; then
-    echo "--> Joomla already installed in volume, skipping download."
+    echo "--> Joomla already installed in volume, skipping."
 else
     echo "--> Installing Joomla..."
     rm -f "$JOOMLA_ROOT/index.html"
@@ -171,7 +170,36 @@ EOF
     chmod -R 755 "$JOOMLA_ROOT"
 fi
 
-# --- 10. Cypress ---
+# --- 10. Xdebug: trova il gateway e scrivi xdebug.ini corretto ---
+echo "--> Configuring Xdebug client host..."
+
+GATEWAY_HEX=$(awk 'NR>1 && $2=="00000000" {print $3; exit}' /proc/net/route)
+if [ -n "$GATEWAY_HEX" ]; then
+    XDEBUG_HOST=$(printf '%d.%d.%d.%d' \
+        $((16#${GATEWAY_HEX:6:2})) \
+        $((16#${GATEWAY_HEX:4:2})) \
+        $((16#${GATEWAY_HEX:2:2})) \
+        $((16#${GATEWAY_HEX:0:2})))
+    echo "--> Gateway trovato: $XDEBUG_HOST"
+else
+    XDEBUG_HOST="host.docker.internal"
+    echo "--> Gateway non trovato, fallback: $XDEBUG_HOST"
+fi
+
+cat > /usr/local/etc/php/conf.d/99-xdebug.ini << EOF
+zend_extension=xdebug
+
+xdebug.mode=debug
+xdebug.start_with_request=yes
+xdebug.client_port=9003
+xdebug.client_host=${XDEBUG_HOST}
+xdebug.idekey=VSCODE
+xdebug.log_level=0
+EOF
+
+echo "--> xdebug.ini scritto con host: $XDEBUG_HOST"
+
+# --- 11. Cypress ---
 echo "--> Setting up Cypress..."
 cd "$WORKSPACE_ROOT"
 
@@ -195,7 +223,7 @@ fi
 sed -i "s|baseUrl: 'http://localhost[^']*'|baseUrl: '${BASE_URL}'|" cypress.config.js
 sed -i "/db_prefix: process.env.DB_PREFIX/a \    cmsPath: '${JOOMLA_ROOT}'," cypress.config.js
 
-# --- 11. Restart Apache ---
+# --- 12. Restart Apache ---
 echo "--> Restarting Apache..."
 service apache2 restart || apache2ctl restart || true
 
@@ -207,7 +235,8 @@ DETAILS_FILE="${WORKSPACE_ROOT}/codespace-details.txt"
     echo "✅ Setup complete! Your environment is ready."
     echo "================================================"
     echo ""
-    echo "Profile attivo: $PROFILE"
+    echo "Profile attivo:  $PROFILE"
+    echo "Xdebug host:     $XDEBUG_HOST"
     echo ""
     echo "Joomla Admin:"
     echo "  URL:      ${BASE_URL}/administrator"
@@ -223,7 +252,7 @@ DETAILS_FILE="${WORKSPACE_ROOT}/codespace-details.txt"
     fi
     echo "Mailpit:  porta 8025"
     echo "Cypress:  pronto"
-    echo "Xdebug:   porta 9003"
+    echo "Xdebug:   porta 9003 → $XDEBUG_HOST"
     echo "================================================"
 } | tee "$DETAILS_FILE"
 
