@@ -27,7 +27,14 @@ if [ ! -f "$ENV_FILE" ]; then
     exit 1
 fi
 
-PROFILE=$(grep -E '^PROFILE=' "$ENV_FILE" | cut -d '=' -f2)
+# New Way: Use the environment variable, fallback to .env if needed
+if [ -z "$PROFILE" ]; then
+    if [ -f "$ENV_FILE" ]; then
+        PROFILE=$(grep -E '^PROFILE=' "$ENV_FILE" | cut -d '=' -f2)
+    else
+        PROFILE="mysql" # Default fallback
+    fi
+fi
 
 if [ -z "$PROFILE" ]; then
     echo "❌ ERROR: PROFILE non definito nel file .env"
@@ -43,17 +50,18 @@ if [ "$PROFILE" = "mysql" ]; then
 
     echo "--> Waiting for MySQL (max 60s)..."
     for i in {1..60}; do
-        if mysqladmin ping -h"$DB_HOST" --silent; then
-            echo "--> MySQL is ready!"
-            break
+        # We use a simple TCP check first to see if the port is even open
+        if timeout 1s bash -c "cat < /dev/null > /dev/tcp/$DB_HOST/3306" 2>/dev/null; then
+            echo "--> MySQL Port is open! Checking readiness..."
+            # Now check if it's actually accepting logins
+            if mysql -h"$DB_HOST" -u"$DB_USER" -p"$DB_PASS" -e "SELECT 1;" >/dev/null 2>&1; then
+                echo "--> MySQL is ready and authenticated!"
+                break
+            fi
         fi
-        sleep 1
+        echo "--> MySQL not ready yet (attempt $i)..."
+        sleep 2
     done
-
-    if ! mysqladmin ping -h"$DB_HOST" --silent; then
-        echo "❌ ERROR: MySQL non risponde dopo 60 secondi"
-        exit 1
-    fi
 
 elif [ "$PROFILE" = "pgsql" ]; then
     DB_TYPE="pgsql"

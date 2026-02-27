@@ -3,33 +3,35 @@
     "dockerComposeFile": "docker-compose.yml",
     "service": "app",
     "workspaceFolder": "/workspaces/testcom",
-
-    "features": {
-        "ghcr.io/devcontainers/features/desktop-lite:1": {}
+    "runProfiles": ["mysql"],
+    // Define the PROFILE here so the script can see it without needing to grep an .env file
+    "containerEnv": {
+        "PROFILE": "mysql" 
     },
 
+    "features": {
+        "ghcr.io/devcontainers/features/desktop-lite:1": {},
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {
+            "version": "latest",
+            "enableNonRootDocker": "true"
+        }
+    },
+
+    
+
     "portsAttributes": {
-        "443": {
-            "label": "Web Server (Joomla & phpmyadmin)",
-            "onAutoForward": "silent"
-        },
-        "5432": {
-            "label": "postgres",
-            "onAutoForward": "silent"
-        },
+        "443": { "label": "Web Server", "onAutoForward": "silent" },
+        "5432": { "label": "postgres", "onAutoForward": "silent" },
         "6080": {
             "label": "Cypress GUI",
             "onAutoForward": "silent"
         },
-        "8025": {
-            "label": "Mailpit Web UI",
-            "onAutoForward": "openPreview"
-        }
+        "8025": { "label": "Mailpit", "onAutoForward": "openPreview" }
     },
-
     "forwardPorts": [80, 443, 5432, 6080, 8025],
 
-    "postCreateCommand": "docker compose --profile ${PROFILE} up -d && bash ./.devcontainer/post-create.sh",
+    // Cleaned up command
+    "postCreateCommand": "bash ./.devcontainer/post-create.sh",
 
     "customizations": {
         "vscode": {
@@ -37,23 +39,8 @@
                 "xdebug.php-debug",
                 "bmewburn.vscode-intelephense-client",
                 "esbenp.prettier-vscode"
-            ],
-            "settings": {
-                "launch": {
-                    "version": "0.2.0",
-                    "configurations": [
-                        {
-                            "name": "Listen for Xdebug",
-                            "type": "php",
-                            "request": "launch",
-                            "port": 9003,
-                            "log": false
-                        }
-                    ]
-                }
-            }
+            ]
         }
     },
-
     "remoteUser": "root"
 }
