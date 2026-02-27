@@ -37,8 +37,7 @@ services:
       MYSQL_PASSWORD: joomla_ut
     volumes:
       - mysql-data:/var/lib/mysql
-    ports:
-      - "3306:3306"
+    # Nessun ports: — non serve in Codespaces, evita conflitti con porta host
     networks:
       - internal
     healthcheck:
@@ -46,7 +45,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 20
-      start_period: 10s
+      start_period: 15s
 
   db_pgsql:
     image: postgres:16
@@ -58,8 +57,7 @@ services:
       POSTGRES_PASSWORD: joomla_ut
     volumes:
       - db_pgsql_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    # Nessun ports: — stessa ragione
     networks:
       - internal
     healthcheck:
