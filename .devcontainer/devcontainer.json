@@ -3,31 +3,25 @@
     "dockerComposeFile": "docker-compose.yml",
     "service": "app",
     "workspaceFolder": "/workspaces/testcom",
-    "runProfiles": ["mysql"],
-    // Define the PROFILE here so the script can see it without needing to grep an .env file
     "containerEnv": {
-        "PROFILE": "mysql" 
+        "PROFILE": "mysql",
+        "COMPOSE_PROFILES": "mysql"
     },
 
     "features": {
-        "ghcr.io/devcontainers/features/desktop-lite:1": {},
-        "ghcr.io/devcontainers/features/docker-in-docker:2": {
-            "version": "latest",
-            "enableNonRootDocker": "true"
-        }
+        "ghcr.io/devcontainers/features/desktop-lite:1": {}
     },
-
-    
 
     "portsAttributes": {
-        "443": { "label": "Web Server", "onAutoForward": "silent" },
-        "5432": { "label": "postgres", "onAutoForward": "silent" },
-        "6080": {"label": "Cypress GUI", "onAutoForward": "silent"},
+        "80":   { "label": "Web Server", "onAutoForward": "silent" },
+        "443":  { "label": "Web Server HTTPS", "onAutoForward": "silent" },
+        "3306": { "label": "MySQL", "onAutoForward": "silent" },
+        "5432": { "label": "PostgreSQL", "onAutoForward": "silent" },
+        "6080": { "label": "Cypress GUI", "onAutoForward": "silent" },
         "8025": { "label": "Mailpit", "onAutoForward": "openPreview" }
     },
-    "forwardPorts": [80, 443, 5432, 6080, 8025],
+    "forwardPorts": [80, 443, 3306, 5432, 6080, 8025],
 
-    // Cleaned up command
     "postCreateCommand": "bash ./.devcontainer/post-create.sh",
 
     "customizations": {
