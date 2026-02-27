@@ -34,7 +34,8 @@
             "extensions": [
                 "xdebug.php-debug",
                 "bmewburn.vscode-intelephense-client",
-                "esbenp.prettier-vscode"
+                "esbenp.prettier-vscode",
+                "cweijan.vscode-database-client2"
             ]
         }
     },
