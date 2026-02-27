@@ -226,7 +226,9 @@ sed -i "/db_prefix: process.env.DB_PREFIX/a \    cmsPath: '${JOOMLA_ROOT}'," cyp
 # --- 12. Restart Apache ---
 echo "--> Restarting Apache..."
 service apache2 restart || apache2ctl restart || true
-
+# --- Apri il multi-root workspace ---
+echo "--> Opening multi-root workspace..."
+code /workspaces/testcom/testcom.code-workspace 2>/dev/null || true
 # --- Done ---
 DETAILS_FILE="${WORKSPACE_ROOT}/codespace-details.txt"
 {
