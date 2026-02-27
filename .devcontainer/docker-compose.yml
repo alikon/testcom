@@ -16,7 +16,6 @@ services:
       - "443:443"
       - "6080:6080"
     command: sleep infinity
-    privileged: true
     networks:
       - internal
 
