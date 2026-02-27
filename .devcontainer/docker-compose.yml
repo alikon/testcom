@@ -1,3 +1,8 @@
+networks:
+  internal: 
+    name: testcom-internal
+    driver: bridge
+
 services:
   app:
     build:
@@ -59,6 +64,4 @@ volumes:
   mysql-data:
   db_pgsql_data:
 
-networks:
-  internal:
-    driver: bridge
+

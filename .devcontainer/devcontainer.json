@@ -22,10 +22,7 @@
     "portsAttributes": {
         "443": { "label": "Web Server", "onAutoForward": "silent" },
         "5432": { "label": "postgres", "onAutoForward": "silent" },
-        "6080": {
-            "label": "Cypress GUI",
-            "onAutoForward": "silent"
-        },
+        "6080": {"label": "Cypress GUI", "onAutoForward": "silent"},
         "8025": { "label": "Mailpit", "onAutoForward": "openPreview" }
     },
     "forwardPorts": [80, 443, 5432, 6080, 8025],
