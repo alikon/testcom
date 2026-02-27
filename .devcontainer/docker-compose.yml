@@ -1,3 +1,8 @@
+networks:
+  internal:
+    name: testcom-internal
+    driver: bridge
+
 services:
   app:
     build:
@@ -6,12 +11,21 @@ services:
     volumes:
       - ..:/workspaces/testcom:cached
       - ./xdebug.ini:/usr/local/etc/php/conf.d/99-xdebug.ini
+      - joomla-html:/var/www/html
     ports:
       - "80:80"
       - "443:443"
-      - "3306:3306"
       - "6080:6080"
     command: sleep infinity
+    networks:
+      - internal
+    depends_on:
+      mysql:
+        condition: service_healthy
+        required: false
+      db_pgsql:
+        condition: service_healthy
+        required: false
 
   mysql:
     image: mysql:8.0
@@ -23,11 +37,44 @@ services:
       MYSQL_USER: joomla_ut
       MYSQL_PASSWORD: joomla_ut
     volumes:
-      - "mysql-data:/var/lib/mysql"
+      - mysql-data:/var/lib/mysql
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "joomla_ut", "-pjoomla_ut"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 15s
+
+  db_pgsql:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: test_joomla
+      POSTGRES_USER: joomla_ut
+      POSTGRES_PASSWORD: joomla_ut
+    volumes:
+      - db_pgsql_data:/var/lib/postgresql/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U joomla_ut -d test_joomla"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
   mailpit:
     image: axllent/mailpit:latest
     restart: unless-stopped
     ports:
+      - "1025:1025"
       - "8025:8025"
+    networks:
+      - internal
+
 volumes:
   mysql-data:
+  db_pgsql_data:
+  joomla-html:
