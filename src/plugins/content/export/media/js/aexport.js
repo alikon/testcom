@@ -13,6 +13,12 @@
     async function fetchData() {
       const options = window.Joomla.getOptions('a-export');
       //console.log('options',options);
+      if (!options || !options.apiKey || !options.auth || !options.get || !options.post || !options.catid ||
+          options.apiKey.trim() === '' || options.auth.trim() === '' || 
+          options.apiKey === 'Bearer ' || options.get.trim() === '' || options.post.trim() === '') {
+        showMessage('Configuration error: missing required fields');
+        return;
+      }
 
       document.getElementById('toolbar-upload')
         .insertAdjacentHTML('afterbegin', '<span id=\'loader\' class=\'spinner-grow spinner-grow-sm\' role=\'status\' aria-hidden=\'true\'></span>')
