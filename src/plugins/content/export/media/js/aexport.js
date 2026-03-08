@@ -12,7 +12,7 @@
 
     async function fetchData() {
       const options = window.Joomla.getOptions('a-export');
-      console.log('options',options);
+      //console.log('options',options);
       const validation = hasValidConfig(options);
 
       if (!validation.ok) {
@@ -53,15 +53,15 @@
           //console.log('the json', resp);
           const output = resp?.data?.attributes?.alias ?? 'No data';
           //console.log('the o', output);
-          showMessage('Category check', 'success');
+          showMessage(Joomla.Text._('PLG_CONTENT_EXPORT_CATEGORY_CHECK'), 'success');
           return true;
         }
-        showMessage('Category check: ' + response?.status + ' - ' + response?.statusText, 'error');
+        showMessage(Joomla.Text._('PLG_CONTENT_EXPORT_CATEGORY_CHECK_ERROR') + ': ' + response?.status + ' - ' + response?.statusText, 'error');
         return false;
       } catch (error) {
-        let errorMsg = 'Network error occurred';
+        let errorMsg = Joomla.Text._('PLG_CONTENT_EXPORT_NETWORK_ERROR');
         if (error.name === 'TypeError' || error.message.includes('CORS')) {
-          errorMsg = 'CORS error: The GET method is not allowed. Add "GET" to Access-Control-Allow-Methods header on the API server.';
+          errorMsg = Joomla.Text._('PLG_CONTENT_EXPORT_CORS_GET_ERROR');
         } else if (error.message) {
           errorMsg = error.message;
         }
@@ -73,7 +73,7 @@
     async function postArticle(options) {
       // Validate article data before posting
       if (!options.article || !options.article.title || !options.article.catid) {
-        showMessage('Cannot create article: Article must be saved first with a title and category.', 'error');
+        showMessage(Joomla.Text._('PLG_CONTENT_EXPORT_ARTICLE_SAVE_REQUIRED'), 'error');
         return false;
       }
 
@@ -102,15 +102,15 @@
           //console.log('the json', resp);
           const output = resp?.data?.attributes?.alias ?? 'No data';
           //console.log('the o', output);
-          showMessage('Article created', 'success');
+          showMessage(Joomla.Text._('PLG_CONTENT_EXPORT_ARTICLE_CREATED'), 'success');
           return true;
         }
-        showMessage('Article not created ' + response?.status + ' ' + response?.statusText, 'error');
+        showMessage(Joomla.Text._('PLG_CONTENT_EXPORT_ARTICLE_NOT_CREATED') + ' ' + response?.status + ' ' + response?.statusText, 'error');
         return false;
       } catch (error) {
-        let errorMsg = 'Network error occurred';
+        let errorMsg = Joomla.Text._('PLG_CONTENT_EXPORT_NETWORK_ERROR');
         if (error.name === 'TypeError' || error.message.includes('CORS')) {
-          errorMsg = 'CORS error: The POST method is not allowed. Add "POST" to Access-Control-Allow-Methods header on the API server.';
+          errorMsg = Joomla.Text._('PLG_CONTENT_EXPORT_CORS_POST_ERROR');
         } else if (error.message) {
           errorMsg = error.message;
         }
@@ -122,7 +122,7 @@
     async function patchArticle(options, articleid) {
       // Validate article data before patching
       if (!options.article || !options.article.title) {
-        showMessage('Cannot update article: Article must be saved first with a title.', 'error');
+        showMessage(Joomla.Text._('PLG_CONTENT_EXPORT_ARTICLE_UPDATE_REQUIRED'), 'error');
         return false;
       }
 
@@ -151,15 +151,15 @@
           //console.log('the json', resp);
           const output = resp?.data?.attributes?.alias ?? 'No data';
           //console.log('the o', output);
-          showMessage('Article exported', 'success');
+          showMessage(Joomla.Text._('PLG_CONTENT_EXPORT_ARTICLE_EXPORTED'), 'success');
           return true;
         }
         showMessage(response?.status + ' ' + response?.statusText, 'error');
         return false;
       } catch (error) {
-        let errorMsg = 'Network error occurred';
+        let errorMsg = Joomla.Text._('PLG_CONTENT_EXPORT_NETWORK_ERROR');
         if (error.name === 'TypeError' || error.message.includes('CORS')) {
-          errorMsg = 'CORS error: The PATCH method is not allowed. Add "PATCH" to Access-Control-Allow-Methods header on the API server.';
+          errorMsg = Joomla.Text._('PLG_CONTENT_EXPORT_CORS_PATCH_ERROR');
         } else if (error.message) {
           errorMsg = error.message;
         }
@@ -187,7 +187,7 @@
         console.log('HTTP Response Text: ', response?.statusText)
         //showMessage(response?.status + ' ' + response?.statusText);
         if (response?.ok) {
-          showMessage('Article Check', 'success');
+          showMessage(Joomla.Text._('PLG_CONTENT_EXPORT_ARTICLE_CHECK'), 'success');
           //console.log('The checkArticle response');
           const resp = await response.json();
           //console.log('the json', resp);
@@ -214,7 +214,7 @@
     }
     function hasValidConfig(options) {
         if (!options || typeof options !== 'object') {
-            return { ok: false, message: 'Invalid configuration: options object is required.' };
+            return { ok: false, message: Joomla.Text._('PLG_CONTENT_EXPORT_INVALID_CONFIG_OBJECT') };
         }
 
         // Coerce to string safely
