@@ -62,11 +62,13 @@ final class UpdatefromcliCommand extends AbstractCommand
                 $symfonyStyle->error('Extension ID not found');
                 return Command::FAILURE;
             }
-			// Load languages key 
+
+			// Load core and installer language files
             $language = $this->getApplication()->getLanguage();
 			$language->load('lib_joomla', JPATH_ADMINISTRATOR);
             $language->load('com_installer', JPATH_ADMINISTRATOR, 'en-GB', false, true);
             $language->load('com_installer', JPATH_ADMINISTRATOR, null, true);
+
             // Find updates.
             /** @var UpdateModel $model */
             $model = $this->getApplication()->bootComponent('com_installer')
