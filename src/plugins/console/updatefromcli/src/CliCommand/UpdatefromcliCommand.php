@@ -62,6 +62,11 @@ final class UpdatefromcliCommand extends AbstractCommand
                 $symfonyStyle->error('Extension ID not found');
                 return Command::FAILURE;
             }
+			// Load languages key 
+            $language = $this->getApplication()->getLanguage();
+			$language->load('lib_joomla', JPATH_ADMINISTRATOR);
+            $language->load('com_installer', JPATH_ADMINISTRATOR, 'en-GB', false, true);
+            $language->load('com_installer', JPATH_ADMINISTRATOR, null, true);
             // Find updates.
             /** @var UpdateModel $model */
             $model = $this->getApplication()->bootComponent('com_installer')
@@ -90,10 +95,7 @@ final class UpdatefromcliCommand extends AbstractCommand
             $extensions = $this->getExtensionInfo($update);
             $symfonyStyle->table(['Extension ID', 'Name', 'Location', 'Type', 'Installed','Available', 'Folder'], $extensions);
 
-            // Load com_installer's language
-            $language = $this->getApplication()->getLanguage();
-            $language->load('com_installer', JPATH_ADMINISTRATOR, 'en-GB', false, true);
-            $language->load('com_installer', JPATH_ADMINISTRATOR, null, true);
+
             // Get the minimum stability.
             $params            = ComponentHelper::getComponent('com_installer')->getParams();
             $minimum_stability = (int) $params->get('minimum_stability', Updater::STABILITY_STABLE);
