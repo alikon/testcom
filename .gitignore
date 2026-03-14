@@ -48,7 +48,7 @@ cypress.config.js
 joomla
 
 # Package building related
-dist
+dist/*
 !dist/pkg-alikonweb-current.zip
 jorobo.ini
 
