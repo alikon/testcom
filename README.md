@@ -39,5 +39,5 @@ PHP >= 7.2.5
 ~~The **system plugin scheduler** [plg_system_scheduler.zip](https://github.com/alikon/testcom/blob/main/build/packages/plg_system_scheduler.zip)~~
 
 
-https://img.shields.io/github/downloads/alikon/testcom/latest/plg_content_export-2.0.0.zip
-https://img.shields.io/github/downloads/alikon/testcom/latest/plg_task_deltrash-1.7.0.zip
+https://img.shields.io/github/downloads/alikon/testcom/1.0/plg_content_export-2.0.0.zip
+https://img.shields.io/github/downloads/alikon/testcom/1.0/plg_task_deltrash-1.7.0.zip
