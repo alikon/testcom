@@ -49,6 +49,7 @@ joomla
 
 # Package building related
 dist
+!dist/pkg-alikonweb-current.zip
 jorobo.ini
 
 # Github Codespaces
