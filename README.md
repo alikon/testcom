@@ -8,39 +8,12 @@ Build Status
 | [![Build Status](https://github.com/alikon/testcom/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/alikon/testcom) | [![PHP](https://img.shields.io/badge/PHP-V8.1.0-green)](https://www.php.net/) | [![node-lts](https://img.shields.io/badge/Node-V20.0-green)](https://nodejs.org/en/) | [![npm](https://img.shields.io/badge/npm-v10.1.0-green)](https://nodejs.org/en/) |
 
 ## Requirements
-Joomla >= 4.0
+Joomla >= 5.0
 
-MySQL >= 5.6.0 or PostgreSQL >= 11.0
+MySQL >= 8.0.0 or PostgreSQL >= 12.0
 
-PHP >= 7.2.5
+PHP >= 8.1.0
 
-~~## Installation~~
-
-~~Install the package [pkg_jobs.zip](https://github.com/alikon/testcom/blob/main/build/packages/pkg_jobs.zip)~~
-
-~~the package include:~~
-
-~~The **Jobs** component [com_jobs.zip](https://github.com/alikon/testcom/blob/main/build/packages/com_jobs.zip)~~
-
-~~The job plugin **ExportDB** [plg_job_exportdb.zip](https://github.com/alikon/testcom/blob/main/build/packages/plg_job_exportdb.zip)~~
-
-~~The job plugin **Log rotation** [plg_job_logrotation.zip](https://github.com/alikon/testcom/blob/main/build/packages/plg_job_logrotation.zip)~~
-
-~~The job plugin **Clean expired cache** [plg_job_cleancache.zip](https://github.com/alikon/testcom/blob/main/build/packages/plg_job_cleancache.zip)~~
-
-~~The job plugin **Expire privacy consent** [plg_job_expiredconsent.zip](https://github.com/alikon/testcom/blob/main/build/packages/plg_job_expiredconsent.zip)~~
-
-~~The job plugin **Start a Friend** [plg_job_startafriend.zip](https://github.com/alikon/testcom/blob/main/build/packages/plg_job_startafriend.zip)~~
-
-~~The **webservices plugin Jobs** [plg_webservices_jobs.zip](https://github.com/alikon/testcom/blob/main/build/packages/plg_webservices_jobs.zip)~~
-
-~~The **console plugin Jobs** [plg_console_job.zip](https://github.com/alikon/testcom/blob/main/build/packages/plg_console_job.zip)~~
- 
-~~The **system plugin scheduler** [plg_system_scheduler.zip](https://github.com/alikon/testcom/blob/main/build/packages/plg_system_scheduler.zip)~~
-
-
-https://img.shields.io/github/downloads/alikon/testcom/1.0/plg_content_export-2.0.0.zip
-https://img.shields.io/github/downloads/alikon/testcom/1.0/plg_task_deltrash-1.7.0.zip
 ## Extension Download Stats
 
 | Extension Name | Version | Download Count |
