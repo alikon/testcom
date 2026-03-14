@@ -41,3 +41,9 @@ PHP >= 7.2.5
 
 https://img.shields.io/github/downloads/alikon/testcom/1.0/plg_content_export-2.0.0.zip
 https://img.shields.io/github/downloads/alikon/testcom/1.0/plg_task_deltrash-1.7.0.zip
+## Extension Download Stats
+
+| Extension Name | Version | Download Count |
+| :--- | :--- | :--- |
+| **Content Export** | v2.0.0 | [![Downloads](https://img.shields.io/github/downloads/alikon/testcom/1.0/plg_content_export-2.0.0.zip)](https://github.com/alikon/testcom/releases/tag/1.0) |
+| **Task Delete trashed** | v1.7.0 | [![Downloads](https://img.shields.io/github/downloads/alikon/testcom/1.0/plg_task_deletetrash-1.7.0.zip)](https://github.com/alikon/testcom/releases/tag/1.0) |
