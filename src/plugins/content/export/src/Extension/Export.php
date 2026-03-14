@@ -64,7 +64,7 @@ final class Export extends CMSPlugin
             // Append button on Article
             if ($this->app->input->getCmd('option') === 'com_content' && $this->app->input->getCmd('view') === 'article') {
                 if ($this->params->get('authorization') === 'Bearer') {
-                    $auth = 'Authorization ';
+                    $auth = 'Authorization';
                     $key = 'Bearer ' . $this->params->get('key');
                 }
 
