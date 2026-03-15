@@ -2,7 +2,7 @@
 
 namespace Joomla\Module\GithubPortfolio\Site\Helper;
 
-defined('_JEXEC') or die;
+\defined('_JEXEC') or die;
 
 class GithubPortfolioHelper
 {

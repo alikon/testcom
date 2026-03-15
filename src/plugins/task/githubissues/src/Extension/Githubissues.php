@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugins
  * @subpackage  Task.Github
@@ -10,20 +11,20 @@
 namespace Joomla\Plugin\Task\Githubissues\Extension;
 
 // Restrict direct access
-defined('_JEXEC') or die;
+\defined('_JEXEC') or die;
 
-use Joomla\Database\ParameterType;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Component\Scheduler\Administrator\Event\ExecuteTaskEvent;
 use Joomla\Component\Scheduler\Administrator\Task\Status as TaskStatus;
 use Joomla\Component\Scheduler\Administrator\Traits\TaskPluginTrait;
-use Joomla\Event\SubscriberInterface;
 use Joomla\Database\DatabaseAwareInterface;
 use Joomla\Database\DatabaseAwareTrait;
-use Joomla\CMS\Http\HttpFactory;
+use Joomla\Database\ParameterType;
+use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
-use Joomla\CMS\Factory;
 
 /**
  * Task plugin with routines that offer checks on files.
@@ -31,7 +32,7 @@ use Joomla\CMS\Factory;
  *
  * @since  4.1.0
  */
-final class Githubissues extends CMSPlugin implements SubscriberInterface,  DatabaseAwareInterface
+final class Githubissues extends CMSPlugin implements SubscriberInterface, DatabaseAwareInterface
 {
     use DatabaseAwareTrait;
     use TaskPluginTrait;
@@ -91,21 +92,18 @@ final class Githubissues extends CMSPlugin implements SubscriberInterface,  Data
     protected function getGithubIssues(ExecuteTaskEvent $event): int
     {
         //
-        $params = $event->getArgument('params');
+        $params   = $event->getArgument('params');
         $response = '';
 
-        $options  = new Registry;
+        $options  = new Registry();
         $options->set('Content-Type', 'application/json');
 
         // Don't let the request take longer than 3 seconds to avoid timeout issues
         $apiurl = 'https://api.github.com/search/issues?q=repo:joomla/joomla-cms+type:issue+state:open&per_page=1';
-    
-        try
-        {
+
+        try {
             $response = HttpFactory::getHttp($options)->get($apiurl, [], 3);
-        }	
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return TaskStatus::KNOCKOUT;
         }
 
@@ -119,13 +117,10 @@ final class Githubissues extends CMSPlugin implements SubscriberInterface,  Data
 
         // Don't let the request take longer than 3 seconds to avoid timeout issues
         $apiurl = 'https://api.github.com/search/issues?q=repo:joomla/joomla-cms+type:issue+state:closed&per_page=1';
-    
-        try
-        {
+
+        try {
             $response = HttpFactory::getHttp($options)->get($apiurl, [], 3);
-        }	
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return TaskStatus::KNOCKOUT;
         }
 
@@ -139,13 +134,10 @@ final class Githubissues extends CMSPlugin implements SubscriberInterface,  Data
 
         // Don't let the request take longer than 3 seconds to avoid timeout issues
         $apiurl = 'https://api.github.com/search/issues?q=repo:joomla/joomla-cms+type:pr+state:open&per_page=1';
-    
-        try
-        {
+
+        try {
             $response = HttpFactory::getHttp($options)->get($apiurl, [], 3);
-        }	
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return TaskStatus::KNOCKOUT;
         }
 
@@ -159,13 +151,10 @@ final class Githubissues extends CMSPlugin implements SubscriberInterface,  Data
 
         // Don't let the request take longer than 3 seconds to avoid timeout issues
         $apiurl = 'https://api.github.com/search/issues?q=repo:joomla/joomla-cms+type:pr+state:closed&per_page=1';
-    
-        try
-        {
+
+        try {
             $response = HttpFactory::getHttp($options)->get($apiurl, [], 3);
-        }	
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return TaskStatus::KNOCKOUT;
         }
 
@@ -198,14 +187,11 @@ final class Githubissues extends CMSPlugin implements SubscriberInterface,  Data
             ->bind(':execution', $date);
 
         $this->db->setQuery($query);
-        
-        try
-        {
+
+        try {
             $this->db->execute();
 
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return TaskStatus::KNOCKOUT;
         }
 
@@ -223,6 +209,6 @@ final class Githubissues extends CMSPlugin implements SubscriberInterface,  Data
     {
         return \is_object($decoded)
             && property_exists($decoded, 'total_count')
-            && \is_numeric($decoded->total_count);
+            && is_numeric($decoded->total_count);
     }
 }
