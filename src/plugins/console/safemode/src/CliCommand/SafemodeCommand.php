@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Console.safemode
@@ -6,16 +7,16 @@
  * @copyright   Copyright (C) 2026 Alikon. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
+
 namespace Joomla\Plugin\Console\Safemode\CliCommand;
 
-defined('_JEXEC') or die;
+\defined('_JEXEC') or die;
 
-use Joomla\Console\Command\AbstractCommand;
-use Joomla\CMS\Factory;
 use Joomla\CMS\Extension\ExtensionHelper;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
-
+use Joomla\Console\Command\AbstractCommand;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Plugin\System\Safemode\Helper\SafemodeHelper;
@@ -62,7 +63,7 @@ class SafemodeCommand extends AbstractCommand
             ['safemode']
         );
 
-        
+
 
         $action  = $input->getOption('action') ?? 'status';
         $dryRun  = (bool) $input->getOption('dry-run');
@@ -258,13 +259,13 @@ final class SafemodeCommand extends AbstractCommand
      */
     private $helper;
 
-   /**
-     * SafemodeCommand constructor.
-     *
-     * @param  DatabaseInterface|null  $db  Optional DB instance, falls back to container/Factory.
-     *
-     * @since  __DEPLOY_VERSION__
-     */
+    /**
+      * SafemodeCommand constructor.
+      *
+      * @param  DatabaseInterface|null  $db  Optional DB instance, falls back to container/Factory.
+      *
+      * @since  __DEPLOY_VERSION__
+      */
     public function __construct(?DatabaseInterface $db = null)
     {
         parent::__construct();
@@ -311,8 +312,8 @@ final class SafemodeCommand extends AbstractCommand
     protected function doExecute(InputInterface $input, OutputInterface $output): int
     {
         $symfonyStyle = new SymfonyStyle($input, $output);
-        $action = $input->getOption('action');
-        $dryRun = $input->getOption('dry-run');
+        $action       = $input->getOption('action');
+        $dryRun       = $input->getOption('dry-run');
 
         // Initialize helper
         $this->helper = new SafemodeHelper($this->getDatabase());
@@ -345,11 +346,11 @@ final class SafemodeCommand extends AbstractCommand
     private function handleStatus(OutputInterface $output): int
     {
         $isActive = $this->helper->isSafeModeActive();
-        
+
         if ($isActive) {
             $disabled = $this->helper->readDisabledIds();
             $output->writeln('<info>' . Text::_('PLG_CONSOLE_SAFEMODE_STATUS_ON') . '</info>');
-            $output->writeln(sprintf(Text::_('PLG_CONSOLE_SAFEMODE_DISABLED_IDS'), implode(', ', $disabled)));
+            $output->writeln(\sprintf(Text::_('PLG_CONSOLE_SAFEMODE_DISABLED_IDS'), implode(', ', $disabled)));
         } else {
             $output->writeln('<info>' . Text::_('PLG_CONSOLE_SAFEMODE_STATUS_OFF') . '</info>');
         }
@@ -419,7 +420,7 @@ final class SafemodeCommand extends AbstractCommand
         }
 
         $disabled = $this->helper->readDisabledIds();
-        $plugins = $this->helper->getRestorablePlugins($disabled);
+        $plugins  = $this->helper->getRestorablePlugins($disabled);
 
         if (!empty($plugins)) {
             $output->writeln('<info>' . Text::_('PLG_CONSOLE_SAFEMODE_PLUGINS_TO_RESTORE') . '</info>');

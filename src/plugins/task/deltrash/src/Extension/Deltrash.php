@@ -10,9 +10,13 @@
 
 namespace Joomla\Plugin\Task\Deltrash\Extension;
 
+use Joomla\CMS\Access\Access;
 use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Table\Table;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Scheduler\Administrator\Event\ExecuteTaskEvent;
 use Joomla\Component\Scheduler\Administrator\Task\Status;
@@ -21,10 +25,6 @@ use Joomla\Database\DatabaseAwareInterface;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
-use Joomla\CMS\Access\Access;
-use Joomla\CMS\Factory;
-use Joomla\CMS\User\UserFactoryInterface;
-use Joomla\CMS\Table\Table;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -40,7 +40,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      * @since 4.1.0
      */
     protected const TASKS_MAP = [
-        'plg_task_deltrash'             => [
+        'plg_task_deltrash' => [
             'langConstPrefix' => 'PLG_TASK_DELTRASH',
             'form'            => 'deltrash_parameters',
             'method'          => 'deleteTrash',
@@ -232,7 +232,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             $db->setQuery($query);
             $db->execute();
             // versions
-            $a = 'com_content.article.' . $item->id;
+            $a     = 'com_content.article.' . $item->id;
             $query = $db->getQuery(true)
                 ->delete($db->quoteName('#__history'))
                 ->where($db->quoteName('item_id') . '= :ucmitemid')
@@ -241,7 +241,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             $db->execute();
             // infamous workflow
             $extension = 'com_content.article';
-            $query = $db->getQuery(true)
+            $query     = $db->getQuery(true)
                 ->delete($db->quoteName('#__workflow_associations'))
                 ->where($db->quoteName('item_id') . '= :wrkflid')
                 ->where($db->quoteName('extension') . ' = :extension')
@@ -263,11 +263,11 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
 
     private function delModules(array $type = []): void
     {
-        $mod = 0;
+        $mod      = 0;
         $strashed = [];
         $atrashed = [];
 
-        if (in_array('site', $type)) {
+        if (\in_array('site', $type)) {
             /** @var \Joomla\Component\Modules\Administrator\Model\ModuleModel $model */
             $model = $this->app->bootComponent('com_modules')->getMVCFactory()
                 ->createModel('Modules', 'Administrator', ['ignore_request' => true]);
@@ -275,7 +275,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             $strashed = $model->getItems();
         }
 
-        if (in_array('admin', $type)) {
+        if (\in_array('admin', $type)) {
             $gmodel = $this->app->bootComponent('com_modules')->getMVCFactory()
                 ->createModel('Modules', 'Administrator', ['ignore_request' => true]);
             $gmodel->setState('filter.client_id', 1);
@@ -381,11 +381,11 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
 
     private function delMenuItems(array $type = []): void
     {
-        $art = 0;
+        $art      = 0;
         $strashed = [];
         $atrashed = [];
 
-        if (in_array('admin', $type)) {
+        if (\in_array('admin', $type)) {
             /** @var \Joomla\Component\Content\Administrator\Model\ArticlesModel $model */
             $model = $this->app->bootComponent('com_menus')
                 ->getMVCFactory()->createModel('Items', 'Administrator', ['ignore_request' => true]);
@@ -395,7 +395,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             $atrashed = $model->getItems();
         }
 
-        if (in_array('site', $type)) {
+        if (\in_array('site', $type)) {
             /** @var \Joomla\Component\Content\Administrator\Model\ArticlesModel $model */
             $model = $this->app->bootComponent('com_menus')
                 ->getMVCFactory()->createModel('Items', 'Administrator', ['ignore_request' => true]);
@@ -455,21 +455,21 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      *
      * @since   3.1
      */
-    private function createRootUser() : bool
+    private function createRootUser(): bool
     {
-        $options = new \stdClass();
+        $options                       = new \stdClass();
         $options->admin_password_plain = '123456789012';
-        $options->admin_user = 'cliagent';
-        $options->admin_username = 'cliagent';
-        $options->admin_email = 'aa@aa.it';
+        $options->admin_user           = 'cliagent';
+        $options->admin_username       = 'cliagent';
+        $options->admin_email          = 'aa@aa.it';
 
         $cryptpass = UserHelper::hashPassword($options->admin_password_plain);
 
         // Create the admin user.
         date_default_timezone_set('UTC');
         $installdate = date('Y-m-d H:i:s');
-        $db    = $this->getDatabase();
-        $query = $db->getQuery(true);
+        $db          = $this->getDatabase();
+        $query       = $db->getQuery(true);
 
         $query = $db->getQuery(true)
             ->select($db->quoteName('id'))
@@ -565,28 +565,27 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         return true;
     }
 
-    private function setGrant() : void
-	{
-		// Get all usergroups with Super User access
-		$db = $this->db;
-		$query = $db->getQuery(true)
-			 ->select([$db->qn('id')])
-			->from($db->qn('#__usergroups'));
-		$groups = $db->setQuery($query)->loadColumn();
+    private function setGrant(): void
+    {
+        // Get all usergroups with Super User access
+        $db    = $this->db;
+        $query = $db->getQuery(true)
+             ->select([$db->qn('id')])
+            ->from($db->qn('#__usergroups'));
+        $groups = $db->setQuery($query)->loadColumn();
 
-		// Get the groups that are Super Users
-		$groups = array_filter($groups, function ($gid) {
-			return Access::checkGroup($gid, 'core.admin');
-		});
+        // Get the groups that are Super Users
+        $groups = array_filter($groups, function ($gid) {
+            return Access::checkGroup($gid, 'core.admin');
+        });
 
-		foreach ($groups as $gid)
-		{
-			$uids = Access::getUsersByGroup($gid);
-			$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($uids[0]);
-			$this->app->getSession()->set('user', $user);
+        foreach ($groups as $gid) {
+            $uids = Access::getUsersByGroup($gid);
+            $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($uids[0]);
+            $this->app->getSession()->set('user', $user);
             $this->app->loadIdentity($user);
 
-			break;
-		}
-	}
+            break;
+        }
+    }
 }

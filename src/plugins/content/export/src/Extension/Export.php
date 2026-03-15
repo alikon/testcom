@@ -66,12 +66,12 @@ final class Export extends CMSPlugin
             if ($this->app->input->getCmd('option') === 'com_content' && $this->app->input->getCmd('view') === 'article') {
                 if ($this->params->get('authorization') === 'Bearer') {
                     $auth = 'Authorization';
-                    $key = 'Bearer ' . $this->params->get('key');
+                    $key  = 'Bearer ' . $this->params->get('key');
                 }
 
                 if ($this->params->get('authorization') === 'X-Joomla-Token') {
                     $auth = 'X-Joomla-Token';
-                    $key = $this->params->get('key');
+                    $key  = $this->params->get('key');
                 }
 
                 $id            = $this->app->input->get('id');
@@ -90,10 +90,10 @@ final class Export extends CMSPlugin
                 $item        = $model->getItem($id);
                 $item->catid = $this->params->get('catid');
                 $item->state = $this->params->get('state', 0);
-                unset($item->created_by);
-                unset($item->typeAlias);
-                unset($item->asset_id);
-                unset($item->tagsHelper);
+                unset($item->created_by, $item->typeAlias, $item->asset_id, $item->tagsHelper);
+
+
+
 
                 $wa = $this->app->getDocument()->getWebAssetManager();
 

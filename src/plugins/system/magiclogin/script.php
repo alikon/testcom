@@ -100,7 +100,7 @@ return new class () implements ServiceProviderInterface {
                  */
                 public function install(InstallerAdapter $adapter): bool
                 {
-                    
+
                     $this->createTable();
                     return true;
                 }
@@ -130,7 +130,7 @@ return new class () implements ServiceProviderInterface {
                  */
                 public function uninstall(InstallerAdapter $adapter): bool
                 {
-                    
+
                     $this->dropTable();
                     return true;
                 }
@@ -215,16 +215,16 @@ return new class () implements ServiceProviderInterface {
                         if ($db->getServerType() === 'postgresql') {
                             $query->where("table_schema = current_schema()");
                         } else {
-                            $query->where($db->quoteName('table_schema') . ' = DATABASE()');       
+                            $query->where($db->quoteName('table_schema') . ' = DATABASE()');
                         }
 
                         $db->setQuery($query);
                         $tableExists = $db->loadResult();
 
                         if (!$tableExists) {
-                            // Create the #__magiclogin_tokens table 
+                            // Create the #__magiclogin_tokens table
                             if ($db->getServerType() === 'postgresql') {
-                                 $query = 'CREATE TABLE IF NOT EXISTS "#__magiclogin_tokens" (
+                                $query = 'CREATE TABLE IF NOT EXISTS "#__magiclogin_tokens" (
                                         "id" SERIAL PRIMARY KEY,
                                         "user_id" INTEGER NOT NULL,
                                         "token" VARCHAR(255) NOT NULL,
@@ -235,20 +235,20 @@ return new class () implements ServiceProviderInterface {
                                         CONSTRAINT "uq_magiclogin_tokens_token" UNIQUE ("token")
                                     );';
                                 $db->setQuery($query);
-                                $db->execute();    
+                                $db->execute();
                                 $query = 'CREATE INDEX IF NOT EXISTS "idx_magiclogin_tokens_user_id" 
                                             ON "#__magiclogin_tokens" ("user_id");';
                                 $db->setQuery($query);
-                                $db->execute();            
+                                $db->execute();
                                 $query = 'CREATE INDEX IF NOT EXISTS "idx_magiclogin_tokens_expires" 
                                             ON "#__magiclogin_tokens" ("expires");';
                                 $db->setQuery($query);
-                                $db->execute(); 
+                                $db->execute();
                                 $query = 'CREATE INDEX IF NOT EXISTS "idx_magiclogin_tokens_ip_address" 
                                             ON "#__magiclogin_tokens" ("ip_address");';
                                 $db->setQuery($query);
-                                $db->execute(); 
-                            } else {  
+                                $db->execute();
+                            } else {
                                 $query = 'CREATE TABLE IF NOT EXISTS `#__magiclogin_tokens` (
                                           `id` int(11) NOT NULL AUTO_INCREMENT,
                                           `user_id` int(11) NOT NULL,
