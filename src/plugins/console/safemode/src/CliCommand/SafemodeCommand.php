@@ -13,6 +13,7 @@ defined('_JEXEC') or die;
 use Joomla\Console\Command\AbstractCommand;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Extension\ExtensionHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 
 use Joomla\Database\DatabaseAwareTrait;
@@ -327,7 +328,7 @@ final class SafemodeCommand extends AbstractCommand
                 return $this->handleOff($output, $dryRun);
 
             default:
-                $output->writeln('<error>Invalid action. Use: on, off, or status</error>');
+                $output->writeln('<error>' . Text::_('PLG_CONSOLE_SAFEMODE_INVALID_ACTION') . '</error>');
                 return 1;
         }
     }
@@ -347,10 +348,10 @@ final class SafemodeCommand extends AbstractCommand
         
         if ($isActive) {
             $disabled = $this->helper->readDisabledIds();
-            $output->writeln('<info>SafeMode is currently ON</info>');
-            $output->writeln('Disabled plugin IDs: ' . implode(', ', $disabled));
+            $output->writeln('<info>' . Text::_('PLG_CONSOLE_SAFEMODE_STATUS_ON') . '</info>');
+            $output->writeln(sprintf(Text::_('PLG_CONSOLE_SAFEMODE_DISABLED_IDS'), implode(', ', $disabled)));
         } else {
-            $output->writeln('<info>SafeMode is currently OFF</info>');
+            $output->writeln('<info>' . Text::_('PLG_CONSOLE_SAFEMODE_STATUS_OFF') . '</info>');
         }
 
         return 0;
@@ -369,37 +370,34 @@ final class SafemodeCommand extends AbstractCommand
     private function handleOn(OutputInterface $output, bool $dryRun): int
     {
         if ($this->helper->isSafeModeActive()) {
-            $output->writeln('<comment>SafeMode already ON</comment>');
+            $output->writeln('<comment>' . Text::_('PLG_CONSOLE_SAFEMODE_ALREADY_ON') . '</comment>');
             return 0;
         }
 
-        // Get plugins that will be disabled
         $plugins = $this->helper->getDisableablePlugins();
 
         if (empty($plugins)) {
-            $output->writeln('<comment>No plugins to disable</comment>');
+            $output->writeln('<comment>' . Text::_('PLG_CONSOLE_SAFEMODE_NO_PLUGINS_DISABLE') . '</comment>');
             return 0;
         }
 
-        $output->writeln('<info>Plugins to disable:</info>');
+        $output->writeln('<info>' . Text::_('PLG_CONSOLE_SAFEMODE_PLUGINS_TO_DISABLE') . '</info>');
         foreach ($plugins as $plugin) {
             $output->writeln(' - ' . $plugin->name . ' (ID: ' . $plugin->extension_id . ')');
         }
 
         if ($dryRun) {
-            $output->writeln('<comment>[DRY RUN] No changes made</comment>');
+            $output->writeln('<comment>' . Text::_('PLG_CONSOLE_SAFEMODE_DRY_RUN') . '</comment>');
             return 0;
         }
 
-        // Disable plugins
         $this->helper->disablePlugins(false);
-        
-        // Set admin flag
+
         if (!$this->helper->setAdminFlag(true)) {
-            $output->writeln('<warning>Warning: Failed to set admin UI flag</warning>');
+            $output->writeln('<warning>' . Text::_('PLG_CONSOLE_SAFEMODE_WARN_ADMIN_FLAG') . '</warning>');
         }
 
-        $output->writeln('<info>SafeMode is now ON</info>');
+        $output->writeln('<info>' . Text::_('PLG_CONSOLE_SAFEMODE_NOW_ON') . '</info>');
         return 0;
     }
 
@@ -416,37 +414,34 @@ final class SafemodeCommand extends AbstractCommand
     private function handleOff(OutputInterface $output, bool $dryRun): int
     {
         if (!$this->helper->isSafeModeActive()) {
-            $output->writeln('<comment>SafeMode already OFF</comment>');
+            $output->writeln('<comment>' . Text::_('PLG_CONSOLE_SAFEMODE_ALREADY_OFF') . '</comment>');
             return 0;
         }
 
-        // Get plugins that will be restored
         $disabled = $this->helper->readDisabledIds();
         $plugins = $this->helper->getRestorablePlugins($disabled);
 
         if (!empty($plugins)) {
-            $output->writeln('<info>Plugins to restore:</info>');
+            $output->writeln('<info>' . Text::_('PLG_CONSOLE_SAFEMODE_PLUGINS_TO_RESTORE') . '</info>');
             foreach ($plugins as $plugin) {
                 $output->writeln(' - ' . $plugin->name . ' (ID: ' . $plugin->extension_id . ')');
             }
         } else {
-            $output->writeln('<comment>No plugins to restore</comment>');
+            $output->writeln('<comment>' . Text::_('PLG_CONSOLE_SAFEMODE_NO_PLUGINS_RESTORE') . '</comment>');
         }
 
         if ($dryRun) {
-            $output->writeln('<comment>[DRY RUN] No changes made</comment>');
+            $output->writeln('<comment>' . Text::_('PLG_CONSOLE_SAFEMODE_DRY_RUN') . '</comment>');
             return 0;
         }
 
-        // Restore plugins (this also clears the state file)
         $this->helper->restorePlugins(false);
 
-        // Clear admin flag
         if (!$this->helper->setAdminFlag(false)) {
-            $output->writeln('<warning>Warning: Failed to clear admin UI flag</warning>');
+            $output->writeln('<warning>' . Text::_('PLG_CONSOLE_SAFEMODE_WARN_CLEAR_FLAG') . '</warning>');
         }
 
-        $output->writeln('<info>SafeMode is now OFF</info>');
+        $output->writeln('<info>' . Text::_('PLG_CONSOLE_SAFEMODE_NOW_OFF') . '</info>');
         return 0;
     }
 }

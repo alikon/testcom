@@ -128,8 +128,12 @@ class SafemodePlugin extends CMSPlugin implements SubscriberInterface
      */
     private function showAdminBanner(): void
     {
+        $this->getApplication()->getLanguage()->load(
+            'plg_system_safemode',
+            JPATH_PLUGINS . '/system/safemode'
+        );
         $this->getApplication()->enqueueMessage(
-            'SafeMode is currently active. Non-core plugins are disabled.',
+            Text::_('PLG_SYSTEM_SAFEMODE_BANNER'),
             'warning'
         );
     }
