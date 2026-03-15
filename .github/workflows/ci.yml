@@ -82,7 +82,7 @@ jobs:
         shell: bash
         run: |
           URL=$(
-            curl -s "https://api.github.com/repos/joomla/joomla-cms/releases" \
+            curl -s "https://api.github.com/repos/joomla/joomla-cms/releases?per_page=50" \
             | jq -r --arg ver "${{ matrix.joomla-version }}" '
                 .[]
                 | .assets[]
