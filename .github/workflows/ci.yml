@@ -118,8 +118,15 @@ jobs:
 
       - name: Build and Verify
         run: |
+          # 1. Verify zip is not empty and is valid
+          if [ ! -s joomla.zip ]; then echo "joomla.zip is empty"; exit 1; fi
+          unzip -t joomla.zip
+          
+          # 2. Run build
           vendor/bin/robo build
-          unzip -t joomla.zip > /dev/null
+          
+          # 3. Ensure dist directory exists before upload
+          mkdir -p dist
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -129,6 +136,7 @@ jobs:
             dist/
             joomla.zip
           retention-days: 1
+          if-no-files-found: error
 
 # -------------------------------------------------
 # PHPSTAN
@@ -146,6 +154,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: build-artifacts-j${{ matrix.joomla-version }}
+          path: .
       - uses: ./.github/actions/setup-dependencies
       - name: Run PHPStan
         continue-on-error: true
@@ -179,13 +188,13 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: build-artifacts-j${{ matrix.joomla-version }}
+          path: .
       - uses: ./.github/actions/setup-dependencies
       - uses: ./.github/actions/setup-cypress
       - name: Run MySQL system tests
         run: |
           unzip -q joomla.zip -d joomla
-         # cp cypress.config.dist.js cypress.config.js
-         # npx cypress run --browser chrome --e2e --config video=false
+          # npx cypress run --browser chrome --e2e --config video=false
 
 # -------------------------------------------------
 # SYSTEM TESTS — MARIADB
@@ -213,13 +222,12 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: build-artifacts-j${{ matrix.joomla-version }}
+          path: .
       - uses: ./.github/actions/setup-dependencies
       - uses: ./.github/actions/setup-cypress
       - name: Run MariaDB system tests
         run: |
           unzip -q joomla.zip -d joomla
-        # cp cypress.config.dist.js cypress.config.js
-        # npx cypress run --browser chrome --e2e --config video=false
 
 # -------------------------------------------------
 # SYSTEM TESTS — POSTGRES
@@ -246,10 +254,9 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: build-artifacts-j${{ matrix.joomla-version }}
+          path: .
       - uses: ./.github/actions/setup-dependencies
       - uses: ./.github/actions/setup-cypress
       - name: Run PostgreSQL system tests
         run: |
           unzip -q joomla.zip -d joomla
-        # cp cypress.config.dist.js cypress.config.js
-        # npx cypress run --browser chrome --e2e --config video=false
