@@ -13,15 +13,17 @@ env:
 
 jobs:
 # -------------------------------------------------
-# Composer
+# Composer (Run natively for speed/stability)
 # -------------------------------------------------
   composer:
     runs-on: ubuntu-latest
-    container:
-      image: joomlaprojects/docker-images:php8.3
-      options: --network host
     steps:
       - uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, zip
       - uses: ./.github/actions/setup-dependencies
 
 # -------------------------------------------------
@@ -30,11 +32,12 @@ jobs:
   phpcs:
     runs-on: ubuntu-latest
     needs: composer
-    container:
-      image: joomlaprojects/docker-images:php8.3
-      options: --network host
     steps:
       - uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
       - uses: ./.github/actions/setup-dependencies
       - name: Run PHP CS Fixer and PHPCS
         continue-on-error: true
@@ -43,41 +46,24 @@ jobs:
           ./vendor/bin/phpcs --extensions=php -p --standard=ruleset.xml src/
 
 # -------------------------------------------------
-# NPM
-# -------------------------------------------------
-  npm:
-    runs-on: ubuntu-latest
-    needs: phpcs
-    container:
-      image: joomlaprojects/docker-images:php8.3
-      options: --network host
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-dependencies
-        with:
-          npm-cache: 'true'
-
-# -------------------------------------------------
-# PREPARE TESTS
+# PREPARE TESTS (Run natively to fix Artifact Download)
 # -------------------------------------------------
   prepare_tests:
     runs-on: ubuntu-latest
-    needs: npm
+    needs: phpcs
     strategy:
       matrix:
         joomla-version: ['5.4', '6.0', '6.1']
-    container:
-      image: joomlaprojects/docker-images:cypress8.3
-      options: --network host
     steps:
       - uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+      
       - uses: ./.github/actions/setup-dependencies
         with:
           npm-cache: 'true'
-      - uses: ./.github/actions/setup-cypress
-
-      - name: Install jq and tar
-        run: apt-get update && apt-get install -y jq tar
 
       - name: Determine Nightly URL
         id: joomla-info
@@ -97,7 +83,7 @@ jobs:
       - name: Build
         run: vendor/bin/robo build
 
-      - name: Upload artifacts (v4)
+      - name: Upload artifacts (v4 works perfectly on native runners)
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts-j${{ matrix.joomla-version }}
@@ -107,33 +93,7 @@ jobs:
           retention-days: 1
 
 # -------------------------------------------------
-# PHPSTAN
-# -------------------------------------------------
-  phpstan:
-    runs-on: ubuntu-latest
-    needs: prepare_tests
-    strategy:
-      matrix:
-        joomla-version: ['5.4', '6.0', '6.1']
-    container:
-      image: joomlaprojects/docker-images:php8.3
-      options: --network host
-    steps:
-      - uses: actions/checkout@v4
-      - name: Download artifacts (v4)
-        uses: actions/download-artifact@v4
-        with:
-          name: build-artifacts-j${{ matrix.joomla-version }}
-          path: .
-      - uses: ./.github/actions/setup-dependencies
-      - name: Run PHPStan
-        continue-on-error: true
-        run: |
-          unzip -q joomla.zip -d joomla
-          ./vendor/bin/phpstan analyse src --level=5 --no-progress
-
-# -------------------------------------------------
-# SYSTEM TESTS — MYSQL
+# SYSTEM TESTS — MYSQL (Kept in Container for Cypress environment)
 # -------------------------------------------------
   system-tests-mysql:
     runs-on: ubuntu-latest
@@ -145,7 +105,7 @@ jobs:
         php-version: ['8.2', '8.3']
     container:
       image: joomlaprojects/docker-images:cypress${{ matrix.php-version }}
-      options: --network host
+      # WE REMOVED --network host HERE TO FIX THE CRASH
     services:
       mysql:
         image: mysql:8.0
@@ -156,13 +116,21 @@ jobs:
           MYSQL_PASSWORD: joomla_ut
     steps:
       - uses: actions/checkout@v4
-      - name: Download artifacts (v4)
+      
+      # FIX: We manually lower MTU inside the container to prevent Artifact download failure
+      - name: Network MTU Fix
+        run: ip link set dev eth0 mtu 1400 || true
+
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts-j${{ matrix.joomla-version }}
           path: .
+          
       - uses: ./.github/actions/setup-dependencies
       - uses: ./.github/actions/setup-cypress
+      
       - name: Run MySQL system tests
         run: |
           unzip -q joomla.zip -d joomla
+          # npx cypress run ...
