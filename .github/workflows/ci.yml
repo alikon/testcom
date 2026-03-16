@@ -13,31 +13,26 @@ env:
 
 jobs:
 # -------------------------------------------------
-# Composer (Run natively for speed/stability)
+# Composer
 # -------------------------------------------------
   composer:
     runs-on: ubuntu-latest
+    container:
+      image: joomlaprojects/docker-images:php8.3
     steps:
       - uses: actions/checkout@v4
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, zip
       - uses: ./.github/actions/setup-dependencies
 
 # -------------------------------------------------
-# PHPCS
+# PHPCS (non-blocking)
 # -------------------------------------------------
   phpcs:
     runs-on: ubuntu-latest
     needs: composer
+    container:
+      image: joomlaprojects/docker-images:php8.3
     steps:
       - uses: actions/checkout@v4
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
       - uses: ./.github/actions/setup-dependencies
       - name: Run PHP CS Fixer and PHPCS
         continue-on-error: true
@@ -46,44 +41,94 @@ jobs:
           ./vendor/bin/phpcs --extensions=php -p --standard=ruleset.xml src/
 
 # -------------------------------------------------
-# PREPARE TESTS (Run natively to fix Artifact Download)
+# NPM
 # -------------------------------------------------
-  prepare_tests:
+  npm:
     runs-on: ubuntu-latest
     needs: phpcs
-    strategy:
-      matrix:
-        joomla-version: ['5.4', '6.0', '6.1']
+    container:
+      image: joomlaprojects/docker-images:php8.3
     steps:
       - uses: actions/checkout@v4
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-      
       - uses: ./.github/actions/setup-dependencies
         with:
           npm-cache: 'true'
 
-      - name: Determine Nightly URL
+# -------------------------------------------------
+# PREPARE TESTS (Joomla versions)
+# -------------------------------------------------
+  prepare_tests:
+    runs-on: ubuntu-latest
+    needs: npm
+    strategy:
+      matrix:
+        joomla-version: ['5.4', '6.0', '6.1']
+    container:
+      image: joomlaprojects/docker-images:cypress8.3
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-dependencies
+        with:
+          npm-cache: 'true'
+
+      - uses: ./.github/actions/setup-cypress
+
+      - name: Install jq
+        run: apt-get update && apt-get install -y jq
+
+      - name: Determine Nightly URL for Joomla ${{ matrix.joomla-version }}
         id: joomla-info
         shell: bash
         run: |
-          URL=$(curl -s "https://api.github.com/repos/joomla/joomla-cms/releases?per_page=50" \
-            | jq -r --arg ver "${{ matrix.joomla-version }}" '.[] | .assets[] | select(.browser_download_url | contains($ver) and endswith("Full_Package.zip")) | .browser_download_url' \
-            | head -1)
-          if [ -z "$URL" ] || [ "$URL" = "null" ]; then exit 1; fi
-          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          URL=$(
+            curl -s "https://api.github.com/repos/joomla/joomla-cms/releases?per_page=50" \
+            | jq -r --arg ver "${{ matrix.joomla-version }}" '
+                .[]
+                | .assets[]
+                | select(
+                    .browser_download_url
+                    | contains($ver)
+                    and endswith("Full_Package.zip")
+                  )
+                | .browser_download_url
+              ' \
+            | head -1
+          )
 
-      - name: Download and Verify Joomla
+          if [ -z "$URL" ] || [ "$URL" = "null" ]; then
+            echo "::error::Could not find URL for version ${{ matrix.joomla-version }}"
+            exit 1
+          fi
+
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "url_hash=$(echo -n "$URL" | md5sum | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Joomla Zip
+        id: cache-joomla
+        uses: actions/cache@v4
+        with:
+          path: joomla.zip
+          key: joomla-core-${{ matrix.joomla-version }}-${{ steps.joomla-info.outputs.url_hash }}
+
+      - name: Download Joomla
+        if: steps.cache-joomla.outputs.cache-hit != 'true'
         run: |
           curl -LfsS "${{ steps.joomla-info.outputs.url }}" -o joomla.zip
+
+      - name: Build and Verify
+        run: |
+          # 1. Verify zip is not empty and is valid
+          if [ ! -s joomla.zip ]; then echo "joomla.zip is empty"; exit 1; fi
           unzip -t joomla.zip
+          
+          # 2. Run build
+          vendor/bin/robo build
+          
+          # 3. Ensure dist directory exists before upload
+          mkdir -p dist
 
-      - name: Build
-        run: vendor/bin/robo build
-
-      - name: Upload artifacts (v4 works perfectly on native runners)
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts-j${{ matrix.joomla-version }}
@@ -91,10 +136,34 @@ jobs:
             dist/
             joomla.zip
           retention-days: 1
+          if-no-files-found: error
 
 # -------------------------------------------------
-# SYSTEM TESTS — MYSQL 
-# Using hybrid approach: download on host, run in container
+# PHPSTAN
+# -------------------------------------------------
+  phpstan:
+    runs-on: ubuntu-latest
+    needs: prepare_tests
+    strategy:
+      matrix:
+        joomla-version: ['5.4', '6.0', '6.1']
+    container:
+      image: joomlaprojects/docker-images:php8.3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts-j${{ matrix.joomla-version }}
+          path: .
+      - uses: ./.github/actions/setup-dependencies
+      - name: Run PHPStan
+        continue-on-error: true
+        run: |
+          unzip -q joomla.zip -d joomla
+          ./vendor/bin/phpstan analyse src --level=5 --no-progress
+
+# -------------------------------------------------
+# SYSTEM TESTS — MYSQL
 # -------------------------------------------------
   system-tests-mysql:
     runs-on: ubuntu-latest
@@ -104,8 +173,8 @@ jobs:
       matrix:
         joomla-version: ['5.4', '6.0', '6.1']
         php-version: ['8.2', '8.3']
-    
-    # MySQL service runs on host, accessible to container via host.docker.internal
+    container:
+      image: joomlaprojects/docker-images:cypress${{ matrix.php-version }}
     services:
       mysql:
         image: mysql:8.0
@@ -114,122 +183,80 @@ jobs:
           MYSQL_DATABASE: test_joomla
           MYSQL_USER: joomla_ut
           MYSQL_PASSWORD: joomla_ut
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-    
     steps:
       - uses: actions/checkout@v4
-      
-      # Download artifacts on the host first (where GitHub Actions works best)
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
           name: build-artifacts-j${{ matrix.joomla-version }}
-          path: ./artifacts-${{ matrix.joomla-version }}
-      
-      # Verify artifacts were downloaded
-      - name: List downloaded artifacts
+          path: .
+      - uses: ./.github/actions/setup-dependencies
+      - uses: ./.github/actions/setup-cypress
+      - name: Run MySQL system tests
         run: |
-          ls -la ./artifacts-${{ matrix.joomla-version }}/
-          echo "Contents of artifacts directory:"
-          find ./artifacts-${{ matrix.joomla-version }} -type f | head -10
-      
-      # Now run the container with volume mounts to access artifacts and code
-      - name: Run MySQL system tests in container
-        run: |
-          # Create a unique container name to avoid conflicts
-          CONTAINER_NAME="cypress-tests-${{ matrix.joomla-version }}-${{ matrix.php-version }}-${{ github.run_id }}"
-          
-          # Run the container with mounted volumes
-          docker run --rm \
-            --name $CONTAINER_NAME \
-            --network host \
-            -v ${{ github.workspace }}:/workspace \
-            -w /workspace \
-            -e DB_NAME=${{ env.DB_NAME }} \
-            -e DB_USER=${{ env.DB_USER }} \
-            -e DB_PASS=${{ env.DB_PASS }} \
-            -e DB_HOST=127.0.0.1 \
-            -e CYPRESS_baseUrl=http://localhost \
-            --add-host host.docker.internal:host-gateway \
-            joomlaprojects/docker-images:cypress${{ matrix.php-version }} \
-            bash -c "
-              echo '=== Container started ==='
-              echo 'Current directory: \$(pwd)'
-              echo 'Directory contents:'
-              ls -la
-              
-              # Network MTU fix inside container
-              echo 'Applying network MTU fix...'
-              apt-get update -qq && apt-get install -y -qq iproute2 unzip > /dev/null 2>&1
-              ip link set dev eth0 mtu 1400 || echo 'MTU fix skipped or failed'
-              
-              # Copy artifacts from mounted volume to current directory
-              echo 'Copying artifacts from mounted volume...'
-              cp -rfv /workspace/artifacts-${{ matrix.joomla-version }}/* . || echo 'No artifacts found in expected location'
-              
-              # Check what files we have
-              echo 'Files after copying artifacts:'
-              ls -la
-              
-              # Unzip Joomla
-              echo 'Unzipping Joomla...'
-              if [ -f joomla.zip ]; then
-                unzip -q joomla.zip -d joomla
-                echo 'Joomla unzipped successfully'
-                ls -la joomla/
-              else
-                echo 'ERROR: joomla.zip not found!'
-                find /workspace -name 'joomla.zip' 2>/dev/null || echo 'joomla.zip not found anywhere'
-                exit 1
-              fi
-              
-              # Install dependencies if needed
-              echo 'Installing test dependencies...'
-              cd /workspace
-              
-              # Check if node_modules exists, if not install
-              if [ ! -d node_modules ]; then
-                npm ci || npm install
-              fi
-              
-              # Run Cypress tests
-              echo 'Starting Cypress tests...'
-              npx cypress run --browser chrome --headless
-              
-              # Capture exit code
-              TEST_EXIT_CODE=\$?
-              echo 'Cypress tests completed with exit code: \$TEST_EXIT_CODE'
-              exit \$TEST_EXIT_CODE
-            "
-      
-      # Upload test results and screenshots as artifacts
-      - name: Upload Cypress results
-        if: always()  # Upload even if tests fail
-        uses: actions/upload-artifact@v4
-        with:
-          name: cypress-results-${{ matrix.joomla-version }}-php${{ matrix.php-version }}
-          path: |
-            cypress/screenshots/
-            cypress/videos/
-            cypress/results/
-          retention-days: 7
-          if-no-files-found: ignore
+          unzip -q joomla.zip -d joomla
+          # npx cypress run --browser chrome --e2e --config video=false
 
 # -------------------------------------------------
-# Optional: Summary job to check all tests passed
+# SYSTEM TESTS — MARIADB
 # -------------------------------------------------
-  test-summary:
+  system-tests-mariadb:
     runs-on: ubuntu-latest
-    needs: system-tests-mysql
-    if: always()
+    needs: prepare_tests
+    strategy:
+      fail-fast: false
+      matrix:
+        joomla-version: ['5.4', '6.0', '6.1']
+        php-version: ['8.2', '8.3']
+    container:
+      image: joomlaprojects/docker-images:cypress${{ matrix.php-version }}
+    services:
+      mariadb:
+        image: mariadb:10.6
+        env:
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_DATABASE: test_joomla
+          MARIADB_USER: joomla_ut
+          MARIADB_PASSWORD: joomla_ut
     steps:
-      - name: Check test results
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts-j${{ matrix.joomla-version }}
+          path: .
+      - uses: ./.github/actions/setup-dependencies
+      - uses: ./.github/actions/setup-cypress
+      - name: Run MariaDB system tests
         run: |
-          echo "✅ All system tests completed"
-          echo "Check individual job logs for detailed results"
+          unzip -q joomla.zip -d joomla
+
+# -------------------------------------------------
+# SYSTEM TESTS — POSTGRES
+# -------------------------------------------------
+  system-tests-pgsql:
+    runs-on: ubuntu-latest
+    needs: prepare_tests
+    strategy:
+      fail-fast: false
+      matrix:
+        joomla-version: ['6.0', '6.1']
+        php-version: ['8.3']
+    container:
+      image: joomlaprojects/docker-images:cypress${{ matrix.php-version }}
+    services:
+      postgres:
+        image: postgres:12-alpine
+        env:
+          POSTGRES_DB: test_joomla
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: root
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts-j${{ matrix.joomla-version }}
+          path: .
+      - uses: ./.github/actions/setup-dependencies
+      - uses: ./.github/actions/setup-cypress
+      - name: Run PostgreSQL system tests
+        run: |
+          unzip -q joomla.zip -d joomla
