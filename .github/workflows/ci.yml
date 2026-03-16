@@ -152,7 +152,7 @@ jobs:
 # -------------------------------------------------
 # SYSTEM TESTS — MYSQL
 # -------------------------------------------------
- system-tests:
+  system-tests:
     runs-on: ubuntu-latest
     needs: [prepare_tests, phpstan]
     strategy:
