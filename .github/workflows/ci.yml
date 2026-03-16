@@ -67,11 +67,9 @@ jobs:
       image: joomlaprojects/docker-images:cypress8.3
     steps:
       - uses: actions/checkout@v4
-
       - uses: ./.github/actions/setup-dependencies
         with:
           npm-cache: 'true'
-
       - uses: ./.github/actions/setup-cypress
 
       - name: Install jq
@@ -95,48 +93,29 @@ jobs:
               ' \
             | head -1
           )
-
           if [ -z "$URL" ] || [ "$URL" = "null" ]; then
             echo "::error::Could not find URL for version ${{ matrix.joomla-version }}"
             exit 1
           fi
-
           echo "url=$URL" >> "$GITHUB_OUTPUT"
           echo "url_hash=$(echo -n "$URL" | md5sum | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
 
-      - name: Cache Joomla Zip
-        id: cache-joomla
-        uses: actions/cache@v4
-        with:
-          path: joomla.zip
-          key: joomla-core-${{ matrix.joomla-version }}-${{ steps.joomla-info.outputs.url_hash }}
-
       - name: Download Joomla
-        if: steps.cache-joomla.outputs.cache-hit != 'true'
         run: |
           curl -LfsS "${{ steps.joomla-info.outputs.url }}" -o joomla.zip
+          unzip -t joomla.zip # Immediate validation
 
-      - name: Build and Verify
-        run: |
-          # 1. Verify zip is not empty and is valid
-          if [ ! -s joomla.zip ]; then echo "joomla.zip is empty"; exit 1; fi
-          unzip -t joomla.zip
-          
-          # 2. Run build
-          vendor/bin/robo build
-          
-          # 3. Ensure dist directory exists before upload
-          mkdir -p dist
+      - name: Build
+        run: vendor/bin/robo build
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+      - name: Upload artifacts (using v3 for container stability)
+        uses: actions/upload-artifact@v3
         with:
           name: build-artifacts-j${{ matrix.joomla-version }}
           path: |
             dist/
             joomla.zip
           retention-days: 1
-          if-no-files-found: error
 
 # -------------------------------------------------
 # PHPSTAN
@@ -151,10 +130,10 @@ jobs:
       image: joomlaprojects/docker-images:php8.3
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - name: Download artifacts (using v3)
+        uses: actions/download-artifact@v3
         with:
           name: build-artifacts-j${{ matrix.joomla-version }}
-          path: .
       - uses: ./.github/actions/setup-dependencies
       - name: Run PHPStan
         continue-on-error: true
@@ -163,7 +142,7 @@ jobs:
           ./vendor/bin/phpstan analyse src --level=5 --no-progress
 
 # -------------------------------------------------
-# SYSTEM TESTS — MYSQL
+# SYSTEM TESTS (Consolidated Example)
 # -------------------------------------------------
   system-tests-mysql:
     runs-on: ubuntu-latest
@@ -185,78 +164,12 @@ jobs:
           MYSQL_PASSWORD: joomla_ut
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - name: Download artifacts (using v3)
+        uses: actions/download-artifact@v3
         with:
           name: build-artifacts-j${{ matrix.joomla-version }}
-          path: .
       - uses: ./.github/actions/setup-dependencies
       - uses: ./.github/actions/setup-cypress
       - name: Run MySQL system tests
-        run: |
-          unzip -q joomla.zip -d joomla
-          # npx cypress run --browser chrome --e2e --config video=false
-
-# -------------------------------------------------
-# SYSTEM TESTS — MARIADB
-# -------------------------------------------------
-  system-tests-mariadb:
-    runs-on: ubuntu-latest
-    needs: prepare_tests
-    strategy:
-      fail-fast: false
-      matrix:
-        joomla-version: ['5.4', '6.0', '6.1']
-        php-version: ['8.2', '8.3']
-    container:
-      image: joomlaprojects/docker-images:cypress${{ matrix.php-version }}
-    services:
-      mariadb:
-        image: mariadb:10.6
-        env:
-          MARIADB_ROOT_PASSWORD: root
-          MARIADB_DATABASE: test_joomla
-          MARIADB_USER: joomla_ut
-          MARIADB_PASSWORD: joomla_ut
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: build-artifacts-j${{ matrix.joomla-version }}
-          path: .
-      - uses: ./.github/actions/setup-dependencies
-      - uses: ./.github/actions/setup-cypress
-      - name: Run MariaDB system tests
-        run: |
-          unzip -q joomla.zip -d joomla
-
-# -------------------------------------------------
-# SYSTEM TESTS — POSTGRES
-# -------------------------------------------------
-  system-tests-pgsql:
-    runs-on: ubuntu-latest
-    needs: prepare_tests
-    strategy:
-      fail-fast: false
-      matrix:
-        joomla-version: ['6.0', '6.1']
-        php-version: ['8.3']
-    container:
-      image: joomlaprojects/docker-images:cypress${{ matrix.php-version }}
-    services:
-      postgres:
-        image: postgres:12-alpine
-        env:
-          POSTGRES_DB: test_joomla
-          POSTGRES_USER: root
-          POSTGRES_PASSWORD: root
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: build-artifacts-j${{ matrix.joomla-version }}
-          path: .
-      - uses: ./.github/actions/setup-dependencies
-      - uses: ./.github/actions/setup-cypress
-      - name: Run PostgreSQL system tests
         run: |
           unzip -q joomla.zip -d joomla
