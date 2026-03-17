@@ -129,57 +129,35 @@ jobs:
           retention-days: 1
 
 # -------------------------------------------------
-# PHPSTAN — step 1: download artifact sul runner HOST (senza container)
-#
-# CAUSA DEL BUG: actions/download-artifact@v4 scarica da Azure Blob Storage
-# tramite URL redirect. I container Docker joomlaprojects non riescono a
-# raggiungere *.blob.core.windows.net a causa di restrizioni di rete.
-#
-# SOLUZIONE: separare il download (runner host, no container) dall'analisi
-# (container php8.3). Il runner host non ha restrizioni di rete e scarica
-# correttamente. L'artefatto viene poi ri-uploadato per il job successivo.
+# PHPSTAN
+# FIX: nessun container Docker — il container joomlaprojects/php8.3 non riesce
+# a raggiungere *.blob.core.windows.net (Azure Artifact Storage) causando
+# "Artifact download failed after 5 retries". Soluzione: usare il runner host
+# ubuntu-latest e installare PHP 8.3 + composer direttamente via apt/shivammathur.
 # -------------------------------------------------
-  phpstan_download:
+  phpstan:
     runs-on: ubuntu-latest
     needs: prepare_tests
     strategy:
       matrix:
         joomla-version: ['5.4', '6.0', '6.1']
-    # Nessun container — download diretto sul runner host
+    # NESSUN container — il download artifact funziona solo sul runner host
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts-j${{ matrix.joomla-version }}
-          path: downloaded-artifacts-j${{ matrix.joomla-version }}
 
-      - name: Re-upload artifacts for phpstan
-        uses: actions/upload-artifact@v4
-        with:
-          name: phpstan-ready-j${{ matrix.joomla-version }}
-          path: downloaded-artifacts-j${{ matrix.joomla-version }}
-          retention-days: 1
-
-# -------------------------------------------------
-# PHPSTAN — step 2: analisi nel container
-# -------------------------------------------------
-  phpstan:
-    runs-on: ubuntu-latest
-    needs: phpstan_download
-    strategy:
-      matrix:
-        joomla-version: ['5.4', '6.0', '6.1']
-    container:
-      image: joomlaprojects/docker-images:php8.3
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download re-uploaded artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: phpstan-ready-j${{ matrix.joomla-version }}
-
-      - uses: ./.github/actions/setup-dependencies
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
 
       - name: Run PHPStan
         continue-on-error: true
