@@ -56,6 +56,10 @@ jobs:
 
 # -------------------------------------------------
 # PREPARE TESTS (Joomla versions)
+# FIX: sostituiamo upload-artifact con actions/cache per il trasferimento
+# dei file tra job. La cache usa endpoint diversi da Azure Blob Storage
+# e risulta molto più stabile per file di grandi dimensioni.
+# La cache key include github.run_id per essere univoca per ogni run.
 # -------------------------------------------------
   prepare_tests:
     runs-on: ubuntu-latest
@@ -97,7 +101,7 @@ jobs:
           echo "url=$URL" >> $GITHUB_OUTPUT
           echo "url_hash=$(echo -n "$URL" | md5sum | cut -d' ' -f1)" >> $GITHUB_OUTPUT
 
-      - name: Cache Joomla Zip
+      - name: Cache Joomla Zip (download cache)
         id: cache-joomla
         uses: actions/cache@v4
         with:
@@ -119,21 +123,19 @@ jobs:
             exit 1
           fi
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+      # Salviamo dist/ + joomla.zip nella cache con run_id univoco
+      # invece di usare upload-artifact che passa per Azure Blob Storage
+      - name: Save build to cache
+        uses: actions/cache/save@v4
         with:
-          name: build-artifacts-j${{ matrix.joomla-version }}
           path: |
             dist/
             joomla.zip
-          retention-days: 1
+          key: build-artifacts-${{ github.run_id }}-j${{ matrix.joomla-version }}
 
 # -------------------------------------------------
 # PHPSTAN
-# FIX: nessun container Docker — il container joomlaprojects/php8.3 non riesce
-# a raggiungere *.blob.core.windows.net (Azure Artifact Storage) causando
-# "Artifact download failed after 5 retries". Soluzione: usare il runner host
-# ubuntu-latest e installare PHP 8.3 + composer direttamente via apt/shivammathur.
+# Usa actions/cache/restore invece di download-artifact
 # -------------------------------------------------
   phpstan:
     runs-on: ubuntu-latest
@@ -141,7 +143,6 @@ jobs:
     strategy:
       matrix:
         joomla-version: ['5.4', '6.0', '6.1']
-    # NESSUN container — il download artifact funziona solo sul runner host
     steps:
       - uses: actions/checkout@v4
 
@@ -151,10 +152,14 @@ jobs:
           php-version: '8.3'
           tools: composer
 
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
+      - name: Restore build from cache
+        uses: actions/cache/restore@v4
         with:
-          name: build-artifacts-j${{ matrix.joomla-version }}
+          path: |
+            dist/
+            joomla.zip
+          key: build-artifacts-${{ github.run_id }}-j${{ matrix.joomla-version }}
+          fail-on-cache-miss: true
 
       - name: Install Composer dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
@@ -167,6 +172,7 @@ jobs:
 
 # -------------------------------------------------
 # SYSTEM TESTS
+# Usa actions/cache/restore invece di download-artifact
 # -------------------------------------------------
   system-tests:
     runs-on: ubuntu-latest
@@ -240,10 +246,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
+      - name: Restore build from cache
+        uses: actions/cache/restore@v4
         with:
-          name: build-artifacts-j${{ matrix.joomla-version }}
+          path: |
+            dist/
+            joomla.zip
+          key: build-artifacts-${{ github.run_id }}-j${{ matrix.joomla-version }}
+          fail-on-cache-miss: true
 
       - uses: ./.github/actions/setup-dependencies
         with:
