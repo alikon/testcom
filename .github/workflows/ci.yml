@@ -74,8 +74,6 @@ jobs:
 
       - uses: ./.github/actions/setup-cypress
 
-      # FIX: jq is already available in the cypress image or installed
-      # via apt BEFORE being used — moved here and made non-fatal if missing
       - name: Install jq
         run: |
           if ! command -v jq &> /dev/null; then
@@ -131,11 +129,43 @@ jobs:
           retention-days: 1
 
 # -------------------------------------------------
-# PHPSTAN
+# PHPSTAN — step 1: download artifact sul runner HOST (senza container)
+#
+# CAUSA DEL BUG: actions/download-artifact@v4 scarica da Azure Blob Storage
+# tramite URL redirect. I container Docker joomlaprojects non riescono a
+# raggiungere *.blob.core.windows.net a causa di restrizioni di rete.
+#
+# SOLUZIONE: separare il download (runner host, no container) dall'analisi
+# (container php8.3). Il runner host non ha restrizioni di rete e scarica
+# correttamente. L'artefatto viene poi ri-uploadato per il job successivo.
+# -------------------------------------------------
+  phpstan_download:
+    runs-on: ubuntu-latest
+    needs: prepare_tests
+    strategy:
+      matrix:
+        joomla-version: ['5.4', '6.0', '6.1']
+    # Nessun container — download diretto sul runner host
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts-j${{ matrix.joomla-version }}
+          path: downloaded-artifacts-j${{ matrix.joomla-version }}
+
+      - name: Re-upload artifacts for phpstan
+        uses: actions/upload-artifact@v4
+        with:
+          name: phpstan-ready-j${{ matrix.joomla-version }}
+          path: downloaded-artifacts-j${{ matrix.joomla-version }}
+          retention-days: 1
+
+# -------------------------------------------------
+# PHPSTAN — step 2: analisi nel container
 # -------------------------------------------------
   phpstan:
     runs-on: ubuntu-latest
-    needs: prepare_tests
+    needs: phpstan_download
     strategy:
       matrix:
         joomla-version: ['5.4', '6.0', '6.1']
@@ -143,11 +173,14 @@ jobs:
       image: joomlaprojects/docker-images:php8.3
     steps:
       - uses: actions/checkout@v4
-      - name: Download artifacts
+
+      - name: Download re-uploaded artifacts
         uses: actions/download-artifact@v4
         with:
-          name: build-artifacts-j${{ matrix.joomla-version }}
+          name: phpstan-ready-j${{ matrix.joomla-version }}
+
       - uses: ./.github/actions/setup-dependencies
+
       - name: Run PHPStan
         continue-on-error: true
         run: |
@@ -267,7 +300,6 @@ jobs:
             --db-encryption=0 \
             --db-prefix=${{ matrix.db-prefix }}
           php cli/joomla.php extension:install --path=/tests/www/${{ matrix.db }}/pkg-weblinks-current.zip
-          # FIX: mkdir ripristinato come nel documento 2 (funzionante)
           mkdir -p tmp/api_rate_limit tmp/plg_system_ratelimit
           chown -R www-data:www-data /tests/www/${{ matrix.db }}/
           chmod -R 777 /tests/www/${{ matrix.db }}/
@@ -279,7 +311,6 @@ jobs:
             mysql -h ${{ matrix.db-host }} -u $DB_USER -p$DB_PASS --skip-ssl -e 'SELECT VERSION();' -s -N
           echo "========================"
           cd $GITHUB_WORKSPACE
-          # FIX: npx cypress run ripristinato come nel documento 2 (funzionante)
           npx cypress run \
             --browser=chrome \
             --e2e \
