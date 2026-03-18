@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Console.updatefromcli
@@ -9,11 +10,11 @@
 
 namespace Joomla\Plugin\Console\Updatefromcli\CliCommand;
 
-use Joomla\CMS\Factory;
-use Joomla\Database\DatabaseInterface;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Updater\Updater;
 use Joomla\Console\Command\AbstractCommand;
+use Joomla\Database\DatabaseInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -57,7 +58,7 @@ final class UpdatefromcliCommand extends AbstractCommand
         if ($eid = $input->getOption('eid')) {
             $db = Factory::getContainer()->get(DatabaseInterface::class);
             // Validate extension exists
-            $db = Factory::getContainer()->get('DatabaseDriver');
+            $db    = Factory::getContainer()->get('DatabaseDriver');
             $query = $db->getQuery(true)
                 ->select('COUNT(*)')
                 ->from($db->quoteName('#__extensions'))
@@ -71,9 +72,9 @@ final class UpdatefromcliCommand extends AbstractCommand
                 return Command::FAILURE;
             }
 
-			// Load core and installer language files
+            // Load core and installer language files
             $language = $this->getApplication()->getLanguage();
-			$language->load('lib_joomla', JPATH_ADMINISTRATOR);
+            $language->load('lib_joomla', JPATH_ADMINISTRATOR);
             $language->load('com_installer', JPATH_ADMINISTRATOR, 'en-GB', false, true);
             $language->load('com_installer', JPATH_ADMINISTRATOR, null, true);
 
