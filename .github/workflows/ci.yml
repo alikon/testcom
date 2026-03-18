@@ -270,7 +270,7 @@ jobs:
           DB_USER=${{ matrix.db == 'pgsql' && 'root' || 'joomla_ut' }}
           DB_PASS=${{ matrix.db == 'pgsql' && 'root' || 'joomla_ut' }}
           cp -r joomla /tests/www/${{ matrix.db }}
-          cp dist/pkg-weblinks-current.zip /tests/www/${{ matrix.db }}/
+          cp dist/pkg-alikonweb-current.zip /tests/www/${{ matrix.db }}/
           cd /tests/www/${{ matrix.db }}/
           apache2ctl -D FOREGROUND &
           php installation/joomla.php install \
@@ -287,7 +287,7 @@ jobs:
             --db-user=$DB_USER \
             --db-encryption=0 \
             --db-prefix=${{ matrix.db-prefix }}
-          php cli/joomla.php extension:install --path=/tests/www/${{ matrix.db }}/pkg-weblinks-current.zip
+          php cli/joomla.php extension:install --path=/tests/www/${{ matrix.db }}/pkg-alikonweb-current.zip
           mkdir -p tmp/api_rate_limit tmp/plg_system_ratelimit
           chown -R www-data:www-data /tests/www/${{ matrix.db }}/
           chmod -R 777 /tests/www/${{ matrix.db }}/
