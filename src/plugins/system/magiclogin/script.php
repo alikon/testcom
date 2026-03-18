@@ -100,7 +100,7 @@ return new class () implements ServiceProviderInterface {
                  */
                 public function install(InstallerAdapter $adapter): bool
                 {
-                    
+
                     $this->createTable();
                     return true;
                 }
@@ -130,7 +130,7 @@ return new class () implements ServiceProviderInterface {
                  */
                 public function uninstall(InstallerAdapter $adapter): bool
                 {
-                    
+
                     $this->dropTable();
                     return true;
                 }
@@ -198,7 +198,7 @@ return new class () implements ServiceProviderInterface {
                     return true;
                 }
                 /**
-                 * Create the #__jo_safemode table.
+                 * Create the #__magiclogin_tokens.
                  *
                  * @return void
                  */
@@ -211,34 +211,63 @@ return new class () implements ServiceProviderInterface {
                         $query = $db->getQuery(true)
                             ->select('COUNT(*)')
                             ->from($db->quoteName('information_schema.tables'))
-                            ->where($db->quoteName('table_name') . ' = ' . $db->quote('#__magiclogin_tokens'))
-                            ->where($db->quoteName('table_schema') . ' = DATABASE()');
+                            ->where($db->quoteName('table_name') . ' = ' . $db->quote('#__magiclogin_tokens'));
+                        if ($db->getServerType() === 'postgresql') {
+                            $query->where("table_schema = current_schema()");
+                        } else {
+                            $query->where($db->quoteName('table_schema') . ' = DATABASE()');
+                        }
 
                         $db->setQuery($query);
                         $tableExists = $db->loadResult();
 
                         if (!$tableExists) {
-                            // Create the #__magiclogin_tokens table 
-                            $query = 'CREATE TABLE IF NOT EXISTS `#__magiclogin_tokens` (
-                                      `id` int(11) NOT NULL AUTO_INCREMENT,
-                                      `user_id` int(11) NOT NULL,
-                                      `token` varchar(255) NOT NULL,
-                                      `expires` datetime NOT NULL,
-                                      `created` timestamp DEFAULT CURRENT_TIMESTAMP,
-                                      `ip_address` varchar(45),
-                                      `user_agent` text,
-                                      PRIMARY KEY (`id`),
-                                      UNIQUE KEY `token` (`token`),
-                                      KEY `user_id` (`user_id`),
-                                      KEY `expires` (`expires`),
-                                      KEY `ip_address` (`ip_address`)
-                                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;';
-
-                            $db->setQuery($query);
-                            $db->execute();
-
+                            // Create the #__magiclogin_tokens table
+                            if ($db->getServerType() === 'postgresql') {
+                                $query = 'CREATE TABLE IF NOT EXISTS "#__magiclogin_tokens" (
+                                        "id" SERIAL PRIMARY KEY,
+                                        "user_id" INTEGER NOT NULL,
+                                        "token" VARCHAR(255) NOT NULL,
+                                        "expires" TIMESTAMP NOT NULL,
+                                        "created" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                        "ip_address" VARCHAR(45),
+                                        "user_agent" TEXT,
+                                        CONSTRAINT "uq_magiclogin_tokens_token" UNIQUE ("token")
+                                    );';
+                                $db->setQuery($query);
+                                $db->execute();
+                                $query = 'CREATE INDEX IF NOT EXISTS "idx_magiclogin_tokens_user_id" 
+                                            ON "#__magiclogin_tokens" ("user_id");';
+                                $db->setQuery($query);
+                                $db->execute();
+                                $query = 'CREATE INDEX IF NOT EXISTS "idx_magiclogin_tokens_expires" 
+                                            ON "#__magiclogin_tokens" ("expires");';
+                                $db->setQuery($query);
+                                $db->execute();
+                                $query = 'CREATE INDEX IF NOT EXISTS "idx_magiclogin_tokens_ip_address" 
+                                            ON "#__magiclogin_tokens" ("ip_address");';
+                                $db->setQuery($query);
+                                $db->execute();
+                            } else {
+                                $query = 'CREATE TABLE IF NOT EXISTS `#__magiclogin_tokens` (
+                                          `id` int(11) NOT NULL AUTO_INCREMENT,
+                                          `user_id` int(11) NOT NULL,
+                                          `token` varchar(255) NOT NULL,
+                                          `expires` datetime NOT NULL,
+                                          `created` timestamp DEFAULT CURRENT_TIMESTAMP,
+                                          `ip_address` varchar(45),
+                                          `user_agent` text,
+                                          PRIMARY KEY (`id`),
+                                          UNIQUE KEY `token` (`token`),
+                                          KEY `user_id` (`user_id`),
+                                          KEY `expires` (`expires`),
+                                          KEY `ip_address` (`ip_address`)
+                                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;';
+                                $db->setQuery($query);
+                                $db->execute();
+                            }
                         }
-                        $templateId   = 'plg_system_magiclogin.magiclink';
+                        $templateId  = 'plg_system_magiclogin.magiclink';
                         $extension   = 'plg_system_magiclogin';
                         $language    = '';
                         $subject     = 'PLG_SYSTEM_MAGICLOGIN_EMAIL_SUBJECT';

@@ -101,7 +101,7 @@ return new class () implements ServiceProviderInterface {
                  */
                 public function install(InstallerAdapter $adapter): bool
                 {
-                    
+
                     $this->createTable();
                     return true;
                 }
@@ -131,7 +131,7 @@ return new class () implements ServiceProviderInterface {
                  */
                 public function uninstall(InstallerAdapter $adapter): bool
                 {
-                    
+
                     $this->dropTable();
                     return true;
                 }
@@ -212,28 +212,49 @@ return new class () implements ServiceProviderInterface {
                         $query = $db->getQuery(true)
                             ->select('COUNT(*)')
                             ->from($db->quoteName('information_schema.tables'))
-                            ->where($db->quoteName('table_name') . ' = ' . $db->quote('#__github_issues'))
-                            ->where($db->quoteName('table_schema') . ' = DATABASE()');
+                            ->where($db->quoteName('table_name') . ' = ' . $db->quote('#__github_issues'));
+
+                        if ($db->getServerType() === 'postgresql') {
+                            $query->where("table_schema = current_schema()");
+                        } else {
+                            $query->where($db->quoteName('table_schema') . ' = DATABASE()');
+                        }
 
                         $db->setQuery($query);
                         $tableExists = $db->loadResult();
 
                         if (!$tableExists) {
-                            // Create the #__github_issues table 
-                            $query = 'CREATE TABLE IF NOT EXISTS `#__github_issues` (
-                                      `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-                                      `execution` datetime DEFAULT NULL ,
-                                      `openi` smallint(6) NOT NULL DEFAULT 0,
-                                      `closedi` smallint(6) NOT NULL DEFAULT 0,
-                                      `openp` smallint(6) NOT NULL DEFAULT 0,
-                                      `closedp` smallint(6) NOT NULL DEFAULT 0,
-                                      PRIMARY KEY (`id`),
-                                      KEY `idx_execution` (`execution`)
-                                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;';
+                            if ($db->getServerType() === 'postgresql') {
+                                $query = 'CREATE TABLE IF NOT EXISTS "#__github_issues" (
+                                        "id" SERIAL PRIMARY KEY,
+                                        "execution" TIMESTAMP DEFAULT NULL,
+                                        "openi" SMALLINT NOT NULL DEFAULT 0,
+                                        "closedi" SMALLINT NOT NULL DEFAULT 0,
+                                        "openp" SMALLINT NOT NULL DEFAULT 0,
+                                        "closedp" SMALLINT NOT NULL DEFAULT 0
+                                    );';
+                                $db->setQuery($query);
+                                $db->execute();
 
-                            $db->setQuery($query);
-                            $db->execute();
-
+                                $query ='CREATE INDEX IF NOT EXISTS "idx_execution" 
+                                    ON "#__github_issues" ("execution");';
+                                $db->setQuery($query);
+                                $db->execute();
+                            } else {
+                                // Create the #__github_issues table
+                                $query = 'CREATE TABLE IF NOT EXISTS `#__github_issues` (
+                                          `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+                                          `execution` datetime DEFAULT NULL ,
+                                          `openi` smallint(6) NOT NULL DEFAULT 0,
+                                          `closedi` smallint(6) NOT NULL DEFAULT 0,
+                                          `openp` smallint(6) NOT NULL DEFAULT 0,
+                                          `closedp` smallint(6) NOT NULL DEFAULT 0,
+                                          PRIMARY KEY (`id`),
+                                          KEY `idx_execution` (`execution`)
+                                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;';
+                                $db->setQuery($query);
+                                $db->execute();
+                            }
                         }
                     } catch (\Exception $e) {
                         Factory::getApplication()->enqueueMessage('Error creating #__github_issues table: ' . $e->getMessage(), 'error');

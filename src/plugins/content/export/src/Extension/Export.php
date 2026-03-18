@@ -11,6 +11,7 @@
 namespace Joomla\Plugin\Content\Export\Extension;
 
 use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Toolbar\Toolbar;
 
@@ -64,13 +65,13 @@ final class Export extends CMSPlugin
             // Append button on Article
             if ($this->app->input->getCmd('option') === 'com_content' && $this->app->input->getCmd('view') === 'article') {
                 if ($this->params->get('authorization') === 'Bearer') {
-                    $auth = 'Authorization ';
-                    $key = 'Bearer ' . $this->params->get('key');
+                    $auth = 'Authorization';
+                    $key  = 'Bearer ' . $this->params->get('key');
                 }
 
                 if ($this->params->get('authorization') === 'X-Joomla-Token') {
                     $auth = 'X-Joomla-Token';
-                    $key = $this->params->get('key');
+                    $key  = $this->params->get('key');
                 }
 
                 $id            = $this->app->input->get('id');
@@ -89,12 +90,30 @@ final class Export extends CMSPlugin
                 $item        = $model->getItem($id);
                 $item->catid = $this->params->get('catid');
                 $item->state = $this->params->get('state', 0);
-                unset($item->created_by);
-                unset($item->typeAlias);
-                unset($item->asset_id);
-                unset($item->tagsHelper);
+                unset($item->created_by, $item->typeAlias, $item->asset_id, $item->tagsHelper);
+
+
+
 
                 $wa = $this->app->getDocument()->getWebAssetManager();
+
+                // Load language strings for JavaScript
+                $this->loadLanguage();
+
+                Text::script('PLG_CONTENT_EXPORT_CATEGORY_CHECK');
+                Text::script('PLG_CONTENT_EXPORT_CATEGORY_CHECK_ERROR');
+                Text::script('PLG_CONTENT_EXPORT_NETWORK_ERROR');
+                Text::script('PLG_CONTENT_EXPORT_CORS_GET_ERROR');
+                Text::script('PLG_CONTENT_EXPORT_CORS_POST_ERROR');
+                Text::script('PLG_CONTENT_EXPORT_CORS_PATCH_ERROR');
+                Text::script('PLG_CONTENT_EXPORT_ARTICLE_SAVE_REQUIRED');
+                Text::script('PLG_CONTENT_EXPORT_ARTICLE_UPDATE_REQUIRED');
+                Text::script('PLG_CONTENT_EXPORT_ARTICLE_CREATED');
+                Text::script('PLG_CONTENT_EXPORT_ARTICLE_NOT_CREATED');
+                Text::script('PLG_CONTENT_EXPORT_ARTICLE_EXPORTED');
+                Text::script('PLG_CONTENT_EXPORT_ARTICLE_CHECK');
+                Text::script('PLG_CONTENT_EXPORT_INVALID_CONFIG_OBJECT');
+                Text::script('PLG_CONTENT_EXPORT_INVALID_CONFIG_REQUIRED');
 
                 // Pass data to javascript
                 $this->app->getDocument()->addScriptOptions(

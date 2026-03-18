@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Content.exportbutton
@@ -7,11 +8,11 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-defined('_JEXEC') or die;
+\defined('_JEXEC') or die;
 
 use Joomla\CMS\Application\CMSApplication;
-use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Router\Route;
@@ -25,294 +26,268 @@ use Joomla\Registry\Registry;
  */
 class PlgContentExport extends CMSPlugin
 {
-	/**
-	 * Application object
-	 *
-	 * @var    CMSApplication
-	 * @since  __DEPLOY_VERSION__
-	 */
-	protected $app;
+    /**
+     * Application object
+     *
+     * @var    CMSApplication
+     * @since  __DEPLOY_VERSION__
+     */
+    protected $app;
 
-	/**
-	 * Database driver
-	 *
-	 * @var    DatabaseDriver
-	 * @since  __DEPLOY_VERSION__
-	 */
-	protected $db;
+    /**
+     * Database driver
+     *
+     * @var    DatabaseDriver
+     * @since  __DEPLOY_VERSION__
+     */
+    protected $db;
 
-	/**
-	 * URL to get the data.
-	 *
-	 * @var    string
-	 * @since  __DEPLOY_VERSION__
-	 */
-	protected $getUrl = '';
+    /**
+     * URL to get the data.
+     *
+     * @var    string
+     * @since  __DEPLOY_VERSION__
+     */
+    protected $getUrl = '';
 
-	/**
-	 * URL to send the data.
-	 *
-	 * @var    string
-	 * @since  __DEPLOY_VERSION__
-	 */
-	protected $postUrl = '';
+    /**
+     * URL to send the data.
+     *
+     * @var    string
+     * @since  __DEPLOY_VERSION__
+     */
+    protected $postUrl = '';
 
-	/**
-	 * URL to send the data.
-	 *
-	 * @var    string
-	 * @since  __DEPLOY_VERSION__
-	 */
-	protected $verb = '';
+    /**
+     * URL to send the data.
+     *
+     * @var    string
+     * @since  __DEPLOY_VERSION__
+     */
+    protected $verb = '';
 
-		/**
-	 * URL to send the data.
-	 *
-	 * @var    string
-	 * @since  __DEPLOY_VERSION__
-	 */
-	protected $options = '';
+    /**
+     * URL to send the data.
+     *
+     * @var    string
+     * @since  __DEPLOY_VERSION__
+     */
+    protected $options = '';
 
-	/**
-	 * URL to send the data.
-	 *
-	 * @var    string
-	 * @since  __DEPLOY_VERSION__
-	 */
-	protected $headers = [];
+    /**
+     * URL to send the data.
+     *
+     * @var    string
+     * @since  __DEPLOY_VERSION__
+     */
+    protected $headers = [];
 
-	/**
-	 * URL to send the data.
-	 *
-	 * @var    string
-	 * @since  __DEPLOY_VERSION__
-	 */
-	protected $json = null;
+    /**
+     * URL to send the data.
+     *
+     * @var    string
+     * @since  __DEPLOY_VERSION__
+     */
+    protected $json = null;
 
-	/**
-	 * Render the button.
-	 *
-	 * @return  void
-	 *
-	 * @since  __DEPLOY_VERSION__
-	 */
-	public function onBeforeRender()
-	{
-		// Run in backend
-		if ($this->app->isClient('administrator') === true)
-		{
-			// Get the input object
-			$input = $this->app->input;
+    /**
+     * Render the button.
+     *
+     * @return  void
+     *
+     * @since  __DEPLOY_VERSION__
+     */
+    public function onBeforeRender()
+    {
+        // Run in backend
+        if ($this->app->isClient('administrator') === true) {
+            // Get the input object
+            $input = $this->app->input;
 
-			// Get an instance of the Toolbar
-			$toolbar = Toolbar::getInstance('toolbar');
-			
-			// Append button on Article
-			if ($input->getCmd('option') === 'com_content' && $input->getCmd('view') === 'article')
-			{
-				$id = $input->get('id');
+            // Get an instance of the Toolbar
+            $toolbar = Toolbar::getInstance('toolbar');
 
-				// Add your custom button here
-				$url = Route::_('index.php?option=com_ajax&group=content&plugin=export&format=json&id=' . $id);
-				$toolbar->appendButton('Link', 'upload', 'Export', $url);
-			}
-		}
-	}
+            // Append button on Article
+            if ($input->getCmd('option') === 'com_content' && $input->getCmd('view') === 'article') {
+                $id = $input->get('id');
 
-	/**
-	 * First step to send the data. Content.
-	 *
-	 * @return  array or void  Will be converted into the JSON response to the module.
-	 *
-	 * @since  __DEPLOY_VERSION__
-	 */
-	public function onAjaxExport()
-	{
-		$id  = $this->app->input->get('id');
+                // Add your custom button here
+                $url = Route::_('index.php?option=com_ajax&group=content&plugin=export&format=json&id=' . $id);
+                $toolbar->appendButton('Link', 'upload', 'Export', $url);
+            }
+        }
+    }
 
-		$domain = $this->params->get('url', 'http://localhost');
-		$this->postUrl = $domain . '/api/index.php/v1/content/articles';
-		$this->getUrl = $domain . '/api/index.php/v1/content';
-		$this->options = new Registry;
-		$this->options->set('Content-Type', 'application/json');
-		
-		if ($this->params->get('authorization') === 'Bearer')
-		{
-			$this->headers = array('Authorization' => 'Bearer ' . $this->params->get('key'));
-		}
+    /**
+     * First step to send the data. Content.
+     *
+     * @return  array or void  Will be converted into the JSON response to the module.
+     *
+     * @since  __DEPLOY_VERSION__
+     */
+    public function onAjaxExport()
+    {
+        $id  = $this->app->input->get('id');
 
-		if ($this->params->get('authorization') === 'X-Joomla-Token')
-		{
-			$this->headers = array('X-Joomla-Token' => $this->params->get('key'));
-		}
+        $domain        = $this->params->get('url', 'http://localhost');
+        $this->postUrl = $domain . '/api/index.php/v1/content/articles';
+        $this->getUrl  = $domain . '/api/index.php/v1/content';
+        $this->options = new Registry();
+        $this->options->set('Content-Type', 'application/json');
+
+        if ($this->params->get('authorization') === 'Bearer') {
+            $this->headers = ['Authorization' => 'Bearer ' . $this->params->get('key')];
+        }
+
+        if ($this->params->get('authorization') === 'X-Joomla-Token') {
+            $this->headers = ['X-Joomla-Token' => $this->params->get('key')];
+        }
 
 
-		// Get an instance of the generic articles model
-		$content = Factory::getApplication()->bootComponent('com_content')->getMVCFactory();
-		/** @var Joomla\Component\Content\Administrator\Model\ArticleModel $model */
-		$model = $content->createModel('Article', 'Administrator', ['ignore_request' => true]);
+        // Get an instance of the generic articles model
+        $content = Factory::getApplication()->bootComponent('com_content')->getMVCFactory();
+        /** @var Joomla\Component\Content\Administrator\Model\ArticleModel $model */
+        $model = $content->createModel('Article', 'Administrator', ['ignore_request' => true]);
 
-		$item = $model->getItem($id);
-		$item->catid = $this->params->get('catid');
-		$item->state = $this->params->get('state', 0);
-		unset($item->created_by);
+        $item        = $model->getItem($id);
+        $item->catid = $this->params->get('catid');
+        $item->state = $this->params->get('state', 0);
+        unset($item->created_by);
 
-		if ($this->sendData($item))
-		{
-			// There was an error sending data.
-			$this->app->enqueueMessage(Text::_('Exported to ' . $domain), 'success');
-		}
+        if ($this->sendData($item)) {
+            // There was an error sending data.
+            $this->app->enqueueMessage(Text::_('Exported to ' . $domain), 'success');
+        }
 
-		$this->app->redirect(Route::_('index.php?option=com_content&view=article&layout=edit&id=' . $id, false), 200);		
-	}
+        $this->app->redirect(Route::_('index.php?option=com_content&view=article&layout=edit&id=' . $id, false), 200);
+    }
 
-	/**
-	 * Check category existence
-	 *
-	 * @return  boolean
-	 *
-	 * @since   __DEPLOY_VERSION__
-	 *
-	 * @throws  RuntimeException  If there is an error sending the data.
-	 */
-	private function checkCategory($catid)
-	{	
-		// Don't let the request take longer than n seconds to avoid page timeout issues
-		try
-		{
-			$response = HttpFactory::getHttp($this->options)->get($this->getUrl . '/categories/'. $catid, $this->headers, $this->params->get('timeout', 3));
-		}
-		catch (\Exception $e)
-		{
-			$this->app->enqueueMessage(Text::_('CheckCat:' . $e->getMessage()), 'error');
-			return false;
-		}
+    /**
+     * Check category existence
+     *
+     * @return  boolean
+     *
+     * @since   __DEPLOY_VERSION__
+     *
+     * @throws  RuntimeException  If there is an error sending the data.
+     */
+    private function checkCategory($catid)
+    {
+        // Don't let the request take longer than n seconds to avoid page timeout issues
+        try {
+            $response = HttpFactory::getHttp($this->options)->get($this->getUrl . '/categories/'. $catid, $this->headers, $this->params->get('timeout', 3));
+        } catch (\Exception $e) {
+            $this->app->enqueueMessage(Text::_('CheckCat:' . $e->getMessage()), 'error');
+            return false;
+        }
 
-		if ($response->code === 404)
-		{
-			$this->app->enqueueMessage(Text::_('Category not found' . $response->code), 'error');
-			return false;
-		}
+        if ($response->code === 404) {
+            $this->app->enqueueMessage(Text::_('Category not found' . $response->code), 'error');
+            return false;
+        }
 
-		if ($response->code !== 200)
-		{
-			$this->app->enqueueMessage(Text::_('CheckCat:' . $response->code), 'error');
-			return false;
-		}
-		
-		return true;
-	}
+        if ($response->code !== 200) {
+            $this->app->enqueueMessage(Text::_('CheckCat:' . $response->code), 'error');
+            return false;
+        }
 
-	/**
-	 * Check category existence
-	 *
-	 * @return  boolean
-	 *
-	 * @since   __DEPLOY_VERSION__
-	 *
-	 * @throws  RuntimeException  If there is an error sending the data.
-	 */
-	private function checkArticle($item)
-	{	
-		// Check if already exists
-		$title = $item->title;
-		$searchUrl = $this->getUrl . '/articles?filter[search]=' . urlencode($title);
+        return true;
+    }
 
-		try
-		{
-			$response = HttpFactory::getHttp($this->options)->get($searchUrl, $this->headers, $this->params->get('timeout', 3));
-		}
-		catch (\Exception $e)
-		{
-			$this->app->enqueueMessage(Text::_('SearchArt:' . $e->getMessage()), 'error');
-			return false;
-		}
+    /**
+     * Check category existence
+     *
+     * @return  boolean
+     *
+     * @since   __DEPLOY_VERSION__
+     *
+     * @throws  RuntimeException  If there is an error sending the data.
+     */
+    private function checkArticle($item)
+    {
+        // Check if already exists
+        $title     = $item->title;
+        $searchUrl = $this->getUrl . '/articles?filter[search]=' . urlencode($title);
+
+        try {
+            $response = HttpFactory::getHttp($this->options)->get($searchUrl, $this->headers, $this->params->get('timeout', 3));
+        } catch (\Exception $e) {
+            $this->app->enqueueMessage(Text::_('SearchArt:' . $e->getMessage()), 'error');
+            return false;
+        }
 
 
-		if ($response->code !== 200)
-		{
-			$this->app->enqueueMessage(Text::_('SearchArt:' . $response->code), 'error');
-			return false;
-		}
+        if ($response->code !== 200) {
+            $this->app->enqueueMessage(Text::_('SearchArt:' . $response->code), 'error');
+            return false;
+        }
 
-		$this->verb ='post';
-		$this->json = json_decode($response->body);
+        $this->verb ='post';
+        $this->json = json_decode($response->body);
 
-		if (count($this->json->data) > 0)
-		{
-			$this->verb ='patch';
-		}
+        if (\count($this->json->data) > 0) {
+            $this->verb ='patch';
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
-	 * Send the data to the j4 server
-	 *
-	 * @return  boolean
-	 *
-	 * @since   __DEPLOY_VERSION__
-	 *
-	 * @throws  RuntimeException  If there is an error sending the data.
-	 */
-	private function sendData($item)
-	{
-		$this->verb ='get';
+    /**
+     * Send the data to the j4 server
+     *
+     * @return  boolean
+     *
+     * @since   __DEPLOY_VERSION__
+     *
+     * @throws  RuntimeException  If there is an error sending the data.
+     */
+    private function sendData($item)
+    {
+        $this->verb ='get';
 
-		if (!$this->checkCategory($item->catid))
-		{
-			return false;
-		}
+        if (!$this->checkCategory($item->catid)) {
+            return false;
+        }
 
-		if (!$this->checkArticle($item))
-		{
-			return false;
-		}
+        if (!$this->checkArticle($item)) {
+            return false;
+        }
 
-		$content = json_encode($item);
+        $content = json_encode($item);
 
-	
-		if ($this->verb === 'patch')
-		{
-			try
-			{
-				$this->verb ='patch';
-				$artid = $this->json->data[0]->id;
-				$response =  HttpFactory::getHttp($this->options)->patch($this->postUrl .'/' . $artid, $content, $this->headers, $this->params->get('timeout', 3));
-			}
-			catch (\Exception $e)
-			{
 
-				$this->app->enqueueMessage(Text::_('PatchArt:' . $e->getMessage()), 'error');
-				return false;
-			}
+        if ($this->verb === 'patch') {
+            try {
+                $this->verb ='patch';
+                $artid      = $this->json->data[0]->id;
+                $response   =  HttpFactory::getHttp($this->options)->patch($this->postUrl .'/' . $artid, $content, $this->headers, $this->params->get('timeout', 3));
+            } catch (\Exception $e) {
 
-			if ($response->code !== 200)
-			{
-				$this->app->enqueueMessage(Text::_('PatchArt:' . $response->code), 'error');
-				return false;
-			}
+                $this->app->enqueueMessage(Text::_('PatchArt:' . $e->getMessage()), 'error');
+                return false;
+            }
 
-			return true;
-		}
+            if ($response->code !== 200) {
+                $this->app->enqueueMessage(Text::_('PatchArt:' . $response->code), 'error');
+                return false;
+            }
 
-		try
-		{
-			$this->verb ='post';
-			$response = HttpFactory::getHttp($this->options)->post($this->postUrl, $content, $this->headers, $this->params->get('timeout', 3));
-		}
-		catch (\Exception $e)
-		{
-			$this->app->enqueueMessage(Text::_('PostArt:' . $e->getMessage()), 'error');
-			return false;
-		}
-	
-		if ($response->code !== 200)
-		{
-			$this->app->enqueueMessage(Text::_('PostArt:' . $response->code), 'error');
-			return false;
-		}
+            return true;
+        }
 
-		return true;
-	}
+        try {
+            $this->verb ='post';
+            $response   = HttpFactory::getHttp($this->options)->post($this->postUrl, $content, $this->headers, $this->params->get('timeout', 3));
+        } catch (\Exception $e) {
+            $this->app->enqueueMessage(Text::_('PostArt:' . $e->getMessage()), 'error');
+            return false;
+        }
+
+        if ($response->code !== 200) {
+            $this->app->enqueueMessage(Text::_('PostArt:' . $response->code), 'error');
+            return false;
+        }
+
+        return true;
+    }
 }

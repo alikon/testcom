@@ -1,11 +1,20 @@
 <?php
+
+/**
+ * @package     Joomla.Plugin
+ * @subpackage  Console.updatefromcli
+ *
+ * @copyright   Copyright (C) 2026 Alikon. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ */
+
 namespace Joomla\Plugin\Console\Updatefromcli\CliCommand;
 
-use Joomla\CMS\Factory;
-use Joomla\Database\DatabaseInterface;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Updater\Updater;
 use Joomla\Console\Command\AbstractCommand;
+use Joomla\Database\DatabaseInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -49,7 +58,7 @@ final class UpdatefromcliCommand extends AbstractCommand
         if ($eid = $input->getOption('eid')) {
             $db = Factory::getContainer()->get(DatabaseInterface::class);
             // Validate extension exists
-            $db = Factory::getContainer()->get('DatabaseDriver');
+            $db    = Factory::getContainer()->get('DatabaseDriver');
             $query = $db->getQuery(true)
                 ->select('COUNT(*)')
                 ->from($db->quoteName('#__extensions'))
@@ -62,6 +71,13 @@ final class UpdatefromcliCommand extends AbstractCommand
                 $symfonyStyle->error('Extension ID not found');
                 return Command::FAILURE;
             }
+
+            // Load core and installer language files
+            $language = $this->getApplication()->getLanguage();
+            $language->load('lib_joomla', JPATH_ADMINISTRATOR);
+            $language->load('com_installer', JPATH_ADMINISTRATOR, 'en-GB', false, true);
+            $language->load('com_installer', JPATH_ADMINISTRATOR, null, true);
+
             // Find updates.
             /** @var UpdateModel $model */
             $model = $this->getApplication()->bootComponent('com_installer')
@@ -90,10 +106,7 @@ final class UpdatefromcliCommand extends AbstractCommand
             $extensions = $this->getExtensionInfo($update);
             $symfonyStyle->table(['Extension ID', 'Name', 'Location', 'Type', 'Installed','Available', 'Folder'], $extensions);
 
-            // Load com_installer's language
-            $language = $this->getApplication()->getLanguage();
-            $language->load('com_installer', JPATH_ADMINISTRATOR, 'en-GB', false, true);
-            $language->load('com_installer', JPATH_ADMINISTRATOR, null, true);
+
             // Get the minimum stability.
             $params            = ComponentHelper::getComponent('com_installer')->getParams();
             $minimum_stability = (int) $params->get('minimum_stability', Updater::STABILITY_STABLE);

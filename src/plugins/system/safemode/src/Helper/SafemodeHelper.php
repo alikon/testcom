@@ -53,7 +53,7 @@ class SafemodeHelper
      */
     private array $excludedPlugins = [
         'plg_system_safemode',
-        'plg_console_safemode'
+        'plg_console_safemode',
     ];
 
     /**
@@ -74,7 +74,7 @@ class SafemodeHelper
      */
     public function __construct(?DatabaseInterface $db = null, ?string $stateFile = null)
     {
-        $this->db = $db ?? Factory::getDbo();
+        $this->db        = $db ?? Factory::getDbo();
         $this->stateFile = $stateFile ?? JPATH_ROOT . '/tmp/safemode-disabled.json';
         $this->ensureLoggerRegistered();
     }
@@ -118,7 +118,7 @@ class SafemodeHelper
         }
 
         $decoded = json_decode($contents, true);
-        if (json_last_error() !== JSON_ERROR_NONE || !is_array($decoded)) {
+        if (json_last_error() !== JSON_ERROR_NONE || !\is_array($decoded)) {
             Log::add(
                 'SafeMode: invalid JSON in state file "' . $this->stateFile . '": ' . json_last_error_msg(),
                 Log::WARNING,
@@ -130,7 +130,7 @@ class SafemodeHelper
         // Normalize to an array of integer IDs
         $ids = [];
         foreach ($decoded as $id) {
-            if (is_int($id) || ctype_digit((string) $id)) {
+            if (\is_int($id) || ctype_digit((string) $id)) {
                 $ids[] = (int) $id;
             }
         }
@@ -150,7 +150,7 @@ class SafemodeHelper
     public function writeDisabledIds(array $ids): bool
     {
         // Ensure we store a de-duplicated list of integer IDs only
-        $ids = array_values(array_unique(array_map('intval', $ids)));
+        $ids     = array_values(array_unique(array_map('intval', $ids)));
         $payload = json_encode($ids);
 
         if ($payload === false) {
@@ -221,7 +221,7 @@ class SafemodeHelper
      */
     public function getDisableablePlugins(): array
     {
-        $coreIds = ExtensionHelper::getCoreExtensionIds();
+        $coreIds     = ExtensionHelper::getCoreExtensionIds();
         $coreIdsList = !empty($coreIds) ? implode(',', array_map('intval', $coreIds)) : '0';
         $excludeList = "'" . implode("','", $this->excludedPlugins) . "'";
 
@@ -252,7 +252,7 @@ class SafemodeHelper
             return [];
         }
 
-        $idsList = implode(',', array_map('intval', $disabledIds));
+        $idsList     = implode(',', array_map('intval', $disabledIds));
         $excludeList = "'" . implode("','", $this->excludedPlugins) . "'";
 
         $query = $this->db->getQuery(true)
@@ -284,17 +284,15 @@ class SafemodeHelper
             return [];
         }
 
-        $names = array_map(fn($p) => $p->name, $plugins);
-        foreach ($names as $name) {
-            Log::add('SafeMode: disabling plugins: ' . $names , Log::INFO, 'safemode');
-        }
+        $names = array_map(fn ($p) => $p->name, $plugins);
+        Log::add('SafeMode: disabling plugins: ' . implode(', ', $names), Log::INFO, 'safemode');
 
         if (!$dryRun) {
             $ids = array_column($plugins, 'extension_id');
             $this->writeDisabledIds($ids);
 
             $idsList = implode(',', array_map('intval', $ids));
-            $query = $this->db->getQuery(true)
+            $query   = $this->db->getQuery(true)
                 ->update('#__extensions')
                 ->set('enabled = 0')
                 ->where('extension_id IN (' . $idsList . ')');
@@ -317,7 +315,7 @@ class SafemodeHelper
     public function restorePlugins(bool $dryRun = false): array
     {
         $disabled = $this->readDisabledIds();
-        $plugins = $this->getRestorablePlugins($disabled);
+        $plugins  = $this->getRestorablePlugins($disabled);
 
         if (empty($plugins)) {
             // Even if no plugins to restore, clear state if not dry run
@@ -327,15 +325,13 @@ class SafemodeHelper
             return [];
         }
 
-        $names = array_map(fn($p) => $p->name, $plugins);
-        foreach ($names as $name) {
-            Log::add('SafeMode: restoring plugins: ' . $names , Log::INFO, 'safemode');
-        }
+        $names = array_map(fn ($p) => $p->name, $plugins);
+        Log::add('SafeMode: restoring plugins: ' . implode(', ', $names), Log::INFO, 'safemode');
 
         if (!$dryRun) {
-            $restoreIds = array_column($plugins, 'extension_id');
+            $restoreIds     = array_column($plugins, 'extension_id');
             $restoreIdsList = implode(',', array_map('intval', $restoreIds));
-            
+
             $query = $this->db->getQuery(true)
                 ->update('#__extensions')
                 ->set('enabled = 1')
@@ -375,7 +371,7 @@ class SafemodeHelper
             return false;
         }
 
-        $params = json_decode($plugin->params, true) ?: [];
+        $params               = json_decode($plugin->params, true) ?: [];
         $params['enabled_ui'] = $active ? 1 : 0;
 
         $query = $this->db->getQuery(true)
@@ -384,7 +380,7 @@ class SafemodeHelper
             ->where('extension_id = ' . (int) $plugin->extension_id);
 
         $this->db->setQuery($query);
-        
+
         try {
             $this->db->execute();
             return true;
@@ -406,4 +402,3 @@ class SafemodeHelper
         return $this->stateFile;
     }
 }
-

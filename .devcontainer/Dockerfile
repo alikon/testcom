@@ -1,4 +1,5 @@
-FROM php:8.3-apache-bookworm
+# Start from the official PHP 8.4 image with Apache
+FROM php:8.4-apache-bookworm
 
 RUN apt-get update && apt-get install -y \
     git \

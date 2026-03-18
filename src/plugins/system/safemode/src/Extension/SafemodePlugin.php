@@ -10,10 +10,10 @@
 
 namespace Joomla\Plugin\System\Safemode\Extension;
 
-defined('_JEXEC') or die;
+\defined('_JEXEC') or die;
 
-use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Plugin\System\Safemode\Helper\SafemodeHelper;
@@ -95,8 +95,8 @@ class SafemodePlugin extends CMSPlugin implements SubscriberInterface
 
         // Determine SafeMode state from params and URL
         $enabledUi = (bool) $this->params->get('enabled_ui', 0);
-        $dryRun = (bool) $this->params->get('dry_run', 0) || $input->getBool('dryrun', false);
-        $safeMode = $enabledUi || $input->getBool('safemodeon', false);
+        $dryRun    = (bool) $this->params->get('dry_run', 0) || $input->getBool('dryrun', false);
+        $safeMode  = $enabledUi || $input->getBool('safemodeon', false);
 
         // Get current state
         $isActive = $this->helper->isSafeModeActive();
@@ -128,8 +128,12 @@ class SafemodePlugin extends CMSPlugin implements SubscriberInterface
      */
     private function showAdminBanner(): void
     {
+        $this->getApplication()->getLanguage()->load(
+            'plg_system_safemode',
+            JPATH_PLUGINS . '/system/safemode'
+        );
         $this->getApplication()->enqueueMessage(
-            'SafeMode is currently active. Non-core plugins are disabled.',
+            Text::_('PLG_SYSTEM_SAFEMODE_BANNER'),
             'warning'
         );
     }

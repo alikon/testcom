@@ -15,12 +15,8 @@
     <files>
         <folder plugin="safemode">services</folder>
         <folder>src</folder>
+        <folder>language</folder>
     </files>
-    
-    <languages folder="language">
-        <language tag="en-GB">en-GB/plg_system_safemode.ini</language>
-        <language tag="en-GB">en-GB/plg_system_safemode.sys.ini</language>
-    </languages>
     
     <config>
         <fields name="params">
