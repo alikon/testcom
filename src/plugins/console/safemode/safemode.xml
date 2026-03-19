@@ -19,7 +19,19 @@
         <!-- src directory for your plugin code -->
         <folder>src</folder>
         <folder>language</folder>
+        <folder>field</folder>
     </files>
+    <config>
+        <fields name="params" addfieldpath="/plugins/console/safemode/field">
+            <fieldset name="basic">
+                <field name="license" type="note" 
+                    label="PLG_CONSOLE_SAFEMODE_GPL_LICENSE" 
+                    description=""
+                    class="alert alert-success" />
+                
+                <field name="plugin_links" type="links" label="PLG_CONSOLE_SAFEMODE_LINKS_LABEL" />
+                <field name="plugin_version" type="version" label="PLG_CONSOLE_SAFEMODE_VERSION_LABEL" />                
+            </fieldset>
+        </fields>
+    </config>
 </extension>
-
-
