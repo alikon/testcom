@@ -15,6 +15,7 @@
     <files>
         <folder plugin="safemode">services</folder>
         <folder>src</folder>
+        <folder>field</folder>
         <folder>language</folder>
     </files>
     
