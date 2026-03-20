@@ -126,7 +126,7 @@ jobs:
       # Salviamo dist/ + joomla.zip nella cache con run_id univoco
       # invece di usare upload-artifact che passa per Azure Blob Storage
       - name: Save build to cache
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             dist/
@@ -153,7 +153,7 @@ jobs:
           tools: composer
 
       - name: Restore build from cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             dist/
@@ -247,7 +247,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Restore build from cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             dist/
