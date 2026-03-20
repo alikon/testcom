@@ -1,5 +1,6 @@
 <?php
-defined('_JEXEC') or die;
+
+\defined('_JEXEC') or die;
 
 use Joomla\CMS\Form\FormField;
 
@@ -12,10 +13,10 @@ class JFormFieldVersion extends FormField
         // 1. Get the path to your plugin's XML
         // Note: Ensure this path matches your folder name (safemode)
         $path = JPATH_SITE . '/plugins/content/swaggerui/swaggerui.xml';
-        
+
         $version = '0.0.0';
         if (file_exists($path)) {
-            $xml = simplexml_load_file($path);
+            $xml     = simplexml_load_file($path);
             $version = (string)$xml->version;
         }
 

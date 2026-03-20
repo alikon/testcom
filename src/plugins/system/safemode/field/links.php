@@ -1,5 +1,6 @@
 <?php
-defined('_JEXEC') or die;
+
+\defined('_JEXEC') or die;
 
 use Joomla\CMS\Form\FormField;
 use Joomla\CMS\Language\Text;
@@ -17,29 +18,29 @@ class JFormFieldLinks extends FormField
             ['link' => 'https://github.com/sponsors/alikon', 'class' => 'btn-success', 'icon' => 'fab fa-github', 'label' => 'PLG_SYSTEM_SAFEMODE_LBL_SPONSOR'],
         ];
 
-        // This CSS reset ensures that if your template adds a "duplicate" icon via 
+        // This CSS reset ensures that if your template adds a "duplicate" icon via
         // a ::before or ::after selector on target="_blank", it is hidden here.
         $html = '<style>.magic-links-container a[target="_blank"]::before, .magic-links-container a[target="_blank"]::after {content: none !important;}</style>';
-        
+
         $html .= '<div class="magic-links-container" style="display: flex; gap: 6px; flex-wrap: nowrap; width: 100%;">';
 
         foreach ($buttons as $btn) {
             $safeLink = htmlspecialchars($btn['link'], ENT_QUOTES, 'UTF-8');
-            
+
             $html .= '<a href="' . $safeLink . '" target="_blank" rel="noopener noreferrer" 
                         class="btn ' . $btn['class'] . '" 
                         style="display: flex; align-items: center; justify-content: center; flex-direction: row; 
                                flex: 1; padding: 20px 5px; text-decoration: none; white-space: nowrap;">';
-            
+
             // 1. Primary Icon (Manual/Bug/etc.) stays on the LEFT
             $html .= '  <i class="' . $btn['icon'] . '" style="margin-right: 8px;" aria-hidden="true"></i>';
-            
+
             // 2. Button Label (Center)
             $html .= '  <span style="font-size: 0.8rem; font-weight: 600;">' . Text::_($btn['label']) . '</span>';
-            
+
             // 3. External Link Icon on the RIGHT
             $html .= '  <i class="fas fa-external-link-alt" style="margin-left: 8px; font-size: 0.7rem; opacity: 0.8;" aria-hidden="true"></i>';
-            
+
             $html .= '</a>';
         }
 

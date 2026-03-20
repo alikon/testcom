@@ -1,5 +1,6 @@
 <?php
-defined('_JEXEC') or die;
+
+\defined('_JEXEC') or die;
 
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Form\FormRule;
@@ -11,14 +12,14 @@ use Joomla\Registry\Registry;
  */
 class JFormRuleConditionalcategory extends FormRule
 {
-    public function test(\SimpleXMLElement $element, $value, $group = null, Registry $input = null, Form $form = null): bool
+    public function test(\SimpleXMLElement $element, $value, $group = null, ?Registry $input = null, ?Form $form = null): bool
     {
         // Get all form data
         $data = $input->toArray();
-        
+
         // Navigate to the 'params' group where our switcher is
         $params = $data['params'] ?? [];
-        
+
         // Check if categories switcher is '1' (Yes)
         $categoriesEnabled = isset($params['categories']) ? (int) $params['categories'] : 0;
 
@@ -29,18 +30,18 @@ class JFormRuleConditionalcategory extends FormRule
 
         // If categories ARE enabled, check if $value is empty
         // For 'multiple="true"', $value is usually an array
-       // If categories ARE enabled, check if $value is actually useful
+        // If categories ARE enabled, check if $value is actually useful
         if (empty($value)) {
             return false;
         }
-        
+
         // If it's an array (multiple select), filter out any empty strings/nulls
-        if (is_array($value)) {
-            $filtered = array_filter($value, function($v) {
+        if (\is_array($value)) {
+            $filtered = array_filter($value, function ($v) {
                 return $v !== '' && $v !== null;
             });
-        
-            if (count($filtered) === 0) {
+
+            if (\count($filtered) === 0) {
                 return false;
             }
         }
