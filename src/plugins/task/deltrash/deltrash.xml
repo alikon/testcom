@@ -15,9 +15,23 @@
 		<folder plugin="deltrash">services</folder>
 		<folder>src</folder>
 		<folder>language</folder>
+		<folder>field</folder>
 		<folder>forms</folder>
 	</files>
 	<updateservers>
 		<server type="extension" name="Task - Delete Trash">https://raw.githubusercontent.com/alikon/testcom/main/plugins/task/deltrash/updateserver.xml</server>
 	</updateservers>
+	 <config>
+        <fields name="params" addfieldpath="/plugins/task/deltrash/field">
+            <fieldset name="basic">
+                <field name="license" type="note" 
+                    label="PLG_TASK_DELTRASH_GPL_LICENSE" 
+                    description=""
+                    class="alert alert-success" />
+                
+                <field name="plugin_links" type="links" label="PLG_TASK_DELTRASH_LINKS_LABEL" />
+                <field name="plugin_version" type="version" label="PLG_TASK_DELTRASH_VERSION_LABEL" />                
+            </fieldset>
+        </fields>
+    </config>
 </extension>
