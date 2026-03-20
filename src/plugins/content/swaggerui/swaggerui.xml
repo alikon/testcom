@@ -8,7 +8,7 @@
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>alikon@alikonweb.it</authorEmail>
     <authorUrl>www.alikonweb.it</authorUrl>
-    <description>Embed Swagger UI in Joomla 5 articles using {swaggerui}</description>
+    <description>Embed Swagger UI in Joomla articles using {swaggerui}</description>
 	<namespace path="src">Joomla\Plugin\Content\Swaggerui</namespace>
 	<files>
 		<folder plugin="swaggerui">services</folder>
@@ -19,8 +19,14 @@
 		<folder>js</folder>
 	</media>
 	<config>
-	<fields name="params">
+	<fields name="params" addfieldpath="/plugins/content/swaggerui/field">
 			<fieldset name="basic">
+				<field name="license" type="note" 
+                    label="PLG_CONTENT_SWAGGERUI_GPL_LICENSE" 
+                    description=""
+                    class="alert alert-success" />
+                
+                <field name="plugin_links" type="links" label="PLG_CONTENT_SWAGGERUI_LINKS_LABEL" />
 				<field
 					name="openapiyaml"
 					type="filelist"
