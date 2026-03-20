@@ -14,6 +14,7 @@
 		<folder plugin="swaggerui">services</folder>
 		<folder>src</folder>
 		<folder>language</folder>
+		<folder>field</folder>
 	</files>
 	<media destination="plg_content_swaggerui" folder="media">
 		<folder>js</folder>
