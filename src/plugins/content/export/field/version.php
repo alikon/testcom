@@ -12,7 +12,7 @@ class JFormFieldVersion extends FormField
     {
         // 1. Get the path to your plugin's XML
         // Note: Ensure this path matches your folder name (safemode)
-        $path = JPATH_SITE . '/plugins/system/safemode/safemode.xml';
+        $path = JPATH_SITE . '/plugins/content/export/export.xml';
 
         $version = '0.0.0';
         if (file_exists($path)) {

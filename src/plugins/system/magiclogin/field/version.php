@@ -16,8 +16,10 @@ class JFormFieldVersion extends FormField
 
         $version = '0.0.0';
         if (file_exists($path)) {
-            $xml     = simplexml_load_file($path);
-            $version = (string)$xml->version;
+            $xml = @simplexml_load_file($path);
+            if ($xml !== false && isset($xml->version)) {
+                $version = (string) $xml->version;
+            }
         }
 
         // 2. Return a larger, styled "button-style" badge
