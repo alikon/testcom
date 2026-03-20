@@ -23,6 +23,7 @@ npm install
 # --- 2. Build Extension ---
 echo "--> Building extension..."
 [ -f "vendor/bin/robo" ] && vendor/bin/robo build || echo "Robo not found, skipping build."
+rm -f $JOOMLA_ROOT/configuration.php
 
 # --- 3. Install Joomla ---
 echo "--> Installing Joomla..."
@@ -66,7 +67,7 @@ fi
 # --- 5. Download phpMyAdmin ---
 PMA_ROOT="/var/www/html/phpmyadmin"
 echo "--> Downloading phpMyAdmin into $PMA_ROOT..."
-PMA_VERSION=5.2.1
+PMA_VERSION=5.2.2
 mkdir -p $PMA_ROOT
 curl -o /tmp/phpmyadmin.tar.gz https://files.phpmyadmin.net/phpMyAdmin/${PMA_VERSION}/phpMyAdmin-${PMA_VERSION}-all-languages.tar.gz
 tar xf /tmp/phpmyadmin.tar.gz --strip-components=1 -C $PMA_ROOT
@@ -105,4 +106,4 @@ echo "Joomla:      http://localhost"
 echo "Admin:       http://localhost/administrator  (user: $ADMIN_USER / pass: $ADMIN_PASS)"
 echo "phpMyAdmin:  http://localhost/phpmyadmin     (user: $DB_USER / pass: $DB_PASS)"
 echo "Mailpit:     http://localhost:8025"
-echo ""
+echo "run docker compose exec app bash /usr/local/bin/setup.sh to re-run this setup script if needed."

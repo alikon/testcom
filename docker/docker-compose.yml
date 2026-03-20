@@ -3,11 +3,16 @@ services:
     build:
       context: ../.devcontainer
       dockerfile: Dockerfile
+    # We use 'command' to pass arguments to the default entrypoint
+    # This runs your chmod, then starts the standard joomla/apache process
+    command: >
+      bash -c "chmod +x /usr/local/bin/setup.sh && apache2-foreground"
     volumes:
       - ..:/workspaces/testcom:cached
       - ../.devcontainer/xdebug.ini:/usr/local/etc/php/conf.d/99-xdebug.ini
+      - ./setup.sh:/usr/local/bin/setup.sh
     ports:
-      - "80:80"
+      - "8080:80"
       - "443:443"
       - "9003:9003"
     depends_on:
@@ -15,7 +20,6 @@ services:
         condition: service_healthy
       mailpit:
         condition: service_started
-    command: bash -c "service apache2 start && sleep infinity"
 
   mysql:
     image: mysql:8.0
