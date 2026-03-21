@@ -10,7 +10,7 @@
 	<version>2.1.0</version>
 	<description>PLG_CONTENT_EXPORT_XML_DESCRIPTION</description>
 	<namespace path="src">Joomla\Plugin\Content\Export</namespace>
-	<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/changelog.xml</changelogurl>
+	<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/content/export/changelog.xml</changelogurl>
 	<files>
 		<folder plugin="export">services</folder>
 		<folder>src</folder>
@@ -87,6 +87,6 @@
 		</fields>
 	</config>
 	<updateservers>
-		<server type="extension" name="Content - Export Article">https://raw.githubusercontent.com/alikon/testcom/main/plugins/content/export/updateserver.xml</server>
+		<server type="extension" name="Content - Export Article">https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/content/export/updateserver.xml</server>
 	</updateservers>
 </extension>
