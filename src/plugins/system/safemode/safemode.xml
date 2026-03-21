@@ -11,7 +11,7 @@
     <description>PLG_SYSTEM_SAFEMODE_XML_DESCRIPTION</description>
     
     <namespace path="src">Joomla\Plugin\System\Safemode</namespace>
-    
+    <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/system/safemode/changelog.xml</changelogurl>
     <files>
         <folder plugin="safemode">services</folder>
         <folder>src</folder>
@@ -57,4 +57,7 @@
             </fieldset>
         </fields>
     </config>
+    <updateservers>
+        <server type="extension" name="System - Safemode">https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/system/safemode/updateserver.xml</server>
+    </updateservers>
 </extension>

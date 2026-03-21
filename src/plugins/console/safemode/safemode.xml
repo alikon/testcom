@@ -12,7 +12,7 @@
 
     <!-- Correct namespace per Joomla docs -->
     <namespace path="src">Joomla\Plugin\Console\Safemode</namespace>
-
+    <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/console/safemode/changelog.xml</changelogurl>
     <files>
         <!-- Services directory must be included -->
         <folder plugin="safemode">services</folder>
@@ -34,4 +34,7 @@
             </fieldset>
         </fields>
     </config>
+    <updateservers>
+        <server type="extension" name="Console - Safemode">https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/console/safemode/updateserver.xml</server>
+    </updateservers>
 </extension>
