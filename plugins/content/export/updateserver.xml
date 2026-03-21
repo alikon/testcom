@@ -110,8 +110,7 @@
 		<updatefromcli>false</updatefromcli>
 		<targetplatform name="joomla" version="((4\.[01234])|(5\.[01234])|(6\.[01234]))" />
 	</update>
-	</update>
-		<update>
+	<update>
 		<name>Content - Export Article</name>
 		<description>Joomla! Content - Export Article Plugin</description>
 		<element>export</element>
