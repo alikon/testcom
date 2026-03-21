@@ -2,35 +2,46 @@
 <extension type="plugin" group="content" method="upgrade" version="5.0">
     <name>plg_content_swaggerui</name>
     <version>1.0.0</version>
-	<author>Alikon</author>
+    <author>Alikon</author>
     <creationDate>2026-01</creationDate>
     <copyright>(C) 2007 Alikonweb</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>alikon@alikonweb.it</authorEmail>
     <authorUrl>www.alikonweb.it</authorUrl>
-    <description>Embed Swagger UI in Joomla 5 articles using {swaggerui}</description>
-	<namespace path="src">Joomla\Plugin\Content\Swaggerui</namespace>
-	<files>
-		<folder plugin="swaggerui">services</folder>
-		<folder>src</folder>
-		<folder>language</folder>
-	</files>
-	<media destination="plg_content_swaggerui" folder="media">
-		<folder>js</folder>
-	</media>
-	<config>
-	<fields name="params">
-			<fieldset name="basic">
-				<field
-					name="openapiyaml"
-					type="filelist"
-					label="PLG_CONTENT_SWAGGERUI_FIELD_YAML_LABEL"
-					description="PLG_CONTENT_SWAGGERUI_FIELD_YAML_DESC"
-					required="true"
-					directory="media/plg_content_swaggerui/js/"
-					fileFilter="\.yaml$"
-				/>				
-			</fieldset>
-		</fields>
-	</config>
+    <description>Embed Swagger UI in Joomla articles using {swaggerui}</description>
+    <namespace path="src">Joomla\Plugin\Content\Swaggerui</namespace>
+    <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/content/swaggerui/changelog.xml</changelogurl>
+    <files>
+        <folder plugin="swaggerui">services</folder>
+        <folder>src</folder>
+        <folder>language</folder>
+        <folder>field</folder>
+    </files>
+    <media destination="plg_content_swaggerui" folder="media">
+        <folder>js</folder>
+    </media>
+    <config>
+    <fields name="params" addfieldpath="/plugins/content/swaggerui/field">
+            <fieldset name="basic">
+                <field name="license" type="note" 
+                    label="PLG_CONTENT_SWAGGERUI_GPL_LICENSE" 
+                    description=""
+                    class="alert alert-success" />
+                
+                <field name="plugin_links" type="links" label="PLG_CONTENT_SWAGGERUI_LINKS_LABEL" />
+                <field
+                    name="openapiyaml"
+                    type="filelist"
+                    label="PLG_CONTENT_SWAGGERUI_FIELD_YAML_LABEL"
+                    description="PLG_CONTENT_SWAGGERUI_FIELD_YAML_DESC"
+                    required="true"
+                    directory="media/plg_content_swaggerui/js/"
+                    fileFilter="\.yaml$"
+                />
+            </fieldset>
+        </fields>
+    </config>
+    <updateservers>
+        <server type="extension" name="Content - SwaggerUI">https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/content/swaggerui/updateserver.xml</server>
+    </updateservers>
 </extension>

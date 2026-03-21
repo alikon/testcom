@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<changelogs>
+    <changelog>
+        <element>swaggerui</element>
+        <folder>content</folder>
+        <type>plugin</type>
+        <version>1.0.0</version>
+        <addition>
+            <item>Test webservices endpoint</item>
+        </addition>
+        <language>
+            <item>en-GB</item>
+        </language>
+        <note>
+            <item>Not listed on Joomla Extension Directory</item>
+        </note>
+    </changelog>
+</changelogs>

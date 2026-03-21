@@ -15,13 +15,20 @@
 		<folder plugin="export">services</folder>
 		<folder>src</folder>
 		<folder>language</folder>
+		<folder>field</folder>
 	</files>
 	<media destination="plg_content_export" folder="media">
 		<folder>js</folder>
 	</media>
 	<config>
-	<fields name="params">
+		<fields name="params" addfieldpath="/plugins/content/export/field">
 			<fieldset name="basic">
+				<field name="license" type="note" 
+                    label="PLG_CONTENT_EXPORT_GPL_LICENSE" 
+                    description=""
+                    class="alert alert-success" />
+                
+                <field name="plugin_links" type="links" label="PLG_CONTENT_EXPORT_LINKS_LABEL" />
 				<field
 					name="url"
 					type="text"

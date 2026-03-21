@@ -16,11 +16,19 @@
         <folder plugin="magiclogin">services</folder>
         <folder>src</folder>
         <folder>language</folder>
+        <folder>field</folder>
     </files>
 
     <config>
-        <fields name="params">
+        <fields name="params"  addfieldpath="/plugins/system/magiclogin/field">
             <fieldset name="basic">
+                <field name="license" type="note" 
+                    label="PLG_SYSTEM_MAGICLOGIN_GPL_LICENSE" 
+                    description=""
+                    class="alert alert-success" />
+                
+                <field name="plugin_links" type="links" label="PLG_SYSTEM_MAGICLOGIN_LINKS_LABEL" />
+                <field name="plugin_version" type="version" label="PLG_SYSTEM_MAGICLOGIN_VERSION_LABEL" />
                 <field name="token_expiry" 
                        type="number" 
                        default="15" 

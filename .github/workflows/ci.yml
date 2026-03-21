@@ -20,7 +20,7 @@ jobs:
     container:
       image: joomlaprojects/docker-images:php8.3
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-dependencies
 
 # -------------------------------------------------
@@ -32,7 +32,7 @@ jobs:
     container:
       image: joomlaprojects/docker-images:php8.3
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-dependencies
       - name: Run PHP CS Fixer and PHPCS
         continue-on-error: true
@@ -49,7 +49,7 @@ jobs:
     container:
       image: joomlaprojects/docker-images:php8.3
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-dependencies
         with:
           npm-cache: 'true'
@@ -70,7 +70,7 @@ jobs:
     container:
       image: joomlaprojects/docker-images:cypress8.3
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: ./.github/actions/setup-dependencies
         with:
@@ -103,7 +103,7 @@ jobs:
 
       - name: Cache Joomla Zip (download cache)
         id: cache-joomla
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: joomla.zip
           key: joomla-core-${{ matrix.joomla-version }}-${{ steps.joomla-info.outputs.url_hash }}
@@ -126,7 +126,7 @@ jobs:
       # Salviamo dist/ + joomla.zip nella cache con run_id univoco
       # invece di usare upload-artifact che passa per Azure Blob Storage
       - name: Save build to cache
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             dist/
@@ -144,7 +144,7 @@ jobs:
       matrix:
         joomla-version: ['5.4', '6.0', '6.1']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup PHP 8.3
         uses: shivammathur/setup-php@v2
@@ -153,7 +153,7 @@ jobs:
           tools: composer
 
       - name: Restore build from cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             dist/
@@ -244,10 +244,10 @@ jobs:
           POSTGRES_DB: ${{ matrix.db == 'pgsql' && 'test_joomla' || 'unused' }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Restore build from cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             dist/
@@ -308,7 +308,7 @@ jobs:
 
       - name: Upload Screenshots on Failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: screenshots-j${{ matrix.joomla-version }}-${{ matrix.db }}-php${{ matrix.php-version }}
           path: tests/cypress/output/screenshot

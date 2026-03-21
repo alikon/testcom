@@ -12,14 +12,29 @@
 
     <!-- Correct namespace per Joomla docs -->
     <namespace path="src">Joomla\Plugin\Console\Safemode</namespace>
-
+    <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/console/safemode/changelog.xml</changelogurl>
     <files>
         <!-- Services directory must be included -->
         <folder plugin="safemode">services</folder>
         <!-- src directory for your plugin code -->
         <folder>src</folder>
         <folder>language</folder>
+        <folder>field</folder>
     </files>
+    <config>
+        <fields name="params" addfieldpath="/plugins/console/safemode/field">
+            <fieldset name="basic">
+                <field name="license" type="note" 
+                    label="PLG_CONSOLE_SAFEMODE_GPL_LICENSE" 
+                    description=""
+                    class="alert alert-success" />
+                
+                <field name="plugin_links" type="links" label="PLG_CONSOLE_SAFEMODE_LINKS_LABEL" />
+                <field name="plugin_version" type="version" label="PLG_CONSOLE_SAFEMODE_VERSION_LABEL" />                
+            </fieldset>
+        </fields>
+    </config>
+    <updateservers>
+        <server type="extension" name="Console - Safemode">https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/console/safemode/updateserver.xml</server>
+    </updateservers>
 </extension>
-
-
