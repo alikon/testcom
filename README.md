@@ -19,7 +19,7 @@ This repository contains various Joomla plugins. To ensure the download counters
 | Extension Name | Version | Download Link (Direct Asset) | Download Count |
 | :--- | :--- | :--- | :--- |
 | **Content Export** | v2.0.0 | [Download plg_content_export-2.0.0.zip](https://github.com/alikon/testcom/releases/download/1.0/plg_content_export-2.0.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/1.0/plg_content_export-2.0.0.zip) |
-| **Task Delete trashed** | v1.7.0 | [Download plg_task_deletetrash-1.7.0.zip](https://github.com/alikon/testcom/releases/download/1.0/plg_task_deletetrash-1.7.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/1.0/plg_task_deletetrash-1.7.0.zip) |
+| **Task Delete trashed** | v1.7.0 | [Download plg_task_deltrash-1.7.0.zip](https://github.com/alikon/testcom/releases/download/1.0/plg_task_deltrash-1.7.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/1.0/plg_task_deltrash-1.7.0.zip) |
 
 ## 🛠 Installation
 
