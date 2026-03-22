@@ -10,7 +10,7 @@
 	<version>1.7.1</version>
 	<description>PLG_TASK_DELTRASH_XML_DESCRIPTION</description>
 	<namespace path="src">Joomla\Plugin\Task\Deltrash</namespace>
-	<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/plugins/task/deltrash/changelog.xml</changelogurl>
+	<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/task/deltrash/changelog.xml</changelogurl>
 	<files>
 		<folder plugin="deltrash">services</folder>
 		<folder>src</folder>
