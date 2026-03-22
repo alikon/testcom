@@ -17,6 +17,7 @@
 		<folder>language</folder>
 		<folder>field</folder>
 		<folder>forms</folder>
+		<folder>rules</folder>
 	</files>
 	<updateservers>
 		<server type="extension" name="Task - Delete Trash">https://raw.githubusercontent.com/alikon/testcom/main/plugins/task/deltrash/updateserver.xml</server>
