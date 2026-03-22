@@ -14,9 +14,26 @@ MySQL >= 8.0.0 or PostgreSQL >= 12.0
 
 PHP >= 8.1.0
 
-## Extension Download Stats
+This repository contains various Joomla plugins. To ensure the download counters increment correctly, please use the direct asset links provided in the table below.
 
-| Extension Name | Version | Download Count |
-| :--- | :--- | :--- |
-| **Content Export** | v2.0.0 | [![Downloads](https://img.shields.io/github/downloads/alikon/testcom/1.0/plg_content_export-2.0.0.zip)](https://github.com/alikon/testcom/releases/tag/1.0) |
-| **Task Delete trashed** | v1.7.0 | [![Downloads](https://img.shields.io/github/downloads/alikon/testcom/1.0/plg_task_deletetrash-1.7.0.zip)](https://github.com/alikon/testcom/releases/tag/1.0) |
+| Extension Name | Version | Download Link (Direct Asset) | Download Count |
+| :--- | :--- | :--- | :--- |
+| **Content Export** | v2.0.0 | [Download plg_content_export-2.0.0.zip](https://github.com/alikon/testcom/releases/download/1.0/plg_content_export-2.0.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/1.0/plg_content_export-2.0.0.zip) |
+| **Task Delete trashed** | v1.7.0 | [Download plg_task_deletetrash-1.7.0.zip](https://github.com/alikon/testcom/releases/download/1.0/plg_task_deletetrash-1.7.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/1.0/plg_task_deletetrash-1.7.0.zip) |
+
+## 🛠 Installation
+
+1. **Download** the `.zip` file for the desired extension from the table above.
+2. Log in to your **Joomla Administrator** panel.
+3. Navigate to **System** -> **Install** -> **Extensions**.
+4. Upload the package file.
+5. Enable the plugin in **System** -> **Manage** -> **Plugins**.
+
+---
+
+### How to contribute
+1. Fork the repository.
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4. Push to the branch (`git push origin feature/AmazingFeature`).
+5. Open a Pull Request.
