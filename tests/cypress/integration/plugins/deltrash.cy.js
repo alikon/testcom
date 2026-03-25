@@ -31,7 +31,7 @@ describe('Joomla Task Plugin: Deltrash Test', () => {
          menus:0,
          modules:0,
          redirects:0,
-         redirectspurge":0,
+         redirectspurge:0,
          tags:0,
          tasks:0
       },
