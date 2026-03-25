@@ -2,6 +2,7 @@ describe('Joomla Task Plugin: Deltrash Test', () => {
 
   beforeEach(() => {
     // 1. Login to the Joomla Backend
+    cy.task('clearEmails');
     cy.doAdministratorLogin();
     cy.db_enableExtension('1', 'plg_task_deltrash');
   });
@@ -12,8 +13,8 @@ describe('Joomla Task Plugin: Deltrash Test', () => {
     cy.get('div.new-task-details').contains('Delete trashed items').click();
     cy.title().should('contain', 'New Task');
     cy.get('h1.page-title').should('contain', 'New Task');
-    cy.get('#myTab div[role="tablist"] button[aria-controls="advanced"]').click();
-    cy.get('#task-form').contains('Delete trashed items').should('be.visible');
+    // Verify the plugin header is visible on the General tab
+    cy.get('#general').contains('Delete trashed items').should('be.visible')
   });
 
   it('can notify successful task execution', () => {
