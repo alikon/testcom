@@ -1,0 +1,35 @@
+<changelogs>
+    <changelog>
+        <element>mod_github_portfolio</element>
+        <type>module</type>
+        <version>1.0.0</version>
+        <security>
+            <item>Item A</item>
+            <item>Item b</item>
+        </security>
+        <fix>
+            <item>Item A</item>
+            <item>Item b</item>
+        </fix>
+        <language>
+            <item>Item A</item>
+            <item>Item b</item>
+        </language>
+        <addition>
+            <item>Item A</item>
+            <item>Item b</item>
+        </addition>
+        <change>
+            <item>Item A</item>
+            <item>Item b</item>
+        </change>
+        <remove>
+            <item>Item A</item>
+            <item>Item b</item>
+        </remove>
+        <note>
+            <item>Item A</item>
+            <item>Item b</item>
+        </note>
+    </changelog>
+</changelogs>
