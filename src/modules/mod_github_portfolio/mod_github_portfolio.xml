@@ -8,6 +8,7 @@
     <version>1.0.0</version>
     <description>MOD_GITHUB_PORTFOLIO_XML_DESCRIPTION</description>
     <namespace path="src">Joomla\Module\GithubPortfolio</namespace>
+    <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/modules/mod_github_portfolio/changelog.xml</changelogurl>
     <media destination="mod_github_portfolio" folder="media">
         <folder>js</folder>
     </media>
@@ -15,14 +16,21 @@
         <folder module="mod_github_portfolio">services</folder>
         <folder>src</folder>
         <folder>tmpl</folder>
+        <folder>field</folder>
+        <folder>language</folder> 
     </files>
-    <languages>
-        <language tag="en-GB">language/en-GB/mod_github_portfolio.ini</language>
-        <language tag="en-GB">language/en-GB/mod_github_portfolio.sys.ini</language>
-    </languages>
+    <updateservers>
+		<server type="extension" name="Module - Github Portfolio">https://raw.githubusercontent.com/alikon/testcom/main/src/modules/mod_github_portfolio/updateserver.xml</server>
+	</updateservers>
     <config>
-        <fields name="params">
+        <fields name="params" addfieldpath="/modules/mod_github_portfolio/field">
             <fieldset name="basic">
+                <field name="license" type="note" 
+                    label="MOD_GITHUB_PORTFOLIO_LICENSE_LABEL" 
+                    description="MOD_GITHUB_PORTFOLIO_GPL_LICENSE"
+                    class="alert alert-success" />
+                <field name="plugin_links" type="links" label="MOD_GITHUB_PORTFOLIO_FIELD_LINKS_LABEL" />
+                <field name="plugin_version" type="version" label="MOD_GITHUB_PORTFOLIO_VERSION_LABEL" />                    
                 <field
                     name="github_username"
                     type="text"
