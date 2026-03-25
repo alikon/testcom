@@ -13,7 +13,7 @@
 	<media destination="mod_jstats" folder="media">
 		<folder>js</folder>
 	</media>
-	<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/modules/src/mod_jstats/changelog.xml</changelogurl>
+	<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/modules/mod_jstats/changelog.xml</changelogurl>
 	<files>
 		<folder module="mod_jstats">services</folder>
 		<folder>src</folder>
@@ -110,6 +110,6 @@
 		</fields>
 	</config>
 	<updateservers>
-		<server type="extension" name="Module - J Statistics">https://raw.githubusercontent.com/alikon/testcom/main/modules/src/mod_jstats/updateserver.xml</server>
+		<server type="extension" name="Module - J Statistics">https://raw.githubusercontent.com/alikon/testcom/main/src/modules/mod_jstats/updateserver.xml</server>
 	</updateservers>
 </extension>
