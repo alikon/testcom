@@ -13,19 +13,24 @@
 	<media destination="mod_jstats" folder="media">
 		<folder>js</folder>
 	</media>
-	<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/modules/mod_jstats/changelog.xml</changelogurl>
+	<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/modules/src/mod_jstats/changelog.xml</changelogurl>
 	<files>
 		<folder module="mod_jstats">services</folder>
 		<folder>src</folder>
+		<folder>field</folder>
 		<folder>tmpl</folder>
+		<folder>language</folder>
 	</files>
-	<languages>
-		<language tag="en-GB">language/en-GB/mod_jstats.ini</language>
-		<language tag="en-GB">language/en-GB/mod_jstats.sys.ini</language>
-	</languages>
-	<help key="Admin_Modules:_Custom" />
 	<config>
-		<fields name="params">
+		<fields name="params" addfieldpath="/modules/mod_jstats/field">
+			<fieldset name="basic">
+                <field name="license" type="note" 
+                    label="MOD_JSTATS_LICENSE_LABEL" 
+                    description="MOD_JSTATS_GPL_LICENSE"
+                    class="alert alert-success" />
+                <field name="plugin_links" type="links" label="MOD_JSTATS_FIELD_LINKS_LABEL" />
+                <field name="plugin_version" type="version" label="MOD_JSTATS_VERSION_LABEL" />
+			</fieldset>
 			<fieldset name="options" label="COM_MODULES_BASIC_FIELDSET_LABEL">
 				<field
 					name="timeframe0"
@@ -79,9 +84,7 @@
 					label="JFIELD_ALT_LAYOUT_LABEL"
 					class="form-select"
  				/>
-
 				
-
 				<field
 					name="cache"
 					type="list"
@@ -107,6 +110,6 @@
 		</fields>
 	</config>
 	<updateservers>
-		<server type="extension" name="Module - J Statistics">https://raw.githubusercontent.com/alikon/testcom/main/modules/mod_jstats/updateserver.xml</server>
+		<server type="extension" name="Module - J Statistics">https://raw.githubusercontent.com/alikon/testcom/main/modules/src/mod_jstats/updateserver.xml</server>
 	</updateservers>
 </extension>
