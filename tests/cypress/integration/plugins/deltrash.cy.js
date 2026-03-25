@@ -23,16 +23,17 @@ describe('Joomla Task Plugin: Deltrash Test', () => {
       execution_rules: { 'rule-type': 'manual' },
       cron_rules: { type: 'manual', exp: '' },
       params: {
-        "articles":1,
-        "categories":1,
-        "components":["com_banners"],
-        "contacts":0,
-        "menus":0,
-        "modules":0,
-        "redirects":0,
-        "redirectspurge":0,
-        "tags":0,
-        "tasks":0
+         notifications: { success_mail: 1 },
+         articles:1,
+         categories:1,
+         components:["com_banners"],
+         contacts:0,
+         menus:0,
+         modules:0,
+         redirects:0,
+         redirectspurge":0,
+         tags:0,
+         tasks:0
       },
     }).then((task) => {
       cy.visit('/administrator/index.php?option=com_scheduler&view=tasks&filter=');
