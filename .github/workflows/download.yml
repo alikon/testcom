@@ -1,0 +1,27 @@
+name: Update Download Stats
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # ogni ora
+  workflow_dispatch:
+
+jobs:
+  stats:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch download counts
+        run: |
+          curl -s https://api.github.com/repos/alikon/testcom/releases/tags/1.0 \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            | jq '{assets: [.assets[] | {name: .name, download_count: .download_count}]}' \
+            > stats.json
+
+      - name: Commit stats
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add stats.json
+          git diff --cached --quiet || git commit -m "chore: update download stats"
+          git push
