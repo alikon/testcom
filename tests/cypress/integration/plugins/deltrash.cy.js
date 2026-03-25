@@ -73,7 +73,7 @@ describe('Joomla Task Plugin: Deltrash Test', () => {
     cy.get('.alert-message').should('contain', 'Task successfully executed');
 
     // 6. Final check: Go to the Trash view and ensure it is empty
-    cy.visit('/administrator/index.php?option=com_content&view=articles&filter=[published]=-2`);
+    cy.visit('/administrator/index.php?option=com_content&view=articles&filter=[published]=-2');
     cy.get('.no-results-message').should('exist');
   });
 
