@@ -13,10 +13,10 @@ class JFormFieldLinks extends FormField
     {
         \Joomla\CMS\Factory::getApplication()->getLanguage()->load(
             'mod_github_portfolio',
-             JPATH_SITE . '/modules/mod_github_portfolio',
-             null,
-             false,
-             true
+            JPATH_SITE . '/modules/mod_github_portfolio',
+            null,
+            false,
+            true
         );
 
         $buttons = [
