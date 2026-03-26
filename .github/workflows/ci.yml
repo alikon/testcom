@@ -264,6 +264,9 @@ jobs:
 
       - uses: ./.github/actions/setup-cypress
 
+      - name: Install sendmail
+        run: apt-get update && apt-get install -y sendmail
+
       - name: Setup and run ${{ matrix.db }}
         run: |
           ${{ matrix.alter-user-cmd }}
