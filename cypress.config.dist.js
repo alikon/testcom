@@ -18,6 +18,7 @@ export default defineConfig({
       'tests/cypress/integration/site/**/*.cy.{js,jsx,ts,tsx}',
       'tests/cypress/integration/api/**/*.cy.{js,jsx,ts,tsx}',
       'tests/cypress/integration/plugins/**/*.cy.{js,jsx,ts,tsx}',
+      'tests/cypress/integration/modules/**/*.cy.{js,jsx,ts,tsx}',      
     ],
     supportFile: 'tests/cypress/support/index.js',
     scrollBehavior: 'center',
