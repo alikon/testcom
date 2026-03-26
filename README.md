@@ -18,8 +18,9 @@ This repository contains various Joomla plugins. To ensure the download counters
 
 | Extension Name | Version | Download Link (Direct Asset) | Download Count |
 | :--- | :--- | :--- | :--- |
-| **Content Export** | v2.1.0 | [Download plg_content_export-2.1.0.zip](https://github.com/alikon/testcom/releases/download/v1.1/plg_content_export-2.1.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/1.0/plg_content_export-2.0.0.zip?label=downloads) |
-| **Task Delete trashed** | v1.7.1 | [Download plg_task_deltrash-1.7.1.zip](https://github.com/alikon/testcom/releases/download/v1.1/plg_task_deltrash-1.7.1.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/1.0/plg_task_deltrash-1.7.0.zip?label=downloads) |
+| **Content Export** | v2.1.0 | [Download plg_content_export-2.1.0.zip](https://github.com/alikon/testcom/releases/download/v1.1/plg_content_export-2.1.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.1/plg_content_export-2.1.0.zip?label=downloads) |
+| **Task Delete trashed** | v1.7.1 | [Download plg_task_deltrash-1.7.1.zip](https://github.com/alikon/testcom/releases/download/v1.1/plg_task_deltrash-1.7.1.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.1/plg_task_deltrash-1.7.1.zip?label=downloads) |
+| **MagicLogin** | v1.0.0 | [Download plg_system_magiclogin-1.0.0.zip](https://github.com/alikon/testcom/releases/download/v1.1/plg_system_magiclogin-1.0.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.1/plg_system_magiclogin-1.0.0.zip?label=downloads) |
 
 ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/total)
 
