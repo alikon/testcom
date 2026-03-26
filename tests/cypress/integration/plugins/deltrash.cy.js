@@ -7,7 +7,7 @@ describe('Joomla Task Plugin: Deltrash Test', () => {
     cy.db_enableExtension('1', 'plg_task_deltrash');
   });
 
-  it('can display notification form', () => {
+  it('can display the plugin form', () => {
     cy.visit('/administrator/index.php?option=com_scheduler&view=tasks');
     cy.clickToolbarButton('New');
     cy.get('div.new-task-details').contains('Delete trashed items').click();
@@ -36,7 +36,7 @@ describe('Joomla Task Plugin: Deltrash Test', () => {
       execution_rules: { 'rule-type': 'manual' },
       cron_rules: { type: 'manual', exp: '' },
       params: {
-         notifications: { success_mail: 1 },
+         notifications: { success_mail: 0 },
          articles:1,
          categories:1,
          components:["com_banners"],
