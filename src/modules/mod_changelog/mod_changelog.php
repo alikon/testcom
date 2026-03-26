@@ -1,0 +1,20 @@
+<?php
+defined('_JEXEC') or die;
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\Helper\ModuleHelper;
+
+// Get the Helper Factory directly from the Container
+// Use the exact namespace you defined in provider.php
+$container = Factory::getContainer();
+$helperFactory = $container->get(\Joomla\CMS\Extension\Service\Provider\HelperFactory::class);
+$helper = $helperFactory->getHelper('ChangelogHelper', 'Alikonweb\\Module\\Changelog');
+
+// Get the GitHub URL from params
+$githubUrl = $params->get('xml_url', 'https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/task/deltrash/changelog.xml');
+
+// Fetch the data
+$list = $helper->getChangelogData($githubUrl);
+
+// Render the layout
+require ModuleHelper::getLayoutPath('mod_changelog', $params->get('layout', 'default'));

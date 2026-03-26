@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="5.0" client="site" method="upgrade">
+    <name>My XML Changelog</name>
+    <version>1.0.0</version>
+    <description>Displays the deltrash plugin changelog from XML.</description>
+    <namespace path="src">Alikonweb\Module\Changelog</namespace>
+    <files>
+        <folder module="mod_changelog">services</folder>
+        <folder>src</folder>
+        <folder>tmpl</folder>
+    </files>
+    <config>
+    <fields name="params">
+        <fieldset name="basic">
+            <field name="xml_url" type="url" 
+                   default="https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/task/deltrash/changelog.xml" 
+                   label="GitHub Raw XML URL" 
+                   size="80" />
+        </fieldset>
+    </fields>
+</config>
+</extension>
