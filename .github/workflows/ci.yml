@@ -6,6 +6,8 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+      contents: write
 env:
   DB_NAME: test_joomla
   DB_USER: joomla_ut
@@ -50,7 +52,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "style: fix PHP styling with php-cs-fixer"
-          file_pattern: '*.php'
+          file_pattern: '.'
 
 # -------------------------------------------------
 # NPM
