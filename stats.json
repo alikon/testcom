@@ -1,12 +1,36 @@
 {
   "assets": [
     {
-      "name": "plg_content_export-2.0.0.zip",
+      "name": "mod_github_portfolio-1.0.0.zip",
       "download_count": 0
     },
     {
-      "name": "plg_task_deltrash-1.7.0.zip",
+      "name": "mod_jstats-1.0.0.zip",
       "download_count": 0
+    },
+    {
+      "name": "plg_console_safemode-1.0.0.zip",
+      "download_count": 0
+    },
+    {
+      "name": "plg_content_export-2.1.0.zip",
+      "download_count": 3
+    },
+    {
+      "name": "plg_content_swaggerui-1.0.0.zip",
+      "download_count": 0
+    },
+    {
+      "name": "plg_system_magiclogin-1.0.0.zip",
+      "download_count": 2
+    },
+    {
+      "name": "plg_system_safemode-1.0.0.zip",
+      "download_count": 0
+    },
+    {
+      "name": "plg_task_deltrash-1.7.1.zip",
+      "download_count": 1
     }
   ]
 }
