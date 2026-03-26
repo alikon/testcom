@@ -39,6 +39,14 @@ jobs:
         run: |
           ./vendor/bin/php-cs-fixer fix -vvv --dry-run --diff
           ./vendor/bin/phpcs --extensions=php -p --standard=ruleset.xml src/
+      - name: Apply PHP-CS-Fixer fixes
+        run: ./vendor/bin/php-cs-fixer fix -vvv
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: fix PHP style issues via PHP-CS-Fixer"
+          file_pattern: '*.php'
 
 # -------------------------------------------------
 # NPM
