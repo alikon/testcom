@@ -39,13 +39,17 @@ jobs:
         run: |
           ./vendor/bin/php-cs-fixer fix -vvv --dry-run --diff
           ./vendor/bin/phpcs --extensions=php -p --standard=ruleset.xml src/
+
+      - name: Fix Dubious Ownership
+        run: git config --global --add safe.directory /__w/testcom/testcom
+
       - name: Apply PHP-CS-Fixer fixes
         run: ./vendor/bin/php-cs-fixer fix -vvv
 
-      - name: Commit changes
+      - name: Commit and Push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore: fix PHP style issues via PHP-CS-Fixer"
+          commit_message: "style: fix PHP styling with php-cs-fixer"
           file_pattern: '*.php'
 
 # -------------------------------------------------
