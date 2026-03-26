@@ -13,7 +13,7 @@ jobs:
 
       - name: Fetch download counts
         run: |
-          curl -s https://api.github.com/repos/alikon/testcom/releases/tags/1.0 \
+          curl -s https://api.github.com/repos/alikon/testcom/releases/tags/v1.1 \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             | jq '{assets: [.assets[] | {name: .name, download_count: .download_count}]}' \
             > stats.json
