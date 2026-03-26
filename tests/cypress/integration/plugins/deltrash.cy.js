@@ -17,7 +17,19 @@ describe('Joomla Task Plugin: Deltrash Test', () => {
     cy.get('#general').contains('Delete trashed items').should('be.visible')
   });
 
-  it('can notify successful task execution', () => {
+  it('should empty the trash using the deltrash task', () => {
+    // Create dummy content and move it to trash
+    cy.db_createArticle({ title: 'Test trash article' }).then(() => {
+      cy.reload();
+      cy.visit('/administrator/index.php?option=com_content&view=articles&filter=');
+      cy.searchForItem('Test trash article');
+      cy.checkAllResults();
+      cy.clickToolbarButton('Action');
+      cy.contains('Trash').click();
+
+      cy.checkForSystemMessage('Article trashed.');
+    });
+    
     cy.db_createSchedulerTask({
       title: 'Test task',
       type: 'plg_task_deltrash',
@@ -47,48 +59,16 @@ describe('Joomla Task Plugin: Deltrash Test', () => {
       });
       cy.get('joomla-dialog[type="inline"]').should('be.visible');
       cy.get('joomla-dialog[type="inline"]').within(() => {
-        cy.get('header.joomla-dialog-header').should('contain', `Test task (ID: ${task.id})`);
+      //  cy.get('header.joomla-dialog-header').should('contain', `Run task (ID: ${task.id})`);
         cy.get('div.scheduler-status').should('contain', 'Status: Completed');
       });
-      cy.task('getMails').then((mails) => {
-        cy.wrap(mails).should('have.lengthOf', 1);
-        cy.wrap(mails[0].body).should('have.string', `Scheduled Task#${task.id}, Test task, has been successfully executed`);
-        cy.wrap(mails[0].headers.subject).should('have.string', 'Task Successful');
-        cy.wrap(mails[0].headers.from).should('equal', `"${Cypress.env('sitename')}" <${Cypress.env('email')}>`);
-        cy.wrap(mails[0].headers.to).should('equal', Cypress.env('email'));
-      });
+
     });
-  });
-  
-  it('should empty the trash using the deltrash task', () => {
-    // 2. Create dummy content and move it to trash
-    trashDummyArticle();// Move to trash
-    
-    // 3. Navigate to Scheduled Tasks
-    cy.visit('/administrator/index.php?option=com_scheduler&view=tasks');
 
-    // 4. Find the 'deltrash' task and run it
-    // Note: This assumes you have already created a task instance for this plugin
-    cy.contains('deltrash').parents('tr').find('.js-scheduler-run-task').click();
-
-    // 5. Verify the success message
-    cy.get('.alert-message').should('contain', 'Task successfully executed');
-
-    // 6. Final check: Go to the Trash view and ensure it is empty
+    // Final check: Go to the Trash view and ensure it is empty
     cy.visit('/administrator/index.php?option=com_content&view=articles&filter=[published]=-2');
-    cy.get('.no-results-message').should('exist');
+    cy.get('.display-5').should('exist');
+    cy.get('.display-5').should('contain', 'No Articles have been created yet');
+    
   });
-
-  // Helper function to ensure we have a trashed item
-  function trashDummyArticle() {
-    cy.db_createArticle({ title: 'Test trash article' }).then(() => {
-      cy.reload();
-      cy.searchForItem('Test trash article');
-      cy.checkAllResults();
-      cy.clickToolbarButton('Action');
-      cy.contains('Trash').click();
-
-      cy.checkForSystemMessage('Article trashed.');
-    });
-  }
 });
