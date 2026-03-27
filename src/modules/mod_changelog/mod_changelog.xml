@@ -1,22 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="5.0" client="site" method="upgrade">
     <name>My XML Changelog</name>
+    <author>Alikon</author>
+    <creationDate>2026-02-01</creationDate>
+    <copyright>Copyright (C) 2026 Alikon. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <version>1.0.0</version>
-    <description>Displays the deltrash plugin changelog from XML.</description>
     <namespace path="src">Alikonweb\Module\Changelog</namespace>
+    <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/modules/mod_changelog/changelog.xml</changelogurl>
     <files>
         <folder module="mod_changelog">services</folder>
         <folder>src</folder>
         <folder>tmpl</folder>
+        <folder>field</folder>
+        <folder>language</folder> 
     </files>
+    <updateservers>
+		<server type="extension" name="Module - Changelog">https://raw.githubusercontent.com/alikon/testcom/main/src/modules/mod_changelog/updateserver.xml</server>
+	</updateservers>
     <config>
-    <fields name="params">
-        <fieldset name="basic">
-            <field name="xml_url" type="url" 
-                   default="https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/task/deltrash/changelog.xml" 
+        <fields name="params" addfieldpath="/modules/mod_changelog/field">
+            <fieldset name="basic">
+                <field name="license" type="note" 
+                    label="MOD_CHANGELOG_LICENSE_LABEL" 
+                    description="MOD_CHANGELOG_GPL_LICENSE"
+                    class="alert alert-success" />
+                <field name="plugin_links" type="links" label="MOD_CHANGELOG_FIELD_LINKS_LABEL" />
+                <field name="plugin_version" type="version" label="MOD_CHANGELOG_VERSION_LABEL" />                    
+            
+                <field name="xml_url" type="url" 
+                   default="https://raw.githubusercontent.com/alikon/testcom/main/src/modules/mod_changelog/changelog.xml" 
                    label="GitHub Raw XML URL" 
                    size="80" />
-        </fieldset>
-    </fields>
-</config>
+            </fieldset>
+        </fields>
+    </config>
 </extension>
