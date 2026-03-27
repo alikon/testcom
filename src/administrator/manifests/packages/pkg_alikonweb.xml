@@ -18,6 +18,7 @@
         <file type="module" id="mod_jstats" client="site">mod_jstats.zip</file>
         <file type="module" id="mod_backward" client="admin">mod_backward.zip</file>
         <file type="module" id="mod_github_portfolio" client="site">mod_github_portfolio.zip</file>
+        <file type="module" id="mod_changelog" client="site">mod_changelog.zip</file>
         <file type="plugin" id="updatefromcli" group="console">plg_console_updatefromcli.zip</file>
         <file type="plugin" id="safemode" group="console">plg_console_safemode.zip</file>
         <file type="plugin" id="magiclogin" group="system">plg_system_magiclogin.zip</file>
