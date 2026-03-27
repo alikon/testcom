@@ -16,18 +16,14 @@ class Dispatcher extends AbstractModuleDispatcher implements HelperFactoryAwareI
     protected function getLayoutData(): array
     {
         $data = parent::getLayoutData();
-        //container = Factory::getContainer();
-        //$helperFactory = $container->get(\Joomla\CMS\Extension\Service\Provider\HelperFactory::class);
-        
-        //$helper = $helperFactory->getHelper('ChangelogHelper', 'Alikonweb\\Module\\Changelog');
          
         // Get the GitHub URL from params
-        $githubUrl = $data['params']->get('xml_url', 'https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/task/deltrash/changelog.xml');
+        $githubUrl = $data['params']->get('xml_url', 'https://raw.githubusercontent.com/alikon/testcom/main/src/modules/mod_changelog/changelog.xml');
 
         $helper = $this->getHelperFactory()->getHelper('ChangelogHelper');
         // Fetch the data
-        $list = $helper->getChangelogData($githubUrl);
-        $data['list'] = $list;
+        $data['list'] = $helper->getChangelogData($githubUrl);
+
         return $data;
     }
 }

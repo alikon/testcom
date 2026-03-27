@@ -1,5 +1,5 @@
 <?php
-defined('_JEXEC') or die;
+\defined('_JEXEC') or die;
 ?>
 
 <div class="mod-changelog shadow-sm p-3 mb-5 bg-body rounded">

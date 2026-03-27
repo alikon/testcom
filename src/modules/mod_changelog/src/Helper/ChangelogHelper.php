@@ -14,7 +14,7 @@ class ChangelogHelper
             $options =  new Registry();
             // Set a timeout so your site doesn't hang if GitHub is slow
             $options->set('timeout', 10);
-            $transport = HttpFactory::getHttp($options, 'curl');
+            $transport = HttpFactory::getHttp($options);
             $response  = $transport->get($url);
 
             if ($response->code !== 200) {
