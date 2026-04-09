@@ -9,7 +9,7 @@ describe('Joomla Task Plugin: Deltrash Test', () => {
 
   it('can display the plugin form', () => {
     cy.visit('/administrator/index.php?option=com_scheduler&view=tasks');
-    cy.clickToolbarButton('New');
+    cy.wait(1000).clickToolbarButton('New');
     cy.get('div.new-task-details').contains('Delete trashed items').click();
     cy.title().should('contain', 'New Task');
     cy.get('h1.page-title').should('contain', 'New Task');
