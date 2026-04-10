@@ -30,6 +30,7 @@
                     description=""
                     class="alert alert-success" />
                 <field name="plugin_links" type="links" label="PLG_CONTENT_SWAGGERUI_LINKS_LABEL" />
+                <field name="plugin_version" type="version" label="PLG_CONTENT_SWAGGERUI_VERSION_LABEL" /> 
                 <field 
                     name="assets_source" 
                     type="list" 
