@@ -6,7 +6,7 @@
     <h3 class="mb-4 border-bottom pb-2">Project Updates</h3>
     
     <?php if (!$list || empty($list)): ?>
-        <div class="alert alert-warning">Unable to load changelog from GitHub <?php echo htmlspecialchars($url); ?></div>
+        <div class="alert alert-warning">Unable to load changelog from GitHub <?php echo htmlspecialchars($url, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></div>
     <?php else: ?>
         <div class="list-group list-group-flush">
             <?php foreach ($list as $item): ?>
