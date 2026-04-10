@@ -1,6 +1,6 @@
 <changelogs>
     <changelog>
-        <element>mod_jstats</element>
+        <element>mod_changelog</element>
         <type>module</type>
         <version>1.0.0</version>
         <security>
@@ -31,13 +31,5 @@
             <item>Item A</item>
             <item>Item b</item>
         </note>
-    </changelog>
-    <changelog>
-        <element>mod_jstats</element>
-        <type>module</type>
-        <version>1.1.0</version>
-        <addition>
-            <item>Javascript refactor</item>
-        </addition>        
     </changelog>
 </changelogs>

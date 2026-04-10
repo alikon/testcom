@@ -106,4 +106,13 @@
             <item>Ready for Jooomla 5/6</item>
         </note>
     </changelog>
+    <changelog>
+        <element>deltrash</element>
+        <folder>task</folder>
+        <type>plugin</type>
+        <version>1.7.2</version>
+        <note>
+            <item>CLI language support</item>
+        </note>
+    </changelog>
 </changelogs>

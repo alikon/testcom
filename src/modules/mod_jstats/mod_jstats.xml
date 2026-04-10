@@ -7,7 +7,7 @@
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>alikon@alikonweb.it</authorEmail>
 	<authorUrl>www.joomla.org</authorUrl>
-	<version>1.0.0</version>
+	<version>1.1.0</version>
 	<description>MOD_JSTATS_XML_DESCRIPTION</description>
 	<namespace path="src">Joomla\Module\Jstats</namespace>
 	<media destination="mod_jstats" folder="media">

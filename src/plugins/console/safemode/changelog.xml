@@ -15,4 +15,13 @@
             <item>Not listed on Joomla Extension Directory</item>
         </note>
     </changelog>
+    <changelog>
+        <element>safemode</element>
+        <folder>console</folder>
+        <type>plugin</type>
+        <version>1.0.1</version>
+        <language>
+            <item>CLI language support</item>
+        </language>
+    </changelog>
 </changelogs>

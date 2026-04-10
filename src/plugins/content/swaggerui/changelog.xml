@@ -22,8 +22,6 @@
         <version>2.0.0</version>
         <addition>
             <item>Added support for CDN assets</item>
-        </addition>
-        <addition>
             <item>Use Web Asset Manager</item>
         </addition>
     </changelog>
