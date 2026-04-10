@@ -23,6 +23,7 @@ class Dispatcher extends AbstractModuleDispatcher implements HelperFactoryAwareI
         $helper = $this->getHelperFactory()->getHelper('ChangelogHelper');
         // Fetch the data
         $data['list'] = $helper->getChangelogData($githubUrl);
+        $data['url']  = $githubUrl;
 
         return $data;
     }
