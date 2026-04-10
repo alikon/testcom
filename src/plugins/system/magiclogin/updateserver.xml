@@ -12,7 +12,7 @@
         <infourl title="Joomla! System - MagicLogin Plugin">https://www.alikonweb.it/extensions/system-plugin-magiclogin</infourl>
         <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/system/magiclogin/changelog.xml</changelogurl>
         <downloads>
-            <downloadurl type="full" format="zip">https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/system/magiclogin/plg_system_magiclogin-1.0.0.zip</downloadurl>
+            <downloadurl type="full" format="zip">https://github.com/alikon/testcom/releases/download/v1.2/plg_system_magiclogin-1.0.0.zip</downloadurl>
         </downloads>
         <tags><tag>stable</tag></tags>
         <sha256>9aed8c950a73b86a38f19cc4629dd71ace35fdcc62215a41902bbea16d3c4b9d</sha256>
