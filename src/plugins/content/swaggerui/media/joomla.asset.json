@@ -1,0 +1,50 @@
+{
+  "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
+  "name": "plg_content_swaggerui",
+  "version": "1.0.0",
+  "description": "Asset per SwaggerUI Plugin (Local & CDN)",
+  "assets": [
+    {
+      "name": "plg_content_swaggerui.cdn-bundle",
+      "type": "script",
+      "uri": "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui-bundle.js",
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
+      "name": "plg_content_swaggerui.cdn-preset",
+      "type": "script",
+      "uri": "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui-standalone-preset.js",
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
+      "name": "plg_content_swaggerui.cdn-css",
+      "type": "style",
+      "uri": "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui.css"
+    },
+    {
+      "name": "plg_content_swaggerui.local-bundle",
+      "type": "script",
+      "uri": "plg_content_swaggerui/js/swagger-ui-bundle.js",
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
+      "name": "plg_content_swaggerui.local-preset",
+      "type": "script",
+      "uri": "plg_content_swaggerui/js/swagger-ui-standalone-preset.js",
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
+      "name": "plg_content_swaggerui.local-css",
+      "type": "style",
+      "uri": "plg_content_swaggerui/css/swagger-ui.css"
+    }
+  ]
+}

@@ -4,92 +4,150 @@
  * @package     Joomla.Plugin
  * @subpackage  Content.swaggerui
  *
- * @copyright   (C) 2025 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright   Copyright (C) 2024 alikonweb.it. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 namespace Joomla\Plugin\Content\Swaggerui\Extension;
 
-use Joomla\CMS\Event\Content\ContentPrepareEvent;
-use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\CMS\Uri\Uri;
-use Joomla\Event\SubscriberInterface;
-
-// phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
-// phpcs:enable PSR1.Files.SideEffects
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\Event\Event;
+use Joomla\Event\SubscriberInterface;
+use Joomla\CMS\Document\HtmlDocument;
 
 /**
- * Joomla! Swagger UI Plugin.
- *
- * @since  5.0.0
+ * Plugin per integrare Swagger UI negli articoli di Joomla 5
  */
-
-final class Swaggerui extends CMSPlugin implements SubscriberInterface
+class Swaggerui extends CMSPlugin implements SubscriberInterface
 {
-    protected $autoloadLanguage = true;
-    /**
-     * Returns an array of events this subscriber will listen to.
-     *
-     * @return  array
-     *
-     * @since   5.0.0
-     */
     public static function getSubscribedEvents(): array
     {
-        return ['onContentPrepare' => 'onContentPrepare'];
+        return [
+            'onContentPrepare' => 'onContentPrepare',
+        ];
     }
 
-    public function onContentPrepare(ContentPrepareEvent $event)
+    /**
+     * Metodo principale per trasformare il tag {swaggerui ...} in HTML
+     */
+    public function onContentPrepare(Event $event): void
     {
-        // Get content item
-        $item = $event->getItem();
-        $yaml = $this->params->get('openapiyaml', 'openapi.yaml');
+        [$context, $article, $params, $page] = array_values($event->getArguments());
 
-        if (strpos($item->text, '{swaggerui}') === false) {
+        if (empty($article->text) || strpos($article->text, '{swaggerui') === false) {
             return;
         }
-        // Get the WebAssetManager
-        $wa = $this->getApplication()->getDocument()->getWebAssetManager();
-        // Populate the media config
-        $config = [
-            'baseUrl'     => Uri::base(),
-            'openApiYaml' => $yaml,
-        ];
-        $this->getApplication()->getDocument()->addScriptOptions('swagger-ui', $config);
-        // Register and use the Swagger UI CSS
-        $wa->registerAndUseStyle('plg_content_swaggerui_index', 'media/plg_content_swaggerui/js/index.css');
-        $wa->registerAndUseStyle('plg_content_swaggerui', 'media/plg_content_swaggerui/js/swagger-ui.css');
 
-        // Register and use the Swagger UI JS bundle
-        $wa->registerAndUseScript('plg_content_swaggerui_bundle', 'plg_content_swaggerui/swagger-ui-bundle.js', [], ['defer' => true]);
-        $wa->registerAndUseScript('plg_content_swaggerui_preset', 'plg_content_swaggerui/swagger-ui-standalone-preset.js', [], ['defer' => true]);
-        // Add the Swagger UI initialization as an inline script
-        $wa->addInlineScript(
-            <<<JS
-      const options = window.Joomla.getOptions('swagger-ui');
+        $regex = '/\{swaggerui\s+(.*?)\}/i';
 
-window.onload = function() {
-window.ui = SwaggerUIBundle({
-  url: options.baseUrl + "media/plg_content_swaggerui/js/" + options.openApiYaml,
-  dom_id: '#swagger-ui',
-    deepLinking: true,
-    presets: [
-      SwaggerUIBundle.presets.apis,
-      SwaggerUIStandalonePreset
-    ],
-    plugins: [
-      SwaggerUIBundle.plugins.DownloadUrl
-    ],
-    layout: "StandaloneLayout",
-});
-}
-JS
-        );
-        $swaggerHtml = <<<HTML
-<div id="swagger-ui"></div>
-HTML;
+        $article->text = preg_replace_callback($regex, function($matches) {
+            $attributes = $this->parseAttributes($matches[1]);
+            
+            $url = $attributes['url'] ?? 'https://petstore.swagger.io/v2/swagger.json';
+            $source = $attributes['source'] ?? $this->params->get('assets_source', 'local');
+            
+            // Carica gli Asset dal file JSON unico
+            $this->loadSwaggerAssets($source);
+            
+            return $this->generateSwaggerHtml($url);
+            
+        }, $article->text);
+    }
 
-        $item->text = str_replace('{swaggerui}', $swaggerHtml, $item->text);
+    /**
+     * Carica gli asset di Swagger UI usando il WebAssetManager e il file JSON unico
+     */
+    private function loadSwaggerAssets(string $source = 'local'): void
+    {
+        $app = Factory::getApplication();
+        $document = $app->getDocument();
+        
+        if (!($document instanceof HtmlDocument)) {
+            return;
+        }
+        
+        $wa = $document->getWebAssetManager();
+        //$wa->useScript('core');
+        $wa->getRegistry()->addRegistryFile('media/plg_content_swaggerui/joomla.asset.json');
+
+        // 1. Usa i nomi asset differenziati in base alla sorgente (CDN vs Local)
+        if ($source === 'cdn') {
+            $wa->useStyle('plg_content_swaggerui.cdn-css')
+               ->useScript('plg_content_swaggerui.cdn-bundle')
+               ->useScript('plg_content_swaggerui.cdn-preset');
+        } else {
+            //$wa->useStyle('plg_content_swaggerui.local-css')
+            //   ->useScript('plg_content_swaggerui.local-bundle')
+            //   ->useScript('plg_content_swaggerui.local-preset');
+            $document->addStyleSheet(Factory::getApplication()->get('uri.base.full') . 'media/plg_content_swaggerui/css/swagger-ui.css');
+            $document->addScript(Factory::getApplication()->get('uri.base.full') . 'media/plg_content_swaggerui/js/swagger-ui-bundle.js', ['defer' => true]);
+            $document->addScript(Factory::getApplication()->get('uri.base.full') . 'media/plg_content_swaggerui/js/swagger-ui-standalone-preset.js', ['defer' => true]);
+        }
+
+        // 2. Se decidi di usare un file JS esterno per l'init invece del declaration inline:
+        // $wa->useScript('plg_content_swaggerui.init');
+    }
+
+    /**
+     * Genera l'HTML e lo script di inizializzazione inline
+     */
+    private function generateSwaggerHtml(string $url): string
+    {
+        $document = Factory::getApplication()->getDocument();
+        
+        // Script di inizializzazione
+        $initScript = "
+        (function() {
+            var initSwagger = function() {
+                // Controlla che gli oggetti Swagger siano disponibili
+                if (typeof SwaggerUIBundle !== 'undefined' && typeof SwaggerUIStandalonePreset !== 'undefined') {
+                    const ui = SwaggerUIBundle({
+                        url: '" . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . "',
+                        dom_id: '#swagger-ui-container',
+                        deepLinking: true,
+                        presets: [
+                            SwaggerUIBundle.presets.apis,
+                            SwaggerUIStandalonePreset
+                        ],
+                        plugins: [
+                            SwaggerUIBundle.plugins.DownloadUrl
+                        ],
+                        layout: 'StandaloneLayout'
+                    });
+                } else {
+                    // Riprova tra 100ms se non ancora caricato
+                    setTimeout(initSwagger, 100);
+                }
+            };
+            
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initSwagger);
+            } else {
+                initSwagger();
+            }
+        })();
+        ";
+        
+        // Aggiunge lo script al documento
+        $document->addScriptDeclaration($initScript);
+        
+        // Ritorna il contenitore HTML
+        return '<div id="swagger-ui-container" class="swagger-ui-wrapper" style="margin: 20px 0;"></div>';
+    }
+
+    private function parseAttributes(string $text): array
+    {
+        $attributes = [];
+        $pattern = '/(\w+)\s*=\s*["\']([^"\']+)["\']/';
+        
+        if (preg_match_all($pattern, $text, $matches, PREG_SET_ORDER)) {
+            foreach ($matches as $match) {
+                $attributes[$match[1]] = $match[2];
+            }
+        }
+        return $attributes;
     }
 }

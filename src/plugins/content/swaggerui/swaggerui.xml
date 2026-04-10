@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" group="content" method="upgrade" version="5.0">
     <name>plg_content_swaggerui</name>
-    <version>1.0.0</version>
+    <version>2.0.0</version>
     <author>Alikon</author>
     <creationDate>2026-01</creationDate>
     <copyright>(C) 2007 Alikonweb</copyright>
@@ -18,7 +18,9 @@
         <folder>field</folder>
     </files>
     <media destination="plg_content_swaggerui" folder="media">
+        <filename>joomla.asset.json</filename>        
         <folder>js</folder>
+        <folder>css</folder>
     </media>
     <config>
     <fields name="params" addfieldpath="/plugins/content/swaggerui/field">
@@ -27,17 +29,17 @@
                     label="PLG_CONTENT_SWAGGERUI_GPL_LICENSE" 
                     description=""
                     class="alert alert-success" />
-                
                 <field name="plugin_links" type="links" label="PLG_CONTENT_SWAGGERUI_LINKS_LABEL" />
-                <field
-                    name="openapiyaml"
-                    type="filelist"
-                    label="PLG_CONTENT_SWAGGERUI_FIELD_YAML_LABEL"
-                    description="PLG_CONTENT_SWAGGERUI_FIELD_YAML_DESC"
-                    required="true"
-                    directory="media/plg_content_swaggerui/js/"
-                    fileFilter="\.yaml$"
-                />
+                <field 
+                    name="assets_source" 
+                    type="list" 
+                    label="PLG_CONTENT_SWAGGERUI_ASSETS_SOURCE_LABEL" 
+                    description="PLG_CONTENT_SWAGGERUI_ASSETS_SOURCE_DESC"
+                    default="local"
+                    >
+                    <option value="local">PLG_CONTENT_SWAGGERUI_LOCAL</option>
+                    <option value="cdn">PLG_CONTENT_SWAGGERUI_CDN</option>
+                </field>
             </fieldset>
         </fields>
     </config>
