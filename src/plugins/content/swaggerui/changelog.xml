@@ -15,4 +15,16 @@
             <item>Not listed on Joomla Extension Directory</item>
         </note>
     </changelog>
+    <changelog>
+        <element>swaggerui</element>
+        <folder>content</folder>
+        <type>plugin</type>
+        <version>2.0.0</version>
+        <addition>
+            <item>Added support for CDN assets</item>
+        </addition>
+        <addition>
+            <item>Use Web Asset Manager</item>
+        </addition>
+    </changelog>
 </changelogs>
