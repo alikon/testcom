@@ -11,6 +11,7 @@ services:
       - ..:/workspaces/testcom:cached
       - ../.devcontainer/xdebug.ini:/usr/local/etc/php/conf.d/99-xdebug.ini
       - ./setup.sh:/usr/local/bin/setup.sh
+      - setup-cache:/var/cache/setup-downloads    # ← aggiunto
     ports:
       - "8080:80"
       - "443:443"
@@ -43,6 +44,21 @@ services:
     restart: unless-stopped
     ports:
       - "8025:8025"
+  phpmyadmin:
+    image: phpmyadmin:latest
+    profiles:
+      - tools                          # avviato SOLO con --profile tools
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: root
+    ports:
+      - "8081:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
 
 volumes:
   mysql-data:
+  setup-cache:                                    # ← aggiunto

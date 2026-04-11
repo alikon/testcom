@@ -1,0 +1,1 @@
+docker compose exec -e FORCE_DOWNLOAD=1 app bash /usr/local/bin/setup.sh
