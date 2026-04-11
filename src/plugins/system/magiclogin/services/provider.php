@@ -1,11 +1,14 @@
 <?php
 
 /**
- * @package     Joomla.Plugin
- * @subpackage  System.MagicLogin
+ * @package    Joomla.Plugin
+ * @subpackage System.magiclogin
  *
- * @copyright   Copyright (C) 2025 Open Source Matters, Inc. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @author     Alikon <alikon@alikonweb.it>
+ *
+ * @copyright  (C) 2025, Alikonweb <https://www.alikonweb.it>. All rights reserved.
+ * @license    GNU General Public License version 3 or later; see LICENSE
+ * @link       https://www.alikonweb.it
  */
 
 \defined('_JEXEC') or die;

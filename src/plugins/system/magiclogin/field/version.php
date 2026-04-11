@@ -5,7 +5,7 @@
  *
  * @author     Alikon <alikon@alikonweb.it>
  *
- * @copyright  (C) 2025, Alikonweb <https://wwww.alikonweb.it>. All rights reserved.
+ * @copyright  (C) 2025, Alikonweb <https://www.alikonweb.it>. All rights reserved.
  * @license    GNU General Public License version 3 or later; see LICENSE
  * @link       https://www.alikonweb.it
  */
