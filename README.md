@@ -26,7 +26,7 @@ This repository contains various Joomla extensions. To ensure the download count
 | **SwaggerUI** | v2.0.0 | [Download plg_content_swaggerui-2.0.0.zip](https://github.com/alikon/testcom/releases/download/v1.2/plg_content_swaggerui-2.0.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.2/plg_content_swaggerui-2.0.0.zip?label=downloads) |
 | **Github Portfolio** | v1.0.0 | [Download mod_github_portfolio-1.0.0.zip](https://github.com/alikon/testcom/releases/download/v1.2/mod_github_portfolio-1.0.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.2/mod_github_portfolio-1.0.0.zip?label=downloads) |
 | **Joomla Statistics** | v1.1.0 | [Download mod_jstats-1.1.0.zip](https://github.com/alikon/testcom/releases/download/v1.2/mod_jstats-1.1.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.2/mod_jstats-1.1.0.zip?label=downloads) |
-| **Changelog** | v1.0.0 | [Download mod_changelog-1.0.0.zip](https://github.com/alikon/testcom/releases/download/v1.2/mod_changelog-1.0.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.2/mod_changelog-1.1.0.zip?label=downloads) |
+| **Changelog** | v1.0.0 | [Download mod_changelog-1.0.0.zip](https://github.com/alikon/testcom/releases/download/v1.2/mod_changelog-1.0.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.2/mod_changelog-1.0.0.zip?label=downloads) |
 
 ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/total)
 
