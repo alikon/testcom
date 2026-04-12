@@ -14,7 +14,7 @@
             <downloadurl type="full" format="zip">https://github.com/alikon/testcom/releases/download/v1.2/mod_changelog-1.0.0.zip</downloadurl>
         </downloads>
         <tags><tag>stable</tag></tags>
-        <sha256>9aed8c950a73b86a38f19cc4629dd71ace35fdcc62215a41902bbea16d3c4b9d</sha256>
+        <sha256>89b14983eb256b91c862bbff7f845ac841de02bdc0e8efa6b8347fab221bccfc</sha256>
         <targetplatform name="joomla" version="((5\.[01234])|(6\.[01234]))" />
     </update>
 </updates>

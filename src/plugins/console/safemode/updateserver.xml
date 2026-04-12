@@ -33,7 +33,7 @@
             <downloadurl type="full" format="zip">https://github.com/alikon/testcom/releases/download/v1.2/plg_console_safemode-1.0.1.zip</downloadurl>
         </downloads>
         <tags><tag>stable</tag></tags>
-        <sha256>9aed8c950a73b86a38f19cc4629dd71ace35fdcc62215a41902bbea16d3c4b9d</sha256>
+        <sha256>e961ea92bc79c3f1fcb9a76d240aaefe82ca31350cee2530b75f52b65266bb32</sha256>
         <targetplatform name="joomla" version="((5\.[01234])|(6\.[01234]))" />
     </update>
 </updates>

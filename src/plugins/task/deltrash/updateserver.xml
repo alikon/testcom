@@ -194,7 +194,7 @@
             <downloadurl type="full" format="zip">https://github.com/alikon/testcom/releases/download/v1.2/plg_task_deltrash-1.7.2.zip</downloadurl>
         </downloads>
         <tags><tag>stable</tag></tags>
-        <sha256>fa0239b9cd2e28a3dde5861572989ca2857814df2159157fb98fffd61efeba79</sha256>
+        <sha256>a4147fefdd826a2a7427f745f20af21147c315227200c9077d197c89ce6e8ece</sha256>
         <targetplatform name="joomla" version="((5\.[01234])|(6\.[01234]))" />
     </update>
 </updates>
