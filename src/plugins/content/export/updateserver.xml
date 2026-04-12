@@ -144,7 +144,7 @@
             <downloadurl type="full" format="zip">https://github.com/alikon/testcom/releases/download/v1.2/plg_content_export-2.1.0.zip</downloadurl>
         </downloads>
         <tags><tag>stable</tag></tags>
-        <sha256>62fc64675d080cfff6232fd96e30606df18b7a3fc70c89af254bbfaf55997858</sha256>
+        <sha256>0ec5f194995b9e92bec0a4555a72d05e375b59c09fad85a6c6e737b111e88a49</sha256>
         <updatefromcli>false</updatefromcli>
         <targetplatform name="joomla" version="((5\.[01234])|(6\.[01234]))" />
     </update>
