@@ -19,7 +19,7 @@ class JFormFieldLinks extends FormField
     public function getInput()
     {
         $buttons = [
-            ['link' => 'https://www.alikonweb.it/extensions/task-plugin-delete-trashed', 'class' => 'btn-primary', 'icon' => 'fas fa-book', 'label' => 'PLG_TASK_DELTRASH_LBL_MANUAL'],
+            ['link' => 'https://www.alikonweb.it', 'class' => 'btn-primary', 'icon' => 'fas fa-book', 'label' => 'PLG_TASK_DELTRASH_LBL_MANUAL'],
             ['link' => 'https://www.x.com/Alikon', 'class' => 'btn-primary', 'icon' => 'fab fa-x-twitter', 'label' => 'PLG_TASK_DELTRASH_LBL_FOLLOW'],
             ['link' => 'https://github.com/alikon/testcom/issues', 'class' => 'btn-danger', 'icon' => 'fas fa-bug', 'label' => 'PLG_TASK_DELTRASH_LBL_REPORT'],
             ['link' => 'https://github.com/sponsors/alikon', 'class' => 'btn-success', 'icon' => 'fab fa-github', 'label' => 'PLG_TASK_DELTRASH_LBL_SPONSOR'],

@@ -20,7 +20,7 @@ class JFormFieldLinks extends FormField
         );
 
         $buttons = [
-            ['link' => 'https://www.alikonweb.it/extensions/module-changelog', 'class' => 'btn-primary', 'icon' => 'fas fa-book', 'label' => 'MOD_CHANGELOG_LBL_MANUAL'],
+            ['link' => 'https://www.alikonweb.it', 'class' => 'btn-primary', 'icon' => 'fas fa-book', 'label' => 'MOD_CHANGELOG_LBL_MANUAL'],
             ['link' => 'https://www.x.com/Alikon', 'class' => 'btn-primary', 'icon' => 'fab fa-x-twitter', 'label' => 'MOD_CHANGELOG_LBL_FOLLOW'],
             ['link' => 'https://github.com/alikon/testcom/issues', 'class' => 'btn-danger', 'icon' => 'fas fa-bug', 'label' => 'MOD_CHANGELOG_LBL_REPORT'],
             ['link' => 'https://github.com/sponsors/alikon', 'class' => 'btn-success', 'icon' => 'fab fa-github', 'label' => 'MOD_CHANGELOG_LBL_SPONSOR'],
