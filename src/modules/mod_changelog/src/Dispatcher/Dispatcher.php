@@ -1,4 +1,11 @@
 <?php
+/**
+ * @package     Joomla.Module
+ * @subpackage  Module.changelog
+ *
+ * @copyright   Copyright (C) 2026 Alikon. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ */
 
 namespace Alikonweb\Module\Changelog\Site\Dispatcher;
 

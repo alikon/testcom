@@ -1,9 +1,17 @@
 <?php
+/**
+ * @package     Joomla.Module
+ * @subpackage  Module.changelog
+ *
+ * @copyright   Copyright (C) 2026 Alikon. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ */
+
 \defined('_JEXEC') or die;
 ?>
 
 <div class="mod-changelog shadow-sm p-3 mb-5 bg-body rounded">
-    <h3 class="mb-4 border-bottom pb-2">Project Updates</h3>
+    <h3 class="mb-4 border-bottom pb-2" style="font-style: normal;">Project Updates</h3>
     
     <?php if (!$list || empty($list)): ?>
         <div class="alert alert-warning">Unable to load changelog from GitHub <?php echo htmlspecialchars($url, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></div>
@@ -12,10 +20,10 @@
             <?php foreach ($list as $item): ?>
                 <div class="list-group-item py-3">
                     <div class="d-flex w-100 justify-content-between align-items-center mb-2">
-                        <h5 class="mb-1 fw-bold text-primary">
+                        <h4 class="mb-1 fw-bold text-primary-emphasis">
                             Version <?php echo htmlspecialchars($item->version); ?>
-                        </h5>
-                        <small class="badge bg-secondary opacity-75">
+                        </h4>
+                        <small class="badge bg-dark">
                             <?php echo htmlspecialchars($item->type); ?>
                         </small>
                     </div>
@@ -86,7 +94,7 @@
 
                         <?php if (isset($item->language) && !empty($item->language->item)): ?>
                             <div class="mb-3">
-                                <div class="small fw-bold text-primary mb-1">
+                                <div class="small fw-bold text-primary-emphasis mb-1">
                                     <i class="bi bi-translate"></i> LANGUAGE UPDATES
                                 </div>
                                 <ul class="ps-3 mb-0 small">
