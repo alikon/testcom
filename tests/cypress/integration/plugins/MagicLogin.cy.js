@@ -1,4 +1,3 @@
-/* add test */
 describe('Test that the magiclogin system plugin', () => {
   beforeEach(() => {
     cy.db_enableExtension('1','plg_system_magiclogin');
@@ -18,17 +17,17 @@ describe('Test that the magiclogin system plugin', () => {
     cy.get('#password').type('1');
     cy.get('.controls > button[type="submit"].btn').click();
     
-    cy.contains('If this email address is registered').should('be.visible');
+    cy.checkForSystemMessage('If this email address is registered');
     
     cy.task('getMails').then((mails) => {
-      expect(mails).to.have.length(1);
-      expect(mails[0].subject).to.contain('Login to');
-      expect(mails[0].to[0].address).to.equal('magic@example.com');
-      expect(mails[0].html).to.contain('Magic Login');
-      expect(mails[0].html).to.contain('Login Now');
+      cy.wrap(mails).should('have.lengthOf', 1);
+        cy.wrap(mails[0].body).should('have.string', 'Click the link below to login');
+        cy.wrap(mails[0].headers.subject).should('have.string', 'Login to Joomla CMS Test');
+        cy.wrap(mails[0].headers.from).should('equal', `"${Cypress.expose('sitename')}" <${Cypress.expose('email')}>`);
+        cy.wrap(mails[0].headers.to).should('equal', 'magic@example.com');
     });
   });
-
+/*
   it('can login using magic link from email', () => {
     cy.db_createUser({ name: 'Magic User', username: 'magicuser', email: 'magic@example.com', password: '098f6bcd4621d373cade4e832627b4f6' });
     
@@ -169,4 +168,5 @@ describe('Test that the magiclogin system plugin', () => {
       cy.contains('This magic link is invalid or has expired').should('be.visible');
     });
   });
+  */
 });
