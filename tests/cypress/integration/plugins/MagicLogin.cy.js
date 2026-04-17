@@ -6,7 +6,7 @@ describe('Test that the magiclogin system plugin', () => {
 
   afterEach(() => {
     cy.task('getMails').then((mails) => {
-      cy.task('clearMails');
+      cy.task('clearEmails');
     });
   });
 
