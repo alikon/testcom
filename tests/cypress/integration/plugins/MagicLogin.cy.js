@@ -1,7 +1,7 @@
 /* add test */
 describe('Test that the magiclogin system plugin', () => {
   beforeEach(() => {
-    cy.db_enableExtension('plg_system_magiclogin');
+    cy.db_enableExtension('1','plg_system_magiclogin');
   });
 
   afterEach(() => {
