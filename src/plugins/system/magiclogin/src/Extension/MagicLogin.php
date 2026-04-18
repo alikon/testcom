@@ -305,7 +305,7 @@ final class MagicLogin extends CMSPlugin implements SubscriberInterface
             ->select('COUNT(*)')
             ->from($db->quoteName('#__magiclogin_tokens'))
             ->where($db->quoteName('user_id') . ' = (SELECT id FROM ' . $db->quoteName('#__users') . ' WHERE ' . $db->quoteName('email') . ' = :email)')
-            ->where($db->quoteName('created') . ' > DATE_SUB(NOW(), INTERVAL 5 MINUTE)')
+            ->where($db->quoteName('created') . " > NOW() - INTERVAL '5 MINUTE'")
             ->bind(':email', $email);
 
         return $db->setQuery($query)->loadResult() >= 3;
