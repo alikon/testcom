@@ -25,7 +25,7 @@ describe('Test that the magiclogin system plugin', () => {
       cy.wrap(mails[0].headers.subject).should('contain', `Login to Joomla test`);
       // TO DO when upgrade to cypress 15
       //cy.wrap(mails[0].headers.from).should('equal', `"${Cypress.expose('sitename')}" <${Cypress.expose('email')}>`);
-      cy.wrap(mails[0].headers.from).should('equal', `Joomla test <${Cypress.env('email')}>`);
+      cy.wrap(mails[0].headers.from).should('equal', `Joomla test <admin@example.org>`);
       cy.wrap(mails[0].headers.to).should('equal', 'magic@example.com');
     });
   });
