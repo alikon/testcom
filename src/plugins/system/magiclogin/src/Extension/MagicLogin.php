@@ -158,14 +158,15 @@ final class MagicLogin extends CMSPlugin implements SubscriberInterface
         $expiry      = time() + ($this->params->get('token_expiry', 15) * 60);
         $ipAddress   = $this->app->input->server->get('REMOTE_ADDR');
         $userAgent   = $this->app->input->server->get('HTTP_USER_AGENT');
-        $created = date('Y-m-d H:i:s');
+        $created     = date('Y-m-d H:i:s');
+        $expires     = date('Y-m-d H:i:s', $expiry);
         $query = $db->getQuery(true)
             ->insert($db->quoteName('#__magiclogin_tokens'))
             ->columns($db->quoteName(['user_id', 'token', 'expires', 'ip_address', 'user_agent', 'created']))
             ->values(':user_id, :token, :expires, :ip_address, :user_agent, :created')
             ->bind(':user_id', $user->id, \Joomla\Database\ParameterType::INTEGER)
             ->bind(':token', $hashedToken)
-            ->bind(':expires', date('Y-m-d H:i:s', $expiry))
+            ->bind(':expires', $expires)
             ->bind(':ip_address', $ipAddress)
             ->bind(':user_agent', $userAgent)
             ->bind(':created', $created);
