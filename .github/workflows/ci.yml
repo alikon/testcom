@@ -237,6 +237,11 @@ jobs:
           POSTGRES_USER: ${{ matrix.db == 'pgsql' && 'root' || 'unused' }}
           POSTGRES_PASSWORD: ${{ matrix.db == 'pgsql' && 'root' || 'unused' }}
           POSTGRES_DB: ${{ matrix.db == 'pgsql' && 'test_joomla' || 'unused' }}
+      mailpit:
+        image: axllent/mailpit:latest
+        ports:
+          - 1025:1025
+          - 8025:8025
 
     steps:
       - uses: actions/checkout@v6
@@ -258,9 +263,6 @@ jobs:
         run: unzip -q joomla.zip -d joomla
 
       - uses: ./.github/actions/setup-cypress
-
-      - name: Install sendmail
-        run: apt-get update && apt-get install -y sendmail
 
       - name: Setup and run ${{ matrix.db }}
         run: |
@@ -285,6 +287,11 @@ jobs:
             --db-user=$DB_USER \
             --db-encryption=0 \
             --db-prefix=${{ matrix.db-prefix }}
+          # CONFIGURAZIONE EMAIL PER MAILPIT
+          php cli/joomla.php config:set mailer=smtp
+          php cli/joomla.php config:set smtphost=mailpit
+          php cli/joomla.php config:set smtpport=1025
+          php cli/joomla.php config:set smtpauth=0
           php cli/joomla.php extension:install --path=/tests/www/${{ matrix.db }}/pkg-alikonweb-current.zip
           mkdir -p tmp/api_rate_limit tmp/plg_system_ratelimit
           chown -R www-data:www-data /tests/www/${{ matrix.db }}/
@@ -301,7 +308,7 @@ jobs:
             --browser=chrome \
             --e2e \
             --config video=false \
-            --env cmsPath=/tests/www/${{ matrix.db }},db_type=${{ matrix.db-type }},db_host=${{ matrix.db-host }},db_name=test_joomla,db_user=$DB_USER,db_password=$DB_PASS,db_prefix=${{ matrix.db-prefix }},logFile=/var/log/apache2/error.log \
+            --env mailpitUrl=http://mailpit:8025,cmsPath=/tests/www/${{ matrix.db }},db_type=${{ matrix.db-type }},db_host=${{ matrix.db-host }},db_name=test_joomla,db_user=$DB_USER,db_password=$DB_PASS,db_prefix=${{ matrix.db-prefix }},logFile=/var/log/apache2/error.log \
             --config baseUrl=http://localhost/${{ matrix.db }}
 
       - name: Upload Screenshots on Failure
