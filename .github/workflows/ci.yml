@@ -308,7 +308,7 @@ jobs:
             --browser=chrome \
             --e2e \
             --config video=false \
-            --env mailpitUrl=http://mailpit:8025,cmsPath=/tests/www/${{ matrix.db }},db_type=${{ matrix.db-type }},db_host=${{ matrix.db-host }},db_name=test_joomla,db_user=$DB_USER,db_password=$DB_PASS,db_prefix=${{ matrix.db-prefix }},logFile=/var/log/apache2/error.log \
+            --env mailpitUrl=http://mailpit:8025,cmsPath=/tests/www/${{ matrix.db }},db_type=${{ matrix.db-type }},db_host=${{ matrix.db-host }},db_name=test_joomla,db_user=$DB_USER,db_password=$DB_PASS,db_prefix=${{ matrix.db-prefix }},email=admin@example.org,logFile=/var/log/apache2/error.log \
             --config baseUrl=http://localhost/${{ matrix.db }}
 
       - name: Upload Screenshots on Failure
