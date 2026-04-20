@@ -77,7 +77,13 @@ describe('Test that the magiclogin system plugin', () => {
       const magicLinkMatch = htmlContent.match(/magic_token=([a-f0-9]+)/);
       const token = magicLinkMatch[1];
       
-      cy.task('queryDB', "UPDATE #__magiclogin_tokens SET expires = NOW() - INTERVAL '1 HOUR'");
+      const dbType = Cypress.env('db_type'); 
+
+      const query = dbType === 'pgsql' 
+        ? "UPDATE #__magiclogin_tokens SET expires = NOW() - INTERVAL '1 hour'" 
+        : "UPDATE #__magiclogin_tokens SET expires = DATE_SUB(NOW(), INTERVAL 1 HOUR)";
+
+      cy.task('queryDB', query);
       
       cy.visit(`/?magic_token=${token}`);
       cy.checkForSystemMessage('This magic link is invalid or has expired');
