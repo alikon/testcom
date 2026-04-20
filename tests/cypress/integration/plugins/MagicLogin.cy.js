@@ -77,7 +77,7 @@ describe('Test that the magiclogin system plugin', () => {
       const magicLinkMatch = htmlContent.match(/magic_token=([a-f0-9]+)/);
       const token = magicLinkMatch[1];
       
-      cy.task('queryDB', 'UPDATE #__magiclogin_tokens SET expires = DATE_SUB(NOW(), INTERVAL 1 HOUR)');
+      cy.task('queryDB', "UPDATE #__magiclogin_tokens SET expires = NOW() - INTERVAL '1 HOUR'");
       
       cy.visit(`/?magic_token=${token}`);
       cy.checkForSystemMessage('This magic link is invalid or has expired');
@@ -168,7 +168,7 @@ describe('Test that the magiclogin system plugin', () => {
       const magicLinkMatch = htmlContent.match(/magic_token=([a-f0-9]+)/);
       const token = magicLinkMatch[1];
       
-      cy.task('queryDB', 'UPDATE #__magiclogin_tokens SET ip_address = "999.999.999.999"');
+      cy.task('queryDB', "UPDATE #__magiclogin_tokens SET ip_address = '999.999.999.999'");
       
       cy.visit(`/?magic_token=${token}`);
       cy.checkForSystemMessage('This magic link is invalid or has expired');
