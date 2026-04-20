@@ -316,5 +316,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: screenshots-j${{ matrix.joomla-version }}-${{ matrix.db }}-php${{ matrix.php-version }}
-          path: tests/cypress/output/screenshot
+          path: tests/cypress/output/screenshots
           retention-days: 7
