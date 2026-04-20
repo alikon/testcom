@@ -66,7 +66,7 @@ jobs:
     needs: npm
     strategy:
       matrix:
-        joomla-version: ['5.4', '6.0', '6.1']
+        joomla-version: ['5.4', '6.1']
     container:
       image: joomlaprojects/docker-images:cypress8.3
     steps:
@@ -142,7 +142,7 @@ jobs:
     needs: prepare_tests
     strategy:
       matrix:
-        joomla-version: ['5.4', '6.0', '6.1']
+        joomla-version: ['5.4', '6.1']
     steps:
       - uses: actions/checkout@v6
 
@@ -180,7 +180,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        joomla-version: ['5.4', '6.0', '6.1']
+        joomla-version: ['5.4', '6.1']
         php-version: ['8.2', '8.3', '8.4', '8.5']
         db: [mysql, mariadb, pgsql]
         include:
@@ -204,17 +204,12 @@ jobs:
             db-prefix: pgsql_
             image: postgres:12-alpine
             alter-user-cmd: "apt-get update && apt-get install -y postgresql-client"
-          - joomla-version: '6.0'
-            db: mariadb
-            image: mariadb:10.6
           - joomla-version: '6.1'
             db: mariadb
             image: mariadb:10.6
         exclude:
           - joomla-version: '5.4'
             php-version: '8.5'
-          - joomla-version: '6.0'
-            php-version: '8.2'
           - joomla-version: '6.1'
             php-version: '8.2'
 
