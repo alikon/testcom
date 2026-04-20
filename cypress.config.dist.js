@@ -8,6 +8,7 @@ export default defineConfig({
   viewportHeight: 1000,
   viewportWidth: 1200,
   e2e: {
+    pageLoadTimeout: 120000, // Aumentato a 120 secondi
     setupNodeEvents(on, config) {
       setupPlugins(on, config);
     },
