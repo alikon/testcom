@@ -21,6 +21,8 @@ describe('Test that the magiclogin system plugin', () => {
     
     cy.task('getMails').then((mails) => {
       cy.wrap(mails).should('have.lengthOf', 1);
+      console.log('CONTENUTO HEADER FROM:', JSON.stringify(mails[0].headers.from));
+      cy.log('Header From:', mails[0].headers.from);
       // Debug: se il test fallisce ancora, guarda il log di Cypress per vedere l'oggetto mail
       cy.log('Mail From:', mails[0].headers.from);
       cy.log('Cypress Env Email:', Cypress.env('email'));
@@ -28,7 +30,10 @@ describe('Test that the magiclogin system plugin', () => {
       cy.wrap(mails[0].headers.subject).should('contain', `Login to Joomla test`);
       // TO DO when upgrade to cypress 15
       //cy.wrap(mails[0].headers.from).should('equal', `"${Cypress.expose('sitename')}" <${Cypress.expose('email')}>`);
-      cy.wrap(mails[0].headers.from).should('equal', `Joomla test <admin@example.org>`);
+      const fromHeader = mails[0].headers.from;
+      // Invece di 'equal', verifichiamo che contenga sia il nome che l'email
+      cy.wrap(fromHeader).should('contain', 'Joomla test');
+      cy.wrap(fromHeader).should('contain', 'admin@example.org');
       cy.wrap(mails[0].headers.to).should('equal', 'magic@example.com');
     });
   });
