@@ -26,7 +26,7 @@ async function getMails() {
               headers: {
                 subject: detail.Subject,
                 from: `${detail.From.Name} <${detail.From.Address}>`,
-                to: msg.To[0].Addr
+                to: msg.To[0].Address
               },
               body: detail.Text,
               html: detail.HTML
