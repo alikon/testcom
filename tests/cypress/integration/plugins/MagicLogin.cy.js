@@ -21,6 +21,9 @@ describe('Test that the magiclogin system plugin', () => {
     
     cy.task('getMails').then((mails) => {
       cy.wrap(mails).should('have.lengthOf', 1);
+      // Debug: se il test fallisce ancora, guarda il log di Cypress per vedere l'oggetto mail
+      cy.log('Mail From:', mails[0].headers.from);
+      cy.log('Cypress Env Email:', Cypress.env('email'));
       cy.wrap(mails[0].body).should('have.string', 'Click the link below to login');
       cy.wrap(mails[0].headers.subject).should('contain', `Login to Joomla test`);
       // TO DO when upgrade to cypress 15
