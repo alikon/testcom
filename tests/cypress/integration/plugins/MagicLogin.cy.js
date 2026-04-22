@@ -9,6 +9,19 @@ describe('Test that the magiclogin system plugin', () => {
     });
   });
 
+  const loginWithEmail = () => {
+    cy.visit('/index.php?option=com_users&view=login');
+    cy.get('#username').type('magic@example.com');
+    cy.get('#password').type('1');
+    cy.get('.controls > button[type="submit"].btn').click();
+  };
+
+  const getTokenFromMail = () =>
+    cy.task('getMails').then((mails) => {
+      const htmlContent = String(mails[0].html || mails[0].body || '');
+      return htmlContent.match(/magic_token=([a-f0-9]+)/)[1];
+    });
+
   it('sends magic link when user enters email address', () => {
     cy.db_createUser({ name: 'Magic User', username: 'magicuser', email: 'magic@example.com', password: '098f6bcd4621d373cade4e832627b4f6' });
     
@@ -41,27 +54,34 @@ describe('Test that the magiclogin system plugin', () => {
   it('can login using magic link from email', () => {
     cy.db_createUser({ name: 'Magic User', username: 'magicuser', email: 'magic@example.com', password: '098f6bcd4621d373cade4e832627b4f6' });
     
-    cy.visit('/index.php?option=com_users&view=login');
-    cy.get('#username').type('magic@example.com');
-    cy.get('#password').type('1');
-    cy.get('.controls > button[type="submit"].btn').click();
+    loginWithEmail();
     
-    cy.task('getMails').then((mails) => {
-      cy.wrap(mails).should('have.lengthOf', 1);
-      
-      const htmlContent = String(mails[0].html || mails[0].body || '');
-      const magicLinkMatch = htmlContent.match(/magic_token=([a-f0-9]+)/);
-      
-      cy.wrap(magicLinkMatch).should('not.be.null');
-      
-      const token = magicLinkMatch[1];
+    getTokenFromMail().then((token) => {
       cy.wrap(token).should('have.length.greaterThan', 0);
       
       cy.visit(`/?magic_token=${token}`);
       cy.checkForSystemMessage('You have been successfully logged in');
+      // No redirect configured: should stay on homepage
+      cy.url().should('eq', Cypress.config('baseUrl') + '/');
       
       cy.visit('/index.php?option=com_users&view=login');
       cy.get('.com-users-logout').should('contain.text', 'Log out');
+    });
+  });
+
+  it('redirects to configured menu item after login', () => {
+    cy.db_createUser({ name: 'Magic User', username: 'magicuser', email: 'magic@example.com', password: '098f6bcd4621d373cade4e832627b4f6' });
+    // Get the menu item ID for com_users profile page and set it as the login redirect
+    cy.db_getMenuItemId('index.php?option=com_users&view=profile').then((itemId) => {
+      cy.db_updateExtensionParam('plg_system_magiclogin', 'login', itemId);
+    });
+
+    loginWithEmail();
+
+    getTokenFromMail().then((token) => {
+      cy.visit(`/?magic_token=${token}`);
+      cy.checkForSystemMessage('You have been successfully logged in');
+      cy.url().should('include', 'Itemid=');
     });
   });
 
@@ -73,22 +93,12 @@ describe('Test that the magiclogin system plugin', () => {
   it('rejects expired magic token', () => {
     cy.db_createUser({ name: 'Magic User', username: 'magicuser', email: 'magic@example.com', password: '098f6bcd4621d373cade4e832627b4f6' });
     
-    cy.visit('/index.php?option=com_users&view=login');
-    cy.get('#username').type('magic@example.com');
-    cy.get('#password').type('1');
-    cy.get('.controls > button[type="submit"].btn').click();
+    loginWithEmail();
     
-    cy.task('getMails').then((mails) => {
-      cy.wrap(mails).should('have.lengthOf', 1);
-      
-      const htmlContent = String(mails[0].html || mails[0].body || '');
-      const magicLinkMatch = htmlContent.match(/magic_token=([a-f0-9]+)/);
-      const token = magicLinkMatch[1];
-      
-      const dbType = Cypress.env('db_type'); 
-
-      const query = dbType === 'pgsql' 
-        ? "UPDATE #__magiclogin_tokens SET expires = NOW() - INTERVAL '1 hour'" 
+    getTokenFromMail().then((token) => {
+      const dbType = Cypress.env('db_type');
+      const query = dbType === 'pgsql'
+        ? "UPDATE #__magiclogin_tokens SET expires = NOW() - INTERVAL '1 hour'"
         : "UPDATE #__magiclogin_tokens SET expires = DATE_SUB(NOW(), INTERVAL 1 HOUR)";
 
       cy.task('queryDB', query);
@@ -145,18 +155,9 @@ describe('Test that the magiclogin system plugin', () => {
   it('token can only be used once', () => {
     cy.db_createUser({ name: 'Magic User', username: 'magicuser', email: 'magic@example.com', password: '098f6bcd4621d373cade4e832627b4f6' });
     
-    cy.visit('/index.php?option=com_users&view=login');
-    cy.get('#username').type('magic@example.com');
-    cy.get('#password').type('1');
-    cy.get('.controls > button[type="submit"].btn').click();
+    loginWithEmail();
     
-    cy.task('getMails').then((mails) => {
-      cy.wrap(mails).should('have.lengthOf', 1);
-      
-      const htmlContent = String(mails[0].html || mails[0].body || '');
-      const magicLinkMatch = htmlContent.match(/magic_token=([a-f0-9]+)/);
-      const token = magicLinkMatch[1];
-      
+    getTokenFromMail().then((token) => {
       cy.visit(`/?magic_token=${token}`);
       cy.checkForSystemMessage('You have been successfully logged in');
       
@@ -170,18 +171,9 @@ describe('Test that the magiclogin system plugin', () => {
   it('validates IP address and user agent', () => {
     cy.db_createUser({ name: 'Magic User', username: 'magicuser', email: 'magic@example.com', password: '098f6bcd4621d373cade4e832627b4f6' });
     
-    cy.visit('/index.php?option=com_users&view=login');
-    cy.get('#username').type('magic@example.com');
-    cy.get('#password').type('1');
-    cy.get('.controls > button[type="submit"].btn').click();
+    loginWithEmail();
     
-    cy.task('getMails').then((mails) => {
-      cy.wrap(mails).should('have.lengthOf', 1);
-      
-      const htmlContent = String(mails[0].html || mails[0].body || '');
-      const magicLinkMatch = htmlContent.match(/magic_token=([a-f0-9]+)/);
-      const token = magicLinkMatch[1];
-      
+    getTokenFromMail().then((token) => {
       cy.task('queryDB', "UPDATE #__magiclogin_tokens SET ip_address = '999.999.999.999'");
       
       cy.visit(`/?magic_token=${token}`);
