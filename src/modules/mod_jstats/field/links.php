@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Module
  * @subpackage  Module.Jstats
@@ -20,10 +21,10 @@ class JFormFieldLinks extends FormField
     {
         \Joomla\CMS\Factory::getApplication()->getLanguage()->load(
             'mod_jstats',
-             JPATH_SITE . '/modules/mod_jstats',
-             null,
-             false,
-             true
+            JPATH_SITE . '/modules/mod_jstats',
+            null,
+            false,
+            true
         );
 
         $buttons = [

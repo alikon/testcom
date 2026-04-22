@@ -12,11 +12,11 @@ namespace Joomla\Plugin\Content\Swaggerui\Extension;
 
 \defined('_JEXEC') or die;
 
+use Joomla\CMS\Document\HtmlDocument;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
-use Joomla\CMS\Document\HtmlDocument;
 
 /**
  * Plugin per integrare Swagger UI negli articoli di Joomla 5
@@ -43,17 +43,17 @@ class Swaggerui extends CMSPlugin implements SubscriberInterface
 
         $regex = '/\{swaggerui\s+(.*?)\}/i';
 
-        $article->text = preg_replace_callback($regex, function($matches) {
+        $article->text = preg_replace_callback($regex, function ($matches) {
             $attributes = $this->parseAttributes($matches[1]);
-            
-            $url = $attributes['url'] ?? 'https://petstore.swagger.io/v2/swagger.json';
+
+            $url    = $attributes['url'] ?? 'https://petstore.swagger.io/v2/swagger.json';
             $source = $attributes['source'] ?? $this->params->get('assets_source', 'local');
-            
+
             // Carica gli Asset dal file JSON unico
             $this->loadSwaggerAssets($source);
-            
+
             return $this->generateSwaggerHtml($url);
-            
+
         }, $article->text);
     }
 
@@ -62,13 +62,13 @@ class Swaggerui extends CMSPlugin implements SubscriberInterface
      */
     private function loadSwaggerAssets(string $source = 'local'): void
     {
-        $app = Factory::getApplication();
+        $app      = Factory::getApplication();
         $document = $app->getDocument();
-        
+
         if (!($document instanceof HtmlDocument)) {
             return;
         }
-        
+
         $wa = $document->getWebAssetManager();
         //$wa->useScript('core');
         $wa->getRegistry()->addRegistryFile('media/plg_content_swaggerui/joomla.asset.json');
@@ -97,7 +97,7 @@ class Swaggerui extends CMSPlugin implements SubscriberInterface
     private function generateSwaggerHtml(string $url): string
     {
         $document = Factory::getApplication()->getDocument();
-        
+
         // Script di inizializzazione
         $initScript = "
         (function() {
@@ -130,10 +130,10 @@ class Swaggerui extends CMSPlugin implements SubscriberInterface
             }
         })();
         ";
-        
+
         // Aggiunge lo script al documento
         $document->addScriptDeclaration($initScript);
-        
+
         // Ritorna il contenitore HTML
         return '<div id="swagger-ui-container" class="swagger-ui-wrapper" style="margin: 20px 0;"></div>';
     }
@@ -141,8 +141,8 @@ class Swaggerui extends CMSPlugin implements SubscriberInterface
     private function parseAttributes(string $text): array
     {
         $attributes = [];
-        $pattern = '/(\w+)\s*=\s*["\']([^"\']+)["\']/';
-        
+        $pattern    = '/(\w+)\s*=\s*["\']([^"\']+)["\']/';
+
         if (preg_match_all($pattern, $text, $matches, PREG_SET_ORDER)) {
             foreach ($matches as $match) {
                 $attributes[$match[1]] = $match[2];

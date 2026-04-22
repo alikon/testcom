@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Module
  * @subpackage  Module.portfolio
@@ -22,10 +23,10 @@ class JFormFieldVersion extends FormField
         $path = JPATH_SITE . '/modules/mod_github_portfolio/mod_github_portfolio.xml';
         \Joomla\CMS\Factory::getApplication()->getLanguage()->load(
             'mod_github_portfolio',
-             JPATH_SITE . '/modules/mod_github_portfolio',
-             null,
-             false,
-             true
+            JPATH_SITE . '/modules/mod_github_portfolio',
+            null,
+            false,
+            true
         );
 
         $version = '0.0.0';

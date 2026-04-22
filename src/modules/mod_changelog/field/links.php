@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Module
  * @subpackage  Module.changelog
@@ -20,10 +21,10 @@ class JFormFieldLinks extends FormField
     {
         \Joomla\CMS\Factory::getApplication()->getLanguage()->load(
             'mod_changelog',
-             JPATH_SITE . '/modules/mod_changelog',
-             null,
-             false,
-             true
+            JPATH_SITE . '/modules/mod_changelog',
+            null,
+            false,
+            true
         );
 
         $buttons = [

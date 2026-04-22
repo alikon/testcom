@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Module
  * @subpackage  Module.changelog
@@ -22,10 +23,10 @@ class JFormFieldVersion extends FormField
         $path = JPATH_SITE . '/modules/mod_changelog/mod_changelog.xml';
         \Joomla\CMS\Factory::getApplication()->getLanguage()->load(
             'mod_changelog',
-             JPATH_SITE . '/modules/mod_changelog',
-             null,
-             false,
-             true
+            JPATH_SITE . '/modules/mod_changelog',
+            null,
+            false,
+            true
         );
 
         $version = '0.0.0';

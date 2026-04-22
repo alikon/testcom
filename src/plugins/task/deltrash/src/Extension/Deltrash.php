@@ -188,7 +188,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
 
     private function delArticles(): void
     {
-        $art = 0;
+        $art      = 0;
         $app      = Factory::getApplication();
         $language = $this->getApplication()->getLanguage();
         $language->load('com_associations', JPATH_ADMINISTRATOR, 'en-GB', false, true);

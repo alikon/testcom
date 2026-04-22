@@ -160,7 +160,7 @@ final class MagicLogin extends CMSPlugin implements SubscriberInterface
         $userAgent   = $this->app->input->server->get('HTTP_USER_AGENT');
         $created     = date('Y-m-d H:i:s');
         $expires     = date('Y-m-d H:i:s', $expiry);
-        $query = $db->getQuery(true)
+        $query       = $db->getQuery(true)
             ->insert($db->quoteName('#__magiclogin_tokens'))
             ->columns($db->quoteName(['user_id', 'token', 'expires', 'ip_address', 'user_agent', 'created']))
             ->values(':user_id, :token, :expires, :ip_address, :user_agent, :created')
@@ -311,33 +311,33 @@ final class MagicLogin extends CMSPlugin implements SubscriberInterface
         }
 
         $db = $this->getDatabase();
-        
+
         // Get user ID first
         $query = $db->getQuery(true)
             ->select($db->quoteName('id'))
             ->from($db->quoteName('#__users'))
             ->where($db->quoteName('email') . ' = :email')
             ->bind(':email', $email);
-        
+
         $userId = $db->setQuery($query)->loadResult();
-        
+
         if (!$userId) {
             return false;
         }
-        
-        $maxAttempts = (int) $this->params->get('rate_limit_max_attempts', 3);
+
+        $maxAttempts   = (int) $this->params->get('rate_limit_max_attempts', 3);
         $windowMinutes = (int) $this->params->get('rate_limit_window', 5);
-        
+
         // Clean old tokens first
         $timeLimit = date('Y-m-d H:i:s', strtotime("-{$windowMinutes} minutes"));
-        $query = $db->getQuery(true)
+        $query     = $db->getQuery(true)
             ->delete($db->quoteName('#__magiclogin_tokens'))
             ->where($db->quoteName('user_id') . ' = :user_id')
             ->where($db->quoteName('created') . ' <= :time_limit')
             ->bind(':user_id', $userId, \Joomla\Database\ParameterType::INTEGER)
             ->bind(':time_limit', $timeLimit);
         $db->setQuery($query)->execute();
-        
+
         // Count remaining tokens
         $query = $db->getQuery(true)
             ->select('COUNT(*)')

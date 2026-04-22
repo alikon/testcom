@@ -12,10 +12,8 @@ namespace Joomla\Plugin\Console\Safemode\CliCommand;
 
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\Extension\ExtensionHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\Log\Log;
 use Joomla\Console\Command\AbstractCommand;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseInterface;

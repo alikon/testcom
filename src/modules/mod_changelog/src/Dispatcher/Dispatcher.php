@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Module
  * @subpackage  Module.changelog
@@ -8,7 +9,6 @@
  */
 
 namespace Alikonweb\Module\Changelog\Site\Dispatcher;
-
 
 use Joomla\CMS\Dispatcher\AbstractModuleDispatcher;
 use Joomla\CMS\Helper\HelperFactoryAwareInterface;
@@ -23,7 +23,7 @@ class Dispatcher extends AbstractModuleDispatcher implements HelperFactoryAwareI
     protected function getLayoutData(): array
     {
         $data = parent::getLayoutData();
-         
+
         // Get the GitHub URL from params
         $githubUrl = $data['params']->get('xml_url', 'https://raw.githubusercontent.com/alikon/testcom/main/src/modules/mod_changelog/changelog.xml');
 
