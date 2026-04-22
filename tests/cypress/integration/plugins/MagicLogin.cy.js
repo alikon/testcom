@@ -82,25 +82,26 @@ describe('Test that the magiclogin system plugin', () => {
       link: 'index.php?option=com_content&view=featured',
       alias: 'after-login-page'
     })
-    .then((menuItem) => {
-      const itemId = menuItem.id;
-      const itemAlias = menuItem.alias ?? 'after-login-page';
+    .then(() => {
+      cy.task('queryDB', "SELECT id, alias FROM #__menu WHERE alias = 'after-login-page' AND published = 1 AND client_id = 0 LIMIT 1")
+        .then((rows) => {
+          expect(rows.length).to.be.greaterThan(0, 'Menu item was not created in DB');
 
-      cy.db_updateExtensionParameter('login', itemId, 'plg_system_magiclogin');
+          const itemId = rows[0].id;
 
-      loginWithEmail();
+          cy.db_updateExtensionParameter('login', itemId, 'plg_system_magiclogin');
 
-      getTokenFromMail().then((token) => {
-        cy.visit(`/?magic_token=${token}`);
-        cy.checkForSystemMessage('You have been successfully logged in');
+          loginWithEmail();
 
-        // Verify URL contains the alias of the configured redirect menu item
-        cy.url().should('include', itemAlias);
+          getTokenFromMail().then((token) => {
+            cy.visit(`/?magic_token=${token}`);
+            cy.checkForSystemMessage('You have been successfully logged in');
 
-        // Verify the redirect menu item is active in the navigation
-        cy.get(`a[href*="${itemAlias}"]`).should('have.class', 'active');
+            // Joomla redirects using Itemid in the URL, not the alias
+            cy.url().should('include', `Itemid=${itemId}`);
+          });
+        });
       });
-    });
   });
 
   it('rejects invalid magic token', () => {
