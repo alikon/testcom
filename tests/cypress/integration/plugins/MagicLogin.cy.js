@@ -71,18 +71,19 @@ describe('Test that the magiclogin system plugin', () => {
 
   it('redirects to configured menu item after login', () => {
     cy.db_createUser({ name: 'Magic User', username: 'magicuser', email: 'magic@example.com', password: '098f6bcd4621d373cade4e832627b4f6' });
-    cy.db_createMenuItem({ title: 'User Profile', alias: 'user-profile', link: 'index.php?option=com_users&view=profile' })
-      .then((itemId) => {
+    cy.task('queryDB', "SELECT id FROM #__menu WHERE published = 1 AND client_id = 0 AND parent_id = 1 LIMIT 1")
+      .then((rows) => {
+        const itemId = rows[0].id;
         cy.db_updateExtensionParameter('login', itemId, 'plg_system_magiclogin');
+
+        loginWithEmail();
+
+        getTokenFromMail().then((token) => {
+          cy.visit(`/?magic_token=${token}`);
+          cy.checkForSystemMessage('You have been successfully logged in');
+          cy.url().should('include', `Itemid=${itemId}`);
+        });
       });
-
-    loginWithEmail();
-
-    getTokenFromMail().then((token) => {
-      cy.visit(`/?magic_token=${token}`);
-      cy.checkForSystemMessage('You have been successfully logged in');
-      cy.url().should('include', 'Itemid=');
-    });
   });
 
   it('rejects invalid magic token', () => {
