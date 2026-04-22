@@ -70,21 +70,37 @@ describe('Test that the magiclogin system plugin', () => {
   });
 
   it('redirects to configured menu item after login', () => {
-    cy.db_createUser({ name: 'Magic User', username: 'magicuser', email: 'magic@example.com', password: '098f6bcd4621d373cade4e832627b4f6' });
-    cy.task('queryDB', "SELECT id, alias FROM #__menu WHERE published = 1 AND client_id = 0 AND parent_id = 1 LIMIT 1")
-      .then((rows) => {
-        const itemId = rows[0].id;
-        const itemAlias = rows[0].alias;
-        cy.db_updateExtensionParameter('login', itemId, 'plg_system_magiclogin');
+    cy.db_createUser({ 
+      name: 'Magic User', 
+      username: 'magicuser', 
+      email: 'magic@example.com', 
+      password: '098f6bcd4621d373cade4e832627b4f6' 
+    });
 
-        loginWithEmail();
+    cy.db_createMenuItem({ 
+      title: 'After Login Page', 
+      link: 'index.php?option=com_content&view=featured',
+      alias: 'after-login-page'
+    })
+    .then((menuItem) => {
+      const itemId = menuItem.id;
+      const itemAlias = menuItem.alias ?? 'after-login-page';
 
-        getTokenFromMail().then((token) => {
-          cy.visit(`/?magic_token=${token}`);
-          cy.checkForSystemMessage('You have been successfully logged in');
-          cy.url().should('include', itemAlias);
-        });
+      cy.db_updateExtensionParameter('login', itemId, 'plg_system_magiclogin');
+
+      loginWithEmail();
+
+      getTokenFromMail().then((token) => {
+        cy.visit(`/?magic_token=${token}`);
+        cy.checkForSystemMessage('You have been successfully logged in');
+
+        // Verify URL contains the alias of the configured redirect menu item
+        cy.url().should('include', itemAlias);
+
+        // Verify the redirect menu item is active in the navigation
+        cy.get(`a[href*="${itemAlias}"]`).should('have.class', 'active');
       });
+    });
   });
 
   it('rejects invalid magic token', () => {
