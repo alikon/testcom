@@ -20,7 +20,7 @@
     </files>
 
     <config>
-        <fields name="params"  addfieldpath="/plugins/system/magiclogin/field">
+        <fields name="params" addfieldpath="/plugins/system/magiclogin/field" addfieldprefix="Joomla\Component\Menus\Administrator\Field">
             <fieldset name="basic">
                 <field name="license" type="note" 
                     label="PLG_SYSTEM_MAGICLOGIN_GPL_LICENSE" 
@@ -64,6 +64,20 @@
                        min="1"
                        max="60"
                        showon="rate_limit_enabled:1" />
+                
+                <field
+                    name="login"
+                    type="modal_menu"
+                    label="PLG_SYSTEM_MAGICLOGIN_REDIRECT_URL_LABEL"
+                    description="PLG_SYSTEM_MAGICLOGIN_REDIRECT_URL_DESC"
+                    disable="separator,alias,heading,url"
+                    select="true"
+                    new="true"
+                    edit="true"
+                    clear="true"
+                    >
+                    <option value="">JOPTION_SELECT_MENU_ITEM</option>
+                </field>
             </fieldset>
         </fields>
     </config>
