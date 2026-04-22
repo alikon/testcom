@@ -77,33 +77,30 @@ describe('Test that the magiclogin system plugin', () => {
       password: '098f6bcd4621d373cade4e832627b4f6' 
     });
 
-    cy.db_createMenuItem({ 
-      title: 'After Login Page', 
-      link: 'index.php?option=com_content&view=featured',
-      alias: 'after-login-page'
-    })
-    .then(() => {
-      cy.task('queryDB', "SELECT id, alias FROM #__menu WHERE alias = 'after-login-page' AND published = 1 AND client_id = 0 LIMIT 1")
-        .then((rows) => {
-          expect(rows.length).to.be.greaterThan(0, 'Menu item was not created in DB');
+    // Use an existing published menu item instead of creating one that might 404
+    cy.task('queryDB', "SELECT id, alias FROM #__menu WHERE published = 1 AND client_id = 0 AND parent_id = 1 LIMIT 1")
+      .then((rows) => {
+        expect(rows.length).to.be.greaterThan(0, 'No published menu item found in DB');
 
-          const itemId = rows[0].id;
+        const itemId = rows[0].id;
+        const itemAlias = rows[0].alias;
 
-          cy.db_updateExtensionParameter('login', itemId, 'plg_system_magiclogin');
+        cy.log(`Using redirect menu item: id=${itemId}, alias=${itemAlias}`);
 
-          loginWithEmail();
+        cy.db_updateExtensionParameter('login', itemId, 'plg_system_magiclogin');
 
-          getTokenFromMail().then((token) => {
-            cy.visit(`/?magic_token=${token}`);
-            cy.checkForSystemMessage('You have been successfully logged in');
+        loginWithEmail();
 
-            // Joomla redirects using Itemid in the URL, not the alias
-            cy.url().should('include', `Itemid=${itemId}`);
-          });
+        getTokenFromMail().then((token) => {
+          cy.visit(`/?magic_token=${token}`);
+          cy.checkForSystemMessage('You have been successfully logged in');
+
+          // Joomla redirects using Itemid in the URL
+          cy.url().should('include', `Itemid=${itemId}`);
         });
       });
   });
-
+  
   it('rejects invalid magic token', () => {
     cy.visit('/?magic_token=invalidtoken123456789');
     cy.checkForSystemMessage('This magic link is invalid or has expired');
