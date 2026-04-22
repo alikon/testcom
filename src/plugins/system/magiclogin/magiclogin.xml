@@ -36,6 +36,34 @@
                        description="PLG_SYSTEM_MAGICLOGIN_TOKEN_EXPIRY_DESC" 
                        min="5" 
                        max="1440" />
+                
+                <field name="rate_limit_enabled"
+                       type="radio"
+                       label="PLG_SYSTEM_MAGICLOGIN_RATE_LIMIT_ENABLED_LABEL"
+                       description="PLG_SYSTEM_MAGICLOGIN_RATE_LIMIT_ENABLED_DESC"
+                       default="1"
+                       class="btn-group btn-group-yesno">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field name="rate_limit_max_attempts"
+                       type="number"
+                       label="PLG_SYSTEM_MAGICLOGIN_RATE_LIMIT_MAX_ATTEMPTS_LABEL"
+                       description="PLG_SYSTEM_MAGICLOGIN_RATE_LIMIT_MAX_ATTEMPTS_DESC"
+                       default="3"
+                       min="1"
+                       max="10"
+                       showon="rate_limit_enabled:1" />
+
+                <field name="rate_limit_window"
+                       type="number"
+                       label="PLG_SYSTEM_MAGICLOGIN_RATE_LIMIT_WINDOW_LABEL"
+                       description="PLG_SYSTEM_MAGICLOGIN_RATE_LIMIT_WINDOW_DESC"
+                       default="5"
+                       min="1"
+                       max="60"
+                       showon="rate_limit_enabled:1" />
             </fieldset>
         </fields>
     </config>
