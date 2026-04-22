@@ -71,10 +71,10 @@ describe('Test that the magiclogin system plugin', () => {
 
   it('redirects to configured menu item after login', () => {
     cy.db_createUser({ name: 'Magic User', username: 'magicuser', email: 'magic@example.com', password: '098f6bcd4621d373cade4e832627b4f6' });
-    // Get the menu item ID for com_users profile page and set it as the login redirect
-    cy.db_getMenuItemId('index.php?option=com_users&view=profile').then((itemId) => {
-      cy.db_updateExtensionParam('plg_system_magiclogin', 'login', itemId);
-    });
+    cy.db_createMenuItem({ title: 'User Profile', alias: 'user-profile', link: 'index.php?option=com_users&view=profile' })
+      .then((itemId) => {
+        cy.db_updateExtensionParameter('login', itemId, 'plg_system_magiclogin');
+      });
 
     loginWithEmail();
 
