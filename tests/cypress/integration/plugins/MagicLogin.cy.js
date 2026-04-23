@@ -70,6 +70,9 @@ describe('Test that the magiclogin system plugin', () => {
   });
 
   it('redirects to configured menu item after login', () => {
+    const uniqueAlias = `magic-redirect-${Date.now()}`;
+
+    // 1. Create a fresh user
     cy.db_createUser({ 
       name: 'Magic User', 
       username: 'magicuser', 
@@ -77,28 +80,37 @@ describe('Test that the magiclogin system plugin', () => {
       password: '098f6bcd4621d373cade4e832627b4f6' 
     });
 
-    // Use an existing published menu item instead of creating one that might 404
-    cy.task('queryDB', "SELECT id, alias FROM #__menu WHERE published = 1 AND client_id = 0 AND parent_id = 1 LIMIT 1")
-      .then((rows) => {
-        expect(rows.length).to.be.greaterThan(0, 'No published menu item found in DB');
+    // 2. Create a new menu item using the custom command
+    // The command handles lft/rgt and component_id automatically
+    cy.db_createMenuItem({
+      title: 'Magic Redirect Page',
+      alias: uniqueAlias,
+      path: uniqueAlias,
+      link: 'index.php?option=com_content&view=featured', // A standard Joomla view
+      menutype: 'mainmenu',
+      published: 1,
+    }).then((itemId) => {
+      cy.log(`Created redirect menu item with ID: ${itemId}`);
 
-        const itemId = rows[0].id;
-        const itemAlias = rows[0].alias;
+      // 3. Configure the plugin to use this new Itemid
+      cy.db_updateExtensionParameter('login', itemId, 'plg_system_magiclogin');
 
-        cy.log(`Using redirect menu item: id=${itemId}, alias=${itemAlias}`);
+      // 4. Perform the login flow
+      loginWithEmail();
 
-        cy.db_updateExtensionParameter('login', itemId, 'plg_system_magiclogin');
+      getTokenFromMail().then((token) => {
+        // Visit the magic link
+        cy.visit(`/?magic_token=${token}`);
 
-        loginWithEmail();
+        // 5. Assertions
+        cy.checkForSystemMessage('You have been successfully logged in');
 
-        getTokenFromMail().then((token) => {
-          cy.visit(`/?magic_token=${token}`);
-          cy.checkForSystemMessage('You have been successfully logged in');
-
-          // Joomla redirects using Itemid in the URL
-          cy.url().should('include', `Itemid=${itemId}`);
-        });
+        // Verify the redirect. Using a regex covers both:
+        // - Standard URLs: index.php?Itemid=123
+        // - SEF URLs: /magic-redirect-page
+        cy.url().should('match', new RegExp(`Itemid=${itemId}|/${uniqueAlias}`));
       });
+    });
   });
   
   it('rejects invalid magic token', () => {
