@@ -15,6 +15,7 @@ namespace Joomla\Plugin\System\MagicLogin\Extension;
 
 use Joomla\CMS\Authentication\Authentication;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Multilanguage;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail\MailTemplate;
@@ -291,7 +292,25 @@ final class MagicLogin extends CMSPlugin implements SubscriberInterface
             $db->setQuery($query)->execute();
 
             $this->app->enqueueMessage(Text::_('PLG_SYSTEM_MAGICLOGIN_LOGIN_SUCCESS'), 'success');
-            $this->app->redirect(Uri::base());
+
+            $returnMenuId = (int) $this->params->get('login', 0);
+            $url          = Uri::base();
+
+            if ($returnMenuId > 0) {
+                $item = $this->app->getMenu()->getItem($returnMenuId);
+
+                if ($item) {
+                    $lang = '';
+
+                    if ($item->language !== '*' && Multilanguage::isEnabled()) {
+                        $lang = '&lang=' . $item->language;
+                    }
+
+                    $url = Uri::base() . 'index.php?Itemid=' . $item->id . $lang;
+                }
+            }
+
+            $this->app->redirect($url);
         }
     }
 
