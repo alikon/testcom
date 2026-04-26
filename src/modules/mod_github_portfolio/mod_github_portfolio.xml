@@ -11,6 +11,7 @@
     <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/modules/mod_github_portfolio/changelog.xml</changelogurl>
     <media destination="mod_github_portfolio" folder="media">
         <folder>js</folder>
+		<folder>css</folder>
     </media>
     <files>
         <folder module="mod_github_portfolio">services</folder>
