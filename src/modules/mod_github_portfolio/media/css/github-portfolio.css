@@ -1,16 +1,22 @@
 /* GitHub Portfolio Module Styles */
 
-.github-portfolio-module .pr-card {
+/* Supporta sia .pr-card (retrocompatibilità) che .github-portfolio-card */
+.github-portfolio-module .pr-card,
+.github-portfolio-module .github-portfolio-card {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
     border-radius: 8px;
     transition: all 0.3s ease;
 }
 
-.github-portfolio-module .pr-card .btn-outline-primary {
+.github-portfolio-module .pr-card .btn-outline-primary,
+.github-portfolio-module .github-portfolio-card .btn-outline-primary {
     border-width: 2px;
     font-weight: 600;
 }
 
-.github-portfolio-module .pr-card .btn-outline-primary:hover {
+.github-portfolio-module .pr-card .btn-outline-primary:hover,
+.github-portfolio-module .github-portfolio-card .btn-outline-primary:hover {
     transform: translateY(-2px);
 }
 
@@ -20,14 +26,25 @@
     text-transform: uppercase;
 }
 
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .github-portfolio-module .pr-card,
+    .github-portfolio-module .github-portfolio-card {
+        background-color: #1e2530;
+        border-color: #3d4a5c;
+        color: #e2e8f0;
+    }
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .github-portfolio-module .container {
         padding-left: 15px;
         padding-right: 15px;
     }
-    
-    .github-portfolio-module .pr-card {
+
+    .github-portfolio-module .pr-card,
+    .github-portfolio-module .github-portfolio-card {
         margin-bottom: 1.5rem;
     }
 }
