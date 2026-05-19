@@ -19,10 +19,21 @@ use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
 
 /**
- * Plugin per integrare Swagger UI negli articoli di Joomla 5
+ * SwaggerUI Content Plugin
+ *
+ * Integrates Swagger UI into Joomla 5 articles via the {swaggerui} tag.
+ *
+ * @since  2.0.0
  */
 class Swaggerui extends CMSPlugin implements SubscriberInterface
 {
+    /**
+     * Returns an array of events this subscriber will listen to.
+     *
+     * @return  array
+     *
+     * @since   2.0.0
+     */
     public static function getSubscribedEvents(): array
     {
         return [
@@ -31,7 +42,13 @@ class Swaggerui extends CMSPlugin implements SubscriberInterface
     }
 
     /**
-     * Metodo principale per trasformare il tag {swaggerui ...} in HTML
+     * Transforms the {swaggerui} tag in article content into a Swagger UI HTML block.
+     *
+     * @param   Event  $event  The onContentPrepare event
+     *
+     * @return  void
+     *
+     * @since   2.0.0
      */
     public function onContentPrepare(Event $event): void
     {
@@ -58,7 +75,13 @@ class Swaggerui extends CMSPlugin implements SubscriberInterface
     }
 
     /**
-     * Carica gli asset di Swagger UI usando il WebAssetManager e il file JSON unico
+     * Loads Swagger UI assets via the WebAssetManager or direct document injection.
+     *
+     * @param   string  $source  Asset source: 'local' or 'cdn'
+     *
+     * @return  void
+     *
+     * @since   2.0.0
      */
     private function loadSwaggerAssets(string $source = 'local'): void
     {
@@ -79,20 +102,20 @@ class Swaggerui extends CMSPlugin implements SubscriberInterface
                ->useScript('plg_content_swaggerui.cdn-bundle')
                ->useScript('plg_content_swaggerui.cdn-preset');
         } else {
-            //$wa->useStyle('plg_content_swaggerui.local-css')
-            //   ->useScript('plg_content_swaggerui.local-bundle')
-            //   ->useScript('plg_content_swaggerui.local-preset');
             $document->addStyleSheet(Factory::getApplication()->get('uri.base.full') . 'media/plg_content_swaggerui/css/swagger-ui.css');
             $document->addScript(Factory::getApplication()->get('uri.base.full') . 'media/plg_content_swaggerui/js/swagger-ui-bundle.js', ['defer' => true]);
             $document->addScript(Factory::getApplication()->get('uri.base.full') . 'media/plg_content_swaggerui/js/swagger-ui-standalone-preset.js', ['defer' => true]);
         }
-
-        // 2. Se decidi di usare un file JS esterno per l'init invece del declaration inline:
-        // $wa->useScript('plg_content_swaggerui.init');
     }
 
     /**
-     * Genera l'HTML e lo script di inizializzazione inline
+     * Generates the Swagger UI container HTML and inline initialisation script.
+     *
+     * @param   string  $url  The OpenAPI spec URL to load
+     *
+     * @return  string  The HTML container markup
+     *
+     * @since   2.0.0
      */
     private function generateSwaggerHtml(string $url): string
     {
@@ -138,6 +161,15 @@ class Swaggerui extends CMSPlugin implements SubscriberInterface
         return '<div id="swagger-ui-container" class="swagger-ui-wrapper" style="margin: 20px 0;"></div>';
     }
 
+    /**
+     * Parses key="value" attribute pairs from a shortcode string.
+     *
+     * @param   string  $text  The raw attribute string from the tag
+     *
+     * @return  array
+     *
+     * @since   2.0.0
+     */
     private function parseAttributes(string $text): array
     {
         $attributes = [];
