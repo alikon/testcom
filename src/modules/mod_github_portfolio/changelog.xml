@@ -3,33 +3,16 @@
         <element>mod_github_portfolio</element>
         <type>module</type>
         <version>1.0.0</version>
-        <security>
-            <item>Item A</item>
-            <item>Item b</item>
-        </security>
-        <fix>
-            <item>Item A</item>
-            <item>Item b</item>
-        </fix>
-        <language>
-            <item>Item A</item>
-            <item>Item b</item>
-        </language>
-        <addition>
-            <item>Item A</item>
-            <item>Item b</item>
-        </addition>
-        <change>
-            <item>Item A</item>
-            <item>Item b</item>
-        </change>
-        <remove>
-            <item>Item A</item>
-            <item>Item b</item>
-        </remove>
         <note>
-            <item>Item A</item>
-            <item>Item b</item>
+            <item>Listed on JED</item>
         </note>
+    </changelog>
+    <changelog>
+        <element>mod_github_portfolio</element>
+        <type>module</type>
+        <version>1.1.0</version>
+        <addition>
+            <item>Dark mode</item>
+        </addition>        
     </changelog>
 </changelogs>

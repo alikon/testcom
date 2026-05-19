@@ -5,12 +5,13 @@
     <creationDate>2025-12-01</creationDate>
     <copyright>Copyright (C) 2021 Alikon. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <description>MOD_GITHUB_PORTFOLIO_XML_DESCRIPTION</description>
     <namespace path="src">Joomla\Module\GithubPortfolio</namespace>
     <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/modules/mod_github_portfolio/changelog.xml</changelogurl>
     <media destination="mod_github_portfolio" folder="media">
         <folder>js</folder>
+		<folder>css</folder>
     </media>
     <files>
         <folder module="mod_github_portfolio">services</folder>
