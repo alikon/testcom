@@ -54,24 +54,35 @@ class Swaggerui extends CMSPlugin implements SubscriberInterface
     {
         [$context, $article, $params, $page] = array_values($event->getArguments());
 
-        if (empty($article->text) || strpos($article->text, '{swaggerui') === false) {
+        // Early return se non c'è testo o non contiene il tag swaggerui
+        if (empty($article->text) || !str_contains($article->text, '{swaggerui')) {
             return;
         }
 
-        $regex = '/\{swaggerui\s+(.*?)\}/i';
+        // URL di default se non specificato nel tag
+        $defaultUrl = 'https://petstore.swagger.io/v2/swagger.json';
 
-        $article->text = preg_replace_callback($regex, function ($matches) {
-            $attributes = $this->parseAttributes($matches[1]);
+        // Pattern regex
+        $regex = '/\{swaggerui\s*(.*?)\}/i';
 
-            $url    = $attributes['url'] ?? 'https://petstore.swagger.io/v2/swagger.json';
-            $source = $attributes['source'] ?? $this->params->get('assets_source', 'local');
+        $article->text = preg_replace_callback(
+            $regex,
+            function ($matches) use ($defaultUrl) {
+                $attributes = $this->parseAttributes($matches[1] ?? '');
 
-            // Carica gli Asset dal file JSON unico
-            $this->loadSwaggerAssets($source);
+                // URL: usa quello specificato nel tag, altrimenti il default
+                $url = $attributes['url'] ?? $defaultUrl;
 
-            return $this->generateSwaggerHtml($url);
+                // Source: usa quello specificato nel tag, altrimenti il parametro del plugin
+                $source = $attributes['source'] ?? $this->params->get('assets_source', 'local');
 
-        }, $article->text);
+                // Carica gli Asset
+                $this->loadSwaggerAssets($source);
+
+                return $this->generateSwaggerHtml($url);
+            },
+            $article->text
+        );
     }
 
     /**
