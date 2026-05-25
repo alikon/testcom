@@ -16,10 +16,22 @@ use Joomla\CMS\Helper\HelperFactoryAwareTrait;
 
 \defined("_JEXEC") or die;
 
+/**
+ * Dispatcher for the mod_changelog module.
+ *
+ * @since  1.0.0
+ */
 class Dispatcher extends AbstractModuleDispatcher implements HelperFactoryAwareInterface
 {
     use HelperFactoryAwareTrait;
 
+    /**
+     * Returns the layout data for the module.
+     *
+     * @return  array
+     *
+     * @since   1.0.0
+     */
     protected function getLayoutData(): array
     {
         $data = parent::getLayoutData();

@@ -15,8 +15,22 @@ namespace Alikonweb\Module\Changelog\Site\Helper;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\Registry\Registry;
 
+/**
+ * Helper class for the mod_changelog module.
+ *
+ * @since  1.0.0
+ */
 class ChangelogHelper
 {
+    /**
+     * Fetches and parses changelog data from a remote XML URL.
+     *
+     * @param   string  $url  The URL of the changelog XML file.
+     *
+     * @return  array|null  Array of changelog entries or null on failure.
+     *
+     * @since   1.0.0
+     */
     public static function getChangelogData($url)
     {
         try {

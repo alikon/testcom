@@ -13,10 +13,28 @@
 use Joomla\CMS\Form\FormField;
 use Joomla\CMS\Language\Text;
 
+/**
+ * Custom form field that renders a row of styled external link buttons.
+ *
+ * @since  1.0.0
+ */
 class JFormFieldLinks extends FormField
 {
+    /**
+     * The form field type.
+     *
+     * @var    string
+     * @since  1.0.0
+     */
     protected $type = 'Links';
 
+    /**
+     * Returns the HTML for a set of external link buttons.
+     *
+     * @return  string  HTML markup for the link buttons.
+     *
+     * @since   1.0.0
+     */
     public function getInput()
     {
         \Joomla\CMS\Factory::getApplication()->getLanguage()->load(

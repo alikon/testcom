@@ -16,7 +16,21 @@ use Joomla\CMS\Extension\Service\Provider\ModuleDispatcherFactory;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 
+/**
+ * Service provider for the mod_changelog module.
+ *
+ * @since  1.0.0
+ */
 return new class () implements ServiceProviderInterface {
+    /**
+     * Registers the service provider with a DI container.
+     *
+     * @param   Container  $container  The DI container.
+     *
+     * @return  void
+     *
+     * @since   1.0.0
+     */
     public function register(Container $container): void
     {
         $container->registerServiceProvider(new ModuleDispatcherFactory('\\Alikonweb\\Module\\Changelog'));
