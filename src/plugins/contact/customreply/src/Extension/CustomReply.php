@@ -170,7 +170,6 @@ final class CustomReply extends CMSPlugin implements SubscriberInterface
                 'NAME'           => $data['contact_name'],
                 'SUBJECT'        => $data['contact_subject'],
                 'MESSAGE'        => $data['contact_message'],
-                'RESPONSE_TIME ' => $this->params->get('token_expiry', 15),
             ]);
             $mailer->send();
         } catch (\Exception $e) {
