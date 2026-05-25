@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
           localStorage.setItem(cacheKey, JSON.stringify(data));
           localStorage.setItem(`${cacheKey}_time`, String(Date.now()));
         } catch (e) {
-          // localStorage might be full or disabled; just ignore
           console.warn('mod_github_portfolio: unable to store cache.', e);
         }
         renderData(data, container);
@@ -93,9 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
       col.className = 'col-lg-4 col-md-6 col-sm-12 mb-4';
 
       const card = document.createElement('div');
-      card.className = 'p-4 rounded shadow h-100';
-      card.style.backgroundColor = '#f8f9fa';
-      card.style.border = '1px solid #dee2e6';
+      card.className = 'p-4 rounded shadow h-100 github-portfolio-card';
 
       const h4 = document.createElement('h4');
       h4.textContent = title;

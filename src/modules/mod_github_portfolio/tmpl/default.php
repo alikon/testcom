@@ -19,6 +19,14 @@ $wa  = $app->getDocument()->getWebAssetManager();
 // Core JS if you still need it elsewhere
 $wa->useScript('core');
 
+// Register & use dedicated CSS asset for dark mode support
+$wa->registerAndUseStyle(
+    'mod_github_portfolio.github-portfolio',
+    'mod_github_portfolio/github-portfolio.css',
+    [],
+    []
+);
+
 // Register & use dedicated JS asset
 $wa->registerAndUseScript(
     'mod_github_portfolio.github-portfolio',
