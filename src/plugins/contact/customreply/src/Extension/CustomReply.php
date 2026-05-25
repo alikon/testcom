@@ -95,19 +95,30 @@ final class CustomReply extends CMSPlugin implements SubscriberInterface
         $contact = $event->getContact();
         $data    = $event->getData();
 
-        $sent = $this->_sendEmail($data, $contact, $params->get('show_email_copy', 0));
+        // Send primary contact email
+        $contactEmailSent = $this->_sendEmail($data, $contact, $params->get('show_email_copy', 0));
 
-        // If username is email (with or without password)
+        // Send autoresponse if email is valid
+        $autoresponseSent = false;
         if (!empty($data['contact_email']) && filter_var($data['contact_email'], FILTER_VALIDATE_EMAIL)) {
-
-            $sent = $this->sendAutoresponse($data);            
+            $autoresponseSent = $this->sendAutoresponse($data);            
         }
 
-        if ($sent) {
+        // Show success message only if at least the primary email was sent
+        if ($contactEmailSent) {
             $this->app->enqueueMessage(
                 Text::_('PLG_CONTACT_CUSTOMREPLY_EMAIL_SENT'),
                 'info'
             );
+            
+            // Log autoresponse failure separately if it occurred
+            if (!$autoresponseSent && !empty($data['contact_email'])) {
+                Log::add(
+                    'Contact email sent successfully but autoresponse failed for: ' . $data['contact_email'],
+                    Log::WARNING,
+                    'plg_contact_customreply'
+                );
+            }
         }
     
          if ($this->app->isClient('site')) {
