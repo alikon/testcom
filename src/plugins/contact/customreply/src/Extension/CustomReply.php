@@ -259,7 +259,7 @@ final class CustomReply extends CMSPlugin implements SubscriberInterface
 
                 $sent = false;
             } catch (\RuntimeException $exception) {
-                $this->app->enqueueMessage(Text::_($exception->errorMessage()), 'warning');
+                $this->app->enqueueMessage(Text::_($exception->getMessage()), 'warning');
 
                 $sent = false;
             }
