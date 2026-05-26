@@ -27,9 +27,9 @@ This repository contains various Joomla extensions. To ensure the download count
 | **Github Portfolio** | v1.1.0 | [Download mod_github_portfolio-1.1.0.zip](https://github.com/alikon/testcom/releases/download/v1.3/mod_github_portfolio-1.1.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.3/mod_github_portfolio-1.1.0.zip?label=downloads) |
 | **Joomla Statistics** | v1.1.1 | [Download mod_jstats-1.1.1.zip](https://github.com/alikon/testcom/releases/download/v1.3/mod_jstats-1.1.1.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.3/mod_jstats-1.1.1.zip?label=downloads) |
 | **Changelog** | v1.1.0 | [Download mod_changelog-1.1.0.zip](https://github.com/alikon/testcom/releases/download/v1.3/mod_changelog-1.1.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.3/mod_changelog-1.1.0.zip?label=downloads) |
-| **Custom Reply** | v1.1.0 | [Download plg_contact_customreply-1.0.0.zip](https://github.com/alikon/testcom/releases/download/v1.3/plg_ccontact_customreply-1.0.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.3/plg_contact_custom_reply-1.0.0.zip?label=downloads) |
+| **Custom Reply** | v1.1.0 | [Download plg_contact_customreply-1.0.0.zip](https://github.com/alikon/testcom/releases/download/v1.3/plg_contact_customreply-1.0.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.3/plg_contact_customreply-1.0.0.zip?label=downloads) |
 
-![Downloads](https://img.shields.io/github/downloads/alikon/testcom/total)
+![Downloads](https://img.shields.io/github/downloads/alikon/testcom/all)
 
 ## 🛠 Installation
 
