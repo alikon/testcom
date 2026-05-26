@@ -9,7 +9,7 @@
         <client>site</client>
         <php_minimum>8.1</php_minimum>
         <infourl title="Joomla! Module - Changelog">https://www.alikonweb.it</infourl>
-        <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/modules/mod_github_portfolio/changelog.xml</changelogurl>
+        <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/modules/mod_changelog/changelog.xml</changelogurl>
         <downloads>
             <downloadurl type="full" format="zip">https://github.com/alikon/testcom/releases/download/v1.2/mod_changelog-1.0.0.zip</downloadurl>
         </downloads>
@@ -26,7 +26,7 @@
         <client>site</client>
         <php_minimum>8.1</php_minimum>
         <infourl title="Joomla! Module - Changelog">https://www.alikonweb.it</infourl>
-        <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/modules/mod_github_portfolio/changelog.xml</changelogurl>
+        <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/modules/mod_changelog/changelog.xml</changelogurl>
         <downloads>
             <downloadurl type="full" format="zip">https://github.com/alikon/testcom/releases/download/v1.3/mod_changelog-1.1.0.zip</downloadurl>
         </downloads>
