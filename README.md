@@ -29,7 +29,7 @@ This repository contains various Joomla extensions. To ensure the download count
 | **Changelog** | v1.1.0 | [Download mod_changelog-1.1.0.zip](https://github.com/alikon/testcom/releases/download/v1.3/mod_changelog-1.1.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.3/mod_changelog-1.1.0.zip?label=downloads) |
 | **Custom Reply** | v1.1.0 | [Download plg_contact_customreply-1.0.0.zip](https://github.com/alikon/testcom/releases/download/v1.3/plg_contact_customreply-1.0.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.3/plg_contact_customreply-1.0.0.zip?label=downloads) |
 
-![Downloads](https://img.shields.io/github/downloads/alikon/testcom/all)
+![Downloads](https://img.shields.io/github/downloads/alikon/testcom/total)
 
 ## 🛠 Installation
 
