@@ -11,6 +11,7 @@
 
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 /** @var Joomla\CMS\WebAsset\WebAssetManager $wa */
 $app = Factory::getApplication();
@@ -44,8 +45,8 @@ $moduleId  = 'github-portfolio-' . (int) $module->id;
 <div class="container py-5 mod-github-portfolio">
     <div class="row text-center mb-5">
         <div class="col-12">
-            <h2>My Recent GitHub Contributions</h2>
-            <p class="lead">Merged, Open and Draft Pull Requests.</p>
+            <h2><?php echo Text::_('MOD_GITHUB_PORTFOLIO_RECENT'); ?></h2>
+            <p class="lead"><?php echo Text::_('MOD_GITHUB_PORTFOLIO_PULL_REQUESTS'); ?></p>
         </div>
     </div>
 
@@ -57,13 +58,13 @@ $moduleId  = 'github-portfolio-' . (int) $module->id;
         data-max-items="<?php echo (int) $maxItems; ?>"
         data-cache-time="<?php echo (int) $cacheTime; ?>"
     >
-        <p class="text-center text-muted col-12">Loading GitHub Portfolio...</p>
+        <p class="text-center text-muted col-12"><?php echo Text::_('MOD_GITHUB_PORTFOLIO_LOADING'); ?></p>
     </div>
 
     <div class="row text-center mt-4">
         <div class="col-12">
             <a href="https://github.com/<?php echo htmlspecialchars($username, ENT_QUOTES, 'UTF-8'); ?>" class="btn btn-primary btn-lg">
-                Visit My GitHub Profile
+                <?php echo Text::_('MOD_GITHUB_PORTFOLIO_VISIT_PROFILE'); ?>
             </a>
         </div>
     </div>
