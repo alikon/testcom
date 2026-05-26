@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension type="plugin" group="system" method="upgrade">
     <name>plg_system_safemode</name>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <creationDate>2026-01</creationDate>
     <author>Alikon</author>
     <copyright>(C) 2026 Alikonweb</copyright>

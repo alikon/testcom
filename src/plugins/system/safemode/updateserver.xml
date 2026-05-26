@@ -18,4 +18,22 @@
         <sha256>8e0c7cc362ce48a30069f765465cd6ebd89eb02834b8bf253570a4feaeed9b9b</sha256>
         <targetplatform name="joomla" version="((5\.[01234])|(6\.[01234]))" />
     </update>
+    <update>
+        <name>System - SafeMode</name>
+        <description>Joomla! System - SafeMode Plugin</description>
+        <element>safemode</element>
+        <type>plugin</type>
+        <folder>system</folder>
+        <version>1.0.1</version>
+        <client>site</client>
+        <php_minimum>8.1</php_minimum>
+        <infourl title="Joomla! System - SafeMode Plugin">https://www.alikonweb.it/extensions/system-plugin-safemode</infourl>
+        <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/system/safemode/changelog.xml</changelogurl>
+        <downloads>
+            <downloadurl type="full" format="zip">https://github.com/alikon/testcom/releases/download/v1.3/plg_system_safemode-1.0.1.zip</downloadurl>
+        </downloads>
+        <tags><tag>stable</tag></tags>
+        <sha256>8e0c7cc362ce48a30069f765465cd6ebd89eb02834b8bf253570a4feaeed9b9b</sha256>
+        <targetplatform name="joomla" version="((5\.[01234])|(6\.[01234]))" />
+    </update>
 </updates>

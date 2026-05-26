@@ -46,6 +46,6 @@ class JFormFieldVersion extends FormField
                   border-radius: 4px; 
                   background-color: #0dcaf0;';
 
-        return '<span style="' . $style . '">' . $version . '</span>';
+        return '<span style="' . $style . '">' . htmlspecialchars($version, ENT_QUOTES, 'UTF-8') . '</span>';
     }
 }

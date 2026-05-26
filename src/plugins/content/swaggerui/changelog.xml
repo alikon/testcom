@@ -25,4 +25,13 @@
             <item>Use Web Asset Manager</item>
         </addition>
     </changelog>
+    <changelog>
+        <element>swaggerui</element>
+        <folder>content</folder>
+        <type>plugin</type>
+        <version>2.0.1</version>
+        <addition>
+            <item>Code clean</item>            
+        </addition>
+    </changelog>
 </changelogs>

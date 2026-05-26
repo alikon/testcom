@@ -13,10 +13,8 @@
 
 namespace Joomla\Plugin\Contact\CustomReply\Extension;
 
-use Joomla\CMS\Authentication\Authentication;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\Contact\SubmitContactEvent;
-use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Multilanguage;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
@@ -25,8 +23,6 @@ use Joomla\CMS\Mail\MailTemplate;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\String\PunycodeHelper;
 use Joomla\CMS\Uri\Uri;
-use Joomla\CMS\User\User;
-use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\SubscriberInterface;
 
@@ -91,7 +87,7 @@ final class CustomReply extends CMSPlugin implements SubscriberInterface
 
         if (!$params->get('custom_reply')) {
             return;
-        }   
+        }
         $contact = $event->getContact();
         $data    = $event->getData();
 
@@ -101,7 +97,7 @@ final class CustomReply extends CMSPlugin implements SubscriberInterface
         // Send autoresponse if email is valid
         $autoresponseSent = false;
         if (!empty($data['contact_email']) && filter_var($data['contact_email'], FILTER_VALIDATE_EMAIL)) {
-            $autoresponseSent = $this->sendAutoresponse($data);            
+            $autoresponseSent = $this->sendAutoresponse($data);
         }
 
         // Show success message only if at least the primary email was sent
@@ -110,7 +106,7 @@ final class CustomReply extends CMSPlugin implements SubscriberInterface
                 Text::_('PLG_CONTACT_CUSTOMREPLY_EMAIL_SENT'),
                 'info'
             );
-            
+
             // Log autoresponse failure separately if it occurred
             if (!$autoresponseSent && !empty($data['contact_email'])) {
                 Log::add(
@@ -120,11 +116,11 @@ final class CustomReply extends CMSPlugin implements SubscriberInterface
                 );
             }
         }
-    
-         if ($this->app->isClient('site')) {
+
+        if ($this->app->isClient('site')) {
             $returnMenuId = (int) $this->params->get('redirect_url', 0);
             $url          = Uri::base();
-            
+
             if ($returnMenuId > 0) {
                 $item = $this->app->getMenu()->getItem($returnMenuId);
 
@@ -140,7 +136,7 @@ final class CustomReply extends CMSPlugin implements SubscriberInterface
             }
 
             $this->app->redirect($url);
-        }        
+        }
     }
 
     /**
@@ -166,10 +162,10 @@ final class CustomReply extends CMSPlugin implements SubscriberInterface
             $mailer = new MailTemplate('plg_contact_customreply.autoresponder', $this->app->getLanguage()->getTag());
             $mailer->addRecipient($data['contact_email']);
             $mailer->addTemplateData([
-                'SITENAME'       => $siteName,
-                'NAME'           => $data['contact_name'],
-                'SUBJECT'        => $data['contact_subject'],
-                'MESSAGE'        => $data['contact_message'],
+                'SITENAME' => $siteName,
+                'NAME'     => $data['contact_name'],
+                'SUBJECT'  => $data['contact_subject'],
+                'MESSAGE'  => $data['contact_message'],
             ]);
             $mailer->send();
         } catch (\Exception $e) {

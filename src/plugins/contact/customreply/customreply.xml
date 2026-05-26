@@ -10,6 +10,7 @@
     <version>1.0.0</version>
     <description>PLG_CONTACT_CUSTOMREPLY_XML_DESCRIPTION</description>
     <namespace path="src">Joomla\Plugin\Contact\CustomReply</namespace>
+    <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/contact/customreply/changelog.xml</changelogurl>
     <!-- Scripts to run on installation -->
 	<scriptfile>script.php</scriptfile>
     <files>
@@ -18,7 +19,6 @@
         <folder>language</folder>
         <folder>field</folder>
     </files>
-
     <config>
         <fields name="params"  addfieldpath="/plugins/contact/customreply/field" addfieldprefix="Joomla\Component\Menus\Administrator\Field">
             <fieldset name="basic">
