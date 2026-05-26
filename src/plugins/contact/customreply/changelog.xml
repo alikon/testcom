@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<changelogs>
+    <changelog>
+        <element>customreply</element>
+        <folder>contact</folder>
+        <type>plugin</type>
+        <version>1.0.0</version>
+        <note>
+            <item>Not listed on Joomla Extension Directory</item>
+        </note>
+    </changelog>
+</changelogs>

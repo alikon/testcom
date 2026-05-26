@@ -31,8 +31,7 @@
         <type>plugin</type>
         <version>2.0.1</version>
         <addition>
-            <item>Added support for CDN assets</item>
-            <item>Use Web Asset Manager</item>
+            <item>Code clean</item>            
         </addition>
     </changelog>
 </changelogs>
