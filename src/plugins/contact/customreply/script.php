@@ -202,7 +202,7 @@ return new class () implements ServiceProviderInterface {
                  *
                  * @return void
                  */
-                private function createTable() :void
+                private function createTable(): void
                 {
                     try {
                         $db = Factory::getContainer()->get(DatabaseDriver::class);
@@ -243,10 +243,10 @@ return new class () implements ServiceProviderInterface {
                  *
                  * @return void
                  */
-                private function dropTable() :void
+                private function dropTable(): void
                 {
                     try {
-                        $db = Factory::getContainer()->get(DatabaseDriver::class);
+                        $db          = Factory::getContainer()->get(DatabaseDriver::class);
                         $templateId  = 'plg_contact_customreply.autoresponder';
                         // Delete the template_id from the #__mail_templates table
                         $query = $db->getQuery(true);
