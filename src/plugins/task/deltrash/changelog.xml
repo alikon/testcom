@@ -115,4 +115,13 @@
             <item>CLI language support</item>
         </note>
     </changelog>
+    <changelog>
+        <element>deltrash</element>
+        <folder>task</folder>
+        <type>plugin</type>
+        <version>1.7.3</version>
+        <note>
+            <item>Code clean</item>
+        </note>
+    </changelog>
 </changelogs>

@@ -3,7 +3,7 @@
     <update>
         <name>Contact - Custom Reply</name>
         <description>Joomla! Contact - Custom Reply plugin</description>
-        <element>swaggerui</element>
+        <element>customreply</element>
         <type>plugin</type>
         <folder>contact</folder>
         <version>1.0.0</version>
