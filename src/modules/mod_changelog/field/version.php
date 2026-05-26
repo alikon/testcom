@@ -18,7 +18,7 @@ use Joomla\CMS\Language\Text;
  *
  * @since  1.0.0
  */
-class JFormFieldLinks extends FormField
+class JFormFieldVersion extends FormField
 {
     /**
      * The form field type.
@@ -26,7 +26,7 @@ class JFormFieldLinks extends FormField
      * @var    string
      * @since  1.0.0
      */
-    protected $type = 'Links';
+    protected $type = 'Version';
 
     /**
      * Returns the HTML for a set of external link buttons.
@@ -37,6 +37,9 @@ class JFormFieldLinks extends FormField
      */
     public function getInput()
     {
+        // 1. Get the path to your plugin's XML
+        // Note: Ensure this path matches your folder name (safemode)
+        $path = JPATH_SITE . '/modules/mod_changelog/mod_changelog.xml';
         \Joomla\CMS\Factory::getApplication()->getLanguage()->load(
             'mod_changelog',
             JPATH_SITE . '/modules/mod_changelog',
@@ -45,41 +48,30 @@ class JFormFieldLinks extends FormField
             true
         );
 
-        $buttons = [
-            ['link' => 'https://www.alikonweb.it', 'class' => 'btn-primary', 'icon' => 'fas fa-book', 'label' => 'MOD_CHANGELOG_LBL_MANUAL'],
-            ['link' => 'https://www.x.com/Alikon', 'class' => 'btn-primary', 'icon' => 'fab fa-x-twitter', 'label' => 'MOD_CHANGELOG_LBL_FOLLOW'],
-            ['link' => 'https://github.com/alikon/testcom/issues', 'class' => 'btn-danger', 'icon' => 'fas fa-bug', 'label' => 'MOD_CHANGELOG_LBL_REPORT'],
-            ['link' => 'https://github.com/sponsors/alikon', 'class' => 'btn-success', 'icon' => 'fab fa-github', 'label' => 'MOD_CHANGELOG_LBL_SPONSOR'],
-        ];
-
-        // This CSS reset ensures that if your template adds a "duplicate" icon via
-        // a ::before or ::after selector on target="_blank", it is hidden here.
-        $html = '<style>.magic-links-container a[target="_blank"]::before, .magic-links-container a[target="_blank"]::after {content: none !important;}</style>';
-
-        $html .= '<div class="magic-links-container" style="display: flex; gap: 6px; flex-wrap: nowrap; width: 100%;">';
-
-        foreach ($buttons as $btn) {
-            $safeLink = htmlspecialchars($btn['link'], ENT_QUOTES, 'UTF-8');
-
-            $html .= '<a href="' . $safeLink . '" target="_blank" rel="noopener noreferrer" 
-                        class="btn ' . $btn['class'] . '" 
-                        style="display: flex; align-items: center; justify-content: center; flex-direction: row; 
-                               flex: 1; padding: 20px 5px; text-decoration: none; white-space: nowrap;">';
-
-            // 1. Primary Icon (Manual/Bug/etc.) stays on the LEFT
-            $html .= '  <i class="' . $btn['icon'] . '" style="margin-right: 8px;" aria-hidden="true"></i>';
-
-            // 2. Button Label (Center)
-            $html .= '  <span style="font-size: 0.8rem; font-weight: 600;">' . Text::_($btn['label']) . '</span>';
-
-            // 3. External Link Icon on the RIGHT
-            $html .= '  <i class="fas fa-external-link-alt" style="margin-left: 8px; font-size: 0.7rem; opacity: 0.8;" aria-hidden="true"></i>';
-
-            $html .= '</a>';
+        $version = '0.0.0';
+        if (file_exists($path)) {
+            $xml = @simplexml_load_file($path);
+            if ($xml !== false && isset($xml->version)) {
+                $version = (string) $xml->version;
+            }
         }
 
-        $html .= '</div>';
+        // 2. Return a larger, styled "button-style" badge
+        // padding: 8px 16px makes it chunky
+        // font-size: 1rem makes it standard text size (bigger than a tiny badge)
+        // border-radius: 4px gives it a subtle button curve
+        $style = 'display: inline-block; 
+                  padding: 8px 16px; 
+                  font-size: 1rem; 
+                  font-weight: bold; 
+                  line-height: 1; 
+                  color: #fff; 
+                  text-align: center; 
+                  white-space: nowrap; 
+                  vertical-align: baseline; 
+                  border-radius: 4px; 
+                  background-color: #0dcaf0;';
 
-        return $html;
+        return '<span style="' . $style . '">' . htmlspecialchars($version, ENT_QUOTES, 'UTF-8') . '</span>';
     }
 }
