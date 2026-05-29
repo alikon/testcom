@@ -10,7 +10,7 @@
     <version>1.0.2</version>
     <description>PLG_CONSOLE_SAFEMODE_XML_DESCRIPTION</description>
     <!-- Correct namespace per Joomla docs -->
-    <namespace path="src">Joomla\Plugin\Console\Safemode</namespace>
+    <namespace path="src">Alikonweb\Plugin\Console\Safemode</namespace>
     <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/console/safemode/changelog.xml</changelogurl>
     <files>
         <!-- Services directory must be included -->

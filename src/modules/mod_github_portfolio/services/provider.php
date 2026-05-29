@@ -18,7 +18,7 @@ use Joomla\DI\ServiceProviderInterface;
 return new class () implements ServiceProviderInterface {
     public function register(Container $container): void
     {
-        $container->registerServiceProvider(new ModuleDispatcherFactory('\\Joomla\\Module\\GithubPortfolio'));
+        $container->registerServiceProvider(new ModuleDispatcherFactory('\\Alikonweb\\Module\\GithubPortfolio'));
         $container->registerServiceProvider(new Module());
     }
 };

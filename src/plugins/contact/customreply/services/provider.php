@@ -19,7 +19,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
-use Joomla\Plugin\Contact\CustomReply\Extension\CustomReply;
+use Alikonweb\Plugin\Contact\CustomReply\Extension\CustomReply;
 
 /**
  * Service provider for the Custom Reply contact plugin

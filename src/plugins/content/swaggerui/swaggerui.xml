@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" group="content" method="upgrade" version="5.0">
     <name>plg_content_swaggerui</name>
-    <version>2.0.1</version>
+    <version>2.1.0</version>
     <author>Alikon</author>
     <creationDate>2026-01</creationDate>
     <copyright>(C) 2007 Alikonweb</copyright>
@@ -9,7 +9,7 @@
     <authorEmail>alikon@alikonweb.it</authorEmail>
     <authorUrl>www.alikonweb.it</authorUrl>
     <description>Embed Swagger UI in Joomla articles using {swaggerui}</description>
-    <namespace path="src">Joomla\Plugin\Content\Swaggerui</namespace>
+    <namespace path="src">Alikonweb\Plugin\Content\Swaggerui</namespace>
     <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/content/swaggerui/changelog.xml</changelogurl>
     <files>
         <folder plugin="swaggerui">services</folder>

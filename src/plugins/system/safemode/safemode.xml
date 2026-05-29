@@ -10,7 +10,7 @@
     <authorUrl>www.alikonweb.it</authorUrl>
     <description>PLG_SYSTEM_SAFEMODE_XML_DESCRIPTION</description>
     
-    <namespace path="src">Joomla\Plugin\System\Safemode</namespace>
+    <namespace path="src">Alikonweb\Plugin\System\Safemode</namespace>
     <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/system/safemode/changelog.xml</changelogurl>
     <files>
         <folder plugin="safemode">services</folder>

@@ -19,7 +19,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
-use Joomla\Plugin\System\MagicLogin\Extension\MagicLogin;
+use Alikonweb\Plugin\System\MagicLogin\Extension\MagicLogin;
 
 /**
  * Service provider for the Magic Login system plugin

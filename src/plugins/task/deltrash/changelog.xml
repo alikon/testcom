@@ -124,4 +124,13 @@
             <item>Code clean</item>
         </note>
     </changelog>
+    <changelog>
+        <element>deltrash</element>
+        <folder>task</folder>
+        <type>plugin</type>
+        <version>1.8.0</version>
+        <change>
+            <item>Namespace</item>
+        </change>
+    </changelog>
 </changelogs>

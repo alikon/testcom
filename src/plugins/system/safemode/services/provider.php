@@ -16,7 +16,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
-use Joomla\Plugin\System\Safemode\Extension\SafemodePlugin;
+use Alikonweb\Plugin\System\Safemode\Extension\SafemodePlugin;
 
 return new class () implements ServiceProviderInterface {
     /**

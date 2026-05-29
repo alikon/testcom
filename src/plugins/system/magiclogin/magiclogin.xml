@@ -7,9 +7,9 @@
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>alikon@alikonweb.it</authorEmail>
     <authorUrl>www.alikonweb.it</authorUrl>
-    <version>1.0.1</version>
+    <version>1.1.0</version>
     <description>PLG_SYSTEM_MAGICLOGIN_XML_DESCRIPTION</description>
-    <namespace path="src">Joomla\Plugin\System\MagicLogin</namespace>
+    <namespace path="src">Alikonweb\Plugin\System\MagicLogin</namespace>
     <!-- Scripts to run on installation -->
 	<scriptfile>script.php</scriptfile>
     <files>

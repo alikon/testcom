@@ -8,7 +8,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Plugin\System\Safemode\Extension;
+namespace Alikonweb\Plugin\System\Safemode\Extension;
 
 \defined('_JEXEC') or die;
 
@@ -16,7 +16,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
-use Joomla\Plugin\System\Safemode\Helper\SafemodeHelper;
+use Alikonweb\Plugin\System\Safemode\Helper\SafemodeHelper;
 
 /**
  * SafeMode System Plugin

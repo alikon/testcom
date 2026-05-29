@@ -9,7 +9,7 @@
     <authorUrl>www.alikonweb.it</authorUrl>
     <version>1.0.0</version>
     <description>PLG_CONTACT_CUSTOMREPLY_XML_DESCRIPTION</description>
-    <namespace path="src">Joomla\Plugin\Contact\CustomReply</namespace>
+    <namespace path="src">Alikonweb\Plugin\Contact\CustomReply</namespace>
     <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/contact/customreply/changelog.xml</changelogurl>
     <!-- Scripts to run on installation -->
 	<scriptfile>script.php</scriptfile>

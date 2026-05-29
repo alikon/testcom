@@ -8,14 +8,14 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Plugin\Console\Updatefromcli\Extension;
+namespace Alikonweb\Plugin\Console\Updatefromcli\Extension;
 
 \defined('_JEXEC') or die;
 
 use Joomla\Application\ApplicationEvents;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\SubscriberInterface;
-use Joomla\Plugin\Console\Updatefromcli\CliCommand\UpdatefromcliCommand;
+use Alikonweb\Plugin\Console\Updatefromcli\CliCommand\UpdatefromcliCommand;
 
 class UpdatefromcliConsolePlugin extends CMSPlugin implements SubscriberInterface
 {

@@ -17,5 +17,23 @@
         <tags><tag>stable</tag></tags>
         <sha256>7bd16da67c1f16f19a17817ff75dd4708ccae7455bfd93789a218b890523bfb8</sha256>
         <targetplatform name="joomla" version="((5\.[01234])|(6\.[01234]))" />
-    </update>    
+    </update>
+     <update>
+        <name>Contact - Custom Reply</name>
+        <description>Joomla! Contact - Custom Reply plugin</description>
+        <element>customreply</element>
+        <type>plugin</type>
+        <folder>contact</folder>
+        <version>1.1.0</version>
+        <client>site</client>
+        <php_minimum>8.1</php_minimum>
+        <infourl title="Joomla! Contact - Custom Reply  Plugin">https://www.alikonweb.it/extensions/contact-plugin-customreply</infourl>
+        <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/contact/customreply/changelog.xml</changelogurl>
+        <downloads>
+            <downloadurl type="full" format="zip">https://github.com/alikon/testcom/releases/download/v1.4/plg_contact_customreply-1.1.0.zip</downloadurl>
+        </downloads>
+        <tags><tag>stable</tag></tags>
+        <sha256>7bd16da67c1f16f19a17817ff75dd4708ccae7455bfd93789a218b890523bfb8</sha256>
+        <targetplatform name="joomla" version="((5\.[01234])|(6\.[01234]))" />
+    </update>
 </updates>

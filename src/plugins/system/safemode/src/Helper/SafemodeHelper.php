@@ -8,7 +8,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Plugin\System\Safemode\Helper;
+namespace Alikonweb\Plugin\System\Safemode\Helper;
 
 use Joomla\CMS\Extension\ExtensionHelper;
 use Joomla\CMS\Factory;

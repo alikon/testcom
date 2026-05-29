@@ -17,7 +17,7 @@ use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
-use Joomla\Plugin\Task\Deltrash\Extension\Deltrash;
+use Alikonweb\Plugin\Task\Deltrash\Extension\Deltrash;
 
 return new class () implements ServiceProviderInterface {
     /**

@@ -34,4 +34,13 @@
             <item>Code clean</item>            
         </addition>
     </changelog>
+    <changelog>
+        <element>swaggerui</element>
+        <folder>content</folder>
+        <type>plugin</type>
+        <version>2.0.1</version>
+        <change>
+            <item>Namespace</item>            
+        </change>
+    </changelog>
 </changelogs>

@@ -15,4 +15,12 @@
             <item>Dark mode</item>
         </addition>        
     </changelog>
+    <changelog>
+        <element>mod_github_portfolio</element>
+        <type>module</type>
+        <version>1.2.0</version>
+        <change>
+            <item>Namespace</item>
+        </chnage>        
+    </changelog>
 </changelogs>
