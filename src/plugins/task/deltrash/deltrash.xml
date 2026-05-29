@@ -20,7 +20,7 @@
 		<folder>rules</folder>
 	</files>
 	<updateservers>
-		<server type="extension" name="Task - Delete Trash">https://raw.githubusercontent.com/alikon/testcom/main/plugins/task/deltrash/updateserver.xml</server>
+		<server type="extension" name="Task - Delete Trash">https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/task/deltrash/updateserver.xml</server>
 	</updateservers>
 	 <config>
         <fields name="params" addfieldpath="/plugins/task/deltrash/field">
