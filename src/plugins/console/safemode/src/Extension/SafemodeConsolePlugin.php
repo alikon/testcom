@@ -12,10 +12,10 @@ namespace Alikonweb\Plugin\Console\Safemode\Extension;
 
 \defined('_JEXEC') or die;
 
+use Alikonweb\Plugin\Console\Safemode\CliCommand\SafemodeCommand;
 use Joomla\Application\ApplicationEvents;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\SubscriberInterface;
-use Alikonweb\Plugin\Console\Safemode\CliCommand\SafemodeCommand;
 
 class SafemodeConsolePlugin extends CMSPlugin implements SubscriberInterface
 {

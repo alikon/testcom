@@ -12,10 +12,10 @@ namespace Alikonweb\Plugin\Console\Updatefromcli\Extension;
 
 \defined('_JEXEC') or die;
 
+use Alikonweb\Plugin\Console\Updatefromcli\CliCommand\UpdatefromcliCommand;
 use Joomla\Application\ApplicationEvents;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\SubscriberInterface;
-use Alikonweb\Plugin\Console\Updatefromcli\CliCommand\UpdatefromcliCommand;
 
 class UpdatefromcliConsolePlugin extends CMSPlugin implements SubscriberInterface
 {

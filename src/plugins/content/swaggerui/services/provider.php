@@ -10,13 +10,13 @@
 
 \defined('_JEXEC') or die;
 
+use Alikonweb\Plugin\Content\Swaggerui\Extension\Swaggerui;
 use Joomla\CMS\Extension\PluginInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
-use Alikonweb\Plugin\Content\Swaggerui\Extension\Swaggerui;
 
 return new class () implements ServiceProviderInterface {
     /**

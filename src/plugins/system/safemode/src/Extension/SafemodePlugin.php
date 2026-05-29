@@ -12,11 +12,11 @@ namespace Alikonweb\Plugin\System\Safemode\Extension;
 
 \defined('_JEXEC') or die;
 
+use Alikonweb\Plugin\System\Safemode\Helper\SafemodeHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
-use Alikonweb\Plugin\System\Safemode\Helper\SafemodeHelper;
 
 /**
  * SafeMode System Plugin
