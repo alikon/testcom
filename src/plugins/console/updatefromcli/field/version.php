@@ -1,0 +1,51 @@
+<?php
+
+/**
+ * @package     Joomla.Plugin
+ * @subpackage  Console.updatefromcli
+ *
+ * @copyright   Copyright (C) 2026 Alikon. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ */
+
+\defined('_JEXEC') or die;
+
+use Joomla\CMS\Form\FormField;
+
+class JFormFieldVersion extends FormField
+{
+    protected $type = 'Version';
+
+    public function getInput()
+    {
+        // 1. Get the path to your plugin's XML
+        // Note: Ensure this path matches your folder name (updatefromcli) and the XML file name (safemode.xml)
+        $path = JPATH_SITE . '/plugins/console/updatefromcli/updatefromcli.xml';
+
+        $version = '0.0.0';
+        if (file_exists($path)) {
+            $xml = @simplexml_load_file($path);
+            if ($xml !== false && isset($xml->version)) {
+                $version = (string) $xml->version;
+            }
+        }
+
+        // 2. Return a larger, styled "button-style" badge
+        // padding: 8px 16px makes it chunky
+        // font-size: 1rem makes it standard text size (bigger than a tiny badge)
+        // border-radius: 4px gives it a subtle button curve
+        $style = 'display: inline-block; 
+                  padding: 8px 16px; 
+                  font-size: 1rem; 
+                  font-weight: bold; 
+                  line-height: 1; 
+                  color: #fff; 
+                  text-align: center; 
+                  white-space: nowrap; 
+                  vertical-align: baseline; 
+                  border-radius: 4px; 
+                  background-color: #0dcaf0;';
+
+        return '<span style="' . $style . '">' . htmlspecialchars($version, ENT_QUOTES, 'UTF-8') . '</span>';
+    }
+}

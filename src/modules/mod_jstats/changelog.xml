@@ -48,4 +48,12 @@
             <item>Code clean</item>
         </addition>        
     </changelog>
+    <changelog>
+        <element>mod_jstats</element>
+        <type>module</type>
+        <version>1.2.0</version>
+        <change>
+            <item>Code clean</item>
+        </change>        
+    </changelog>
 </changelogs>
