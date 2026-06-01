@@ -23,7 +23,7 @@ describe('Test in frontend that the contact form view', () => {
         cy.get('#jform_contact_email').type('testuser@example.com');
         cy.get('#jform_contact_emailmsg').type('Test Subject');
         cy.get('#jform_contact_message').type('Test message content');
-        cy.get('.btn-primary').click();
+        cy.get('button.btn.btn-primary.validate[type="submit"]').click();
 
         cy.task('getMails').then((mails) => {
           expect(mails.length).to.be.greaterThan(0);
