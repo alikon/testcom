@@ -25,9 +25,10 @@ export default defineConfig({
     scrollBehavior: 'center',
     browser: 'firefox',
     screenshotOnRunFailure: true,
-    video: false
+    video: false,
+    allowCypressEnv: false,
   },
-  env: {
+  expose: {
     sitename: 'Joomla CMS Test',
     name: 'jane doe',
     email: 'admin@example.com',
