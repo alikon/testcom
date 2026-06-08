@@ -36,7 +36,7 @@ echo "--> Building extension..."
 echo "--> Installing Joomla..."
 rm -f $JOOMLA_ROOT/index.html
 cd $JOOMLA_ROOT
-curl -o joomla.tar.zst -L https://developer.joomla.org/download-nightly.php/stable/debug/full/joomla.tar.zst
+curl -o joomla.tar.zst -L https://downloads.joomla.org/cms/joomla6/6-1-1/Joomla_6-1-1-Stable-Full_Package.tar.zst?format=zst
 tar xfa joomla.tar.zst
 rm joomla.tar.zst
 
