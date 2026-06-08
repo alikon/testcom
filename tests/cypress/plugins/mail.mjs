@@ -1,5 +1,5 @@
 // L'URL di Mailpit dipende dall'ambiente (CI o locale)
-const MAILPIT_URL = process.expose.CI ? 'http://mailpit:8025' : 'http://127.0.0.1:8025';
+const MAILPIT_URL = process.env.CI ? 'http://mailpit:8025' : 'http://127.0.0.1:8025';
 
 /**
  * Recupera le mail da Mailpit con un meccanismo di retry (3 secondi)
