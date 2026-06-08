@@ -38,7 +38,7 @@ describe('Test that the magiclogin system plugin', () => {
       cy.log('Header From:', mails[0].headers.from);
       // Debug: se il test fallisce ancora, guarda il log di Cypress per vedere l'oggetto mail
       cy.log('Mail From:', mails[0].headers.from);
-      cy.log('Cypress Env Email:', Cypress.env('email'));
+      cy.log('Cypress Env Email:', Cypress.expose('email'));
       cy.wrap(mails[0].body).should('have.string', 'Click the link below to login');
       cy.wrap(mails[0].headers.subject).should('contain', `Login to Joomla test`);
       // TO DO when upgrade to cypress 15
@@ -124,7 +124,7 @@ describe('Test that the magiclogin system plugin', () => {
     loginWithEmail();
     
     getTokenFromMail().then((token) => {
-      const dbType = Cypress.env('db_type');
+      const dbType = Cypress.expose('db_type');
       const query = dbType === 'pgsql'
         ? "UPDATE #__magiclogin_tokens SET expires = NOW() - INTERVAL '1 hour'"
         : "UPDATE #__magiclogin_tokens SET expires = DATE_SUB(NOW(), INTERVAL 1 HOUR)";
