@@ -19,7 +19,7 @@ class JFormFieldVersion extends FormField
     public function getInput()
     {
         // 1. Get the path to your plugin's XML
-        // Note: Ensure this path matches your folder name (updatefromcli) and the XML file name (safemode.xml)
+        // Note: Ensure this path matches your folder name (updatefromcli) and the XML file name (updatefromcli.xml)
         $path = JPATH_SITE . '/plugins/console/updatefromcli/updatefromcli.xml';
 
         $version = '0.0.0';
