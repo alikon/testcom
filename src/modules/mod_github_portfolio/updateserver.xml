@@ -35,14 +35,14 @@
         <targetplatform name="joomla" version="((5\.[01234])|(6\.[01234]))" />
     </update>
     <update>
-        <name>Module - Github Porfolio</name>
-        <description>Joomla! Module - Github Porfolio</description>
+        <name>Module - Github Portfolio</name>
+        <description>Joomla! Module - Github Portfolio</description>
         <element>mod_github_portfolio</element>
         <type>module</type>
         <version>1.2.0</version>
         <client>site</client>
         <php_minimum>8.1</php_minimum>
-        <infourl title="Joomla! Module - Github Porfolio">https://www.alikonweb.it</infourl>
+        <infourl title="Joomla! Module - Github Portfolio">https://www.alikonweb.it</infourl>
         <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/modules/mod_github_portfolio/changelog.xml</changelogurl>
         <downloads>
             <downloadurl type="full" format="zip">https://github.com/alikon/testcom/releases/download/v1.4/mod_github_portfolio-1.2.0.zip</downloadurl>
