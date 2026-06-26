@@ -11,7 +11,7 @@
  * @link       https://www.alikonweb.it
  */
 
-namespace Joomla\Plugin\System\MagicLogin\Extension;
+namespace Alikonweb\Plugin\System\MagicLogin\Extension;
 
 use Joomla\CMS\Authentication\Authentication;
 use Joomla\CMS\Factory;

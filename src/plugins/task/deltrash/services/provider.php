@@ -10,6 +10,7 @@
 
 \defined('_JEXEC') or die;
 
+use Alikonweb\Plugin\Task\Deltrash\Extension\Deltrash;
 use Joomla\CMS\Extension\PluginInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -17,7 +18,6 @@ use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
-use Joomla\Plugin\Task\Deltrash\Extension\Deltrash;
 
 return new class () implements ServiceProviderInterface {
     /**

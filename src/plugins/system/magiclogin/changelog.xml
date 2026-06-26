@@ -24,4 +24,13 @@
             <item>Code clean</item>
         </note>
     </changelog>
+    <changelog>
+        <element>magiclogin</element>
+        <folder>system</folder>
+        <type>plugin</type>
+        <version>1.1.0</version>        
+        <note>
+            <item>Namespace</item>
+        </note>
+    </changelog>
 </changelogs>

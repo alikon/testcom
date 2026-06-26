@@ -8,7 +8,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Plugin\Content\Swaggerui\Extension;
+namespace Alikonweb\Plugin\Content\Swaggerui\Extension;
 
 \defined('_JEXEC') or die;
 

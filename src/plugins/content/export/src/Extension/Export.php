@@ -8,7 +8,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Plugin\Content\Export\Extension;
+namespace Alikonweb\Plugin\Content\Export\Extension;
 
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Language\Text;

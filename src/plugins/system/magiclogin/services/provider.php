@@ -13,13 +13,13 @@
 
 \defined('_JEXEC') or die;
 
+use Alikonweb\Plugin\System\MagicLogin\Extension\MagicLogin;
 use Joomla\CMS\Extension\PluginInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
-use Joomla\Plugin\System\MagicLogin\Extension\MagicLogin;
 
 /**
  * Service provider for the Magic Login system plugin

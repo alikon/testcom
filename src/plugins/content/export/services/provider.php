@@ -10,13 +10,13 @@
 
 \defined('_JEXEC') or die;
 
+use Alikonweb\Plugin\Content\Export\Extension\Export;
 use Joomla\CMS\Extension\PluginInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
-use Joomla\Plugin\Content\Export\Extension\Export;
 
 return new class () implements ServiceProviderInterface {
     /**

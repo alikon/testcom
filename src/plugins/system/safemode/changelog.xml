@@ -24,4 +24,13 @@
             <item>Code clean</item>
         </note>
     </changelog>
+    <changelog>
+        <element>safemode</element>
+        <folder>system</folder>
+        <type>plugin</type>
+        <version>1.1.0</version>       
+        <change>
+            <item>Namespace</item>
+        </change>
+    </changelog>
 </changelogs>

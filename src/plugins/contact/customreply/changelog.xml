@@ -9,4 +9,13 @@
             <item>Not listed on Joomla Extension Directory</item>
         </note>
     </changelog>
+    <changelog>
+        <element>customreply</element>
+        <folder>contact</folder>
+        <type>plugin</type>
+        <version>1.1.0</version>
+        <change>
+            <item>Namespace</item>
+        </change>
+    </changelog>
 </changelogs>

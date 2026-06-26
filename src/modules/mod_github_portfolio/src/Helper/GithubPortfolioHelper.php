@@ -8,7 +8,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Module\GithubPortfolio\Site\Helper;
+namespace Alikonweb\Module\GithubPortfolio\Site\Helper;
 
 \defined('_JEXEC') or die;
 

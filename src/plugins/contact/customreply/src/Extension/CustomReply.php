@@ -11,7 +11,7 @@
  * @link       https://www.alikonweb.it
  */
 
-namespace Joomla\Plugin\Contact\CustomReply\Extension;
+namespace Alikonweb\Plugin\Contact\CustomReply\Extension;
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\Contact\SubmitContactEvent;

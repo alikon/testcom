@@ -33,8 +33,8 @@ return new class () implements ServiceProviderInterface {
      */
     public function register(Container $container)
     {
-        $container->registerServiceProvider(new ModuleDispatcherFactory('\\Joomla\\Module\\Jstats'));
-        $container->registerServiceProvider(new HelperFactory('\\Joomla\\Module\\Jstats\\Site\\Helper'));
+        $container->registerServiceProvider(new ModuleDispatcherFactory('\\Alikonweb\\Module\\Jstats'));
+        $container->registerServiceProvider(new HelperFactory('\\Alikonweb\\Module\\Jstats\\Site\\Helper'));
 
         $container->registerServiceProvider(new Module());
     }

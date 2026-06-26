@@ -8,16 +8,16 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Plugin\Console\Safemode\CliCommand;
+namespace Alikonweb\Plugin\Console\Safemode\CliCommand;
 
 \defined('_JEXEC') or die;
 
+use Alikonweb\Plugin\System\Safemode\Helper\SafemodeHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\Console\Command\AbstractCommand;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseInterface;
-use Joomla\Plugin\System\Safemode\Helper\SafemodeHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;

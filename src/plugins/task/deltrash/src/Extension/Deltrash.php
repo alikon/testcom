@@ -8,7 +8,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Plugin\Task\Deltrash\Extension;
+namespace Alikonweb\Plugin\Task\Deltrash\Extension;
 
 use Joomla\CMS\Access\Access;
 use Joomla\CMS\Application\CMSApplication;

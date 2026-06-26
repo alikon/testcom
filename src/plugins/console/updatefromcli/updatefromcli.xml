@@ -8,17 +8,21 @@
     <authorEmail>alikon@alikonweb.it</authorEmail>
     <authorUrl>www.alikonweb.it</authorUrl>
     <version>1.0.0</version>
-    <description>Console plugin for update extensions from CLI commands</description>
-
+    <description>PLG_CONSOLE_UPDATEFROMCLI_XML_DESCRIPTION</description>
     <!-- Correct namespace per Joomla docs -->
-    <namespace path="src">Joomla\Plugin\Console\Updatefromcli</namespace>
-
+    <namespace path="src">Alikonweb\Plugin\Console\Updatefromcli</namespace>
+    <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/console/updatefromcli/changelog.xml</changelogurl>
     <files>
         <!-- Services directory must be included -->
         <folder plugin="updatefromcli">services</folder>
         <!-- src directory for your plugin code -->
         <folder>src</folder>
+        <folder>language</folder>
+        <folder>field</folder>
     </files>
+    <updateservers>
+        <server type="extension" name="Console - Update from CLI">https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/console/updatefromcli/updateserver.xml</server>
+    </updateservers>
 </extension>
 
 

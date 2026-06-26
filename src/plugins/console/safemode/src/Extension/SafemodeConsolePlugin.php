@@ -8,14 +8,14 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Plugin\Console\Safemode\Extension;
+namespace Alikonweb\Plugin\Console\Safemode\Extension;
 
 \defined('_JEXEC') or die;
 
+use Alikonweb\Plugin\Console\Safemode\CliCommand\SafemodeCommand;
 use Joomla\Application\ApplicationEvents;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\SubscriberInterface;
-use Joomla\Plugin\Console\Safemode\CliCommand\SafemodeCommand;
 
 class SafemodeConsolePlugin extends CMSPlugin implements SubscriberInterface
 {
