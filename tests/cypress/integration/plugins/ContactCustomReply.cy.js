@@ -7,11 +7,11 @@ const submitContactForm = () => {
 };
 
 describe('Test in frontend that the contact form view', () => {
-  afterEach(() => 
+  afterEach(() =>  {
     cy.task('queryDB', 'DELETE FROM #__contact_details');
     cy.db_updateExtensionParameter('custom_reply', '0', 'com_contact');
     cy.db_enableExtension('0', 'plg_contact_customreply');
-  );
+  });
 
   it('can create a contact through a form', () => {
     cy.doFrontendLogin();
