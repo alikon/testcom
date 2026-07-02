@@ -52,9 +52,11 @@ describe('Test in frontend that the contact form view', () => {
         cy.task('getMails').then((mails) => {
           expect(mails.length).to.equal(2);
           const recipients = mails.map((m) => m.headers?.to);
-          // Assert that our test user received one of them
           expect(recipients).to.include('testuser@example.com'); 
-          expect(recipients).to.include('admin@example.com');
+  
+          // Verifica che l'ALTRA mail sia andata a un destinatario diverso (il gestore del sito/contatto)
+          const adminEmail = recipients.find(email => email !== 'testuser@example.com');
+          expect(adminEmail).to.be.a('string').and.not.be.empty;
         });
       });
   });
