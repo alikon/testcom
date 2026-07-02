@@ -19,7 +19,7 @@ describe('Test in frontend that the contact form view', () => {
     cy.get('#jform_name').type('test contact 1');
     cy.get('.mb-2 > .btn-primary').click();
 
-    cy.task('queryDB', 'SELECT catid FROM #__contact_details WHERE name = \'test contact 1\'').then((id) => {
+    cy.task('queryDB', 'SELECT catid FROM #__contact_details WHERE name = "test contact 1"').then((id) => {
       cy.visit(`/index.php?option=com_contact&view=category&id=${id[0].catid}`);
 
       cy.contains('test contact 1').should('exist');
@@ -50,8 +50,9 @@ describe('Test in frontend that the contact form view', () => {
         submitContactForm();
 
         cy.task('getMails').then((mails) => {
-          expect(mails.length).to.be.greaterThan(0);
-          cy.wrap(mails[0].body).should('contain', 'Test message content');
+          expect(mails.length).to.equal(2);
+          const recipients = mails.map((m) => m.to[0].address);
+          expect(recipients).to.include('testuser@example.com');
         });
       });
   });
