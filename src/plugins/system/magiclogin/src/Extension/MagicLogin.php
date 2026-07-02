@@ -144,7 +144,7 @@ final class MagicLogin extends CMSPlugin implements SubscriberInterface
             ->from($db->quoteName('#__users'))
             ->where($db->quoteName('email') . ' = :email')
             ->where($db->quoteName('block') . ' = 0')
-            ->where($db->quoteName('activation') . ' = ' . $db->quote('0'))
+            ->where($db->quoteName('activation') . ' = ' . $db->quote(''))
             ->bind(':email', $email);
 
         $user = $db->setQuery($query)->loadObject();
