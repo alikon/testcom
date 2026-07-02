@@ -24,7 +24,7 @@ describe('Test that the magiclogin system plugin', () => {
 
   it('sends magic link when user enters email address', () => {
     cy.db_createUser({ name: 'Magic User', username: 'magicuser', email: 'magic@example.com', password: '098f6bcd4621d373cade4e832627b4f6' });
-    
+    cy.task('clearEmails');
     cy.visit('/index.php?option=com_users&view=login');
     cy.get('#username').type('magic@example.com');
     cy.get('#password').type('1');
