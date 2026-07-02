@@ -50,9 +50,11 @@ describe('Test in frontend that the contact form view', () => {
         submitContactForm();
 
         cy.task('getMails').then((mails) => {
-          expect(mails.length).to.equal(2);
-          const recipients = mails.map((m) => m.to[0].address);
-          expect(recipients).to.include('testuser@example.com');
+           expect(mails.length).to.equal(2);
+          const recipients = mails.map((m) => m.to[0]?.Address);
+          // Assert that our test user received one of them
+          expect(recipients).to.include('testuser@example.com'); 
+          expect(recipients).to.include('admin@example.com');
         });
       });
   });
