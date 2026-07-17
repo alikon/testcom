@@ -65,7 +65,7 @@
             <downloadurl type="full" format="zip">https://github.com/alikon/testcom/releases/download/v1.4/mod_jstats-1.2.0.zip</downloadurl>
         </downloads>
         <tags><tag>stable</tag></tags>
-        <sha256>7c6d69767118718cbd7eca87a771c7d3b7403539609cf3d4fbff51346c854ce1</sha256>
+        <sha256>73c468fd73389de738618a37b9cc20228da913fd665bf524f9249ddc088a65c9</sha256>
         <targetplatform name="joomla" version="((5\.[01234])|(6\.[01234]))" />
     </update>
 </updates>
