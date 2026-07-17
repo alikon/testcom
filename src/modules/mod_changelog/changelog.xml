@@ -42,4 +42,13 @@
             <item>Code clean</item>
         </change>
     </changelog>
+    <changelog>
+        <element>mod_changelog</element>
+        <type>module</type>
+        <version>1.2.0</version>
+        <!-- <releasedate>2026-07-16</releasedate> -->
+        <change>
+            <item>Namespace</item>
+        </change>
+    </changelog>
 </changelogs>
