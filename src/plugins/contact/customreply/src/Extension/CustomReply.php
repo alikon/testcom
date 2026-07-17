@@ -21,6 +21,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail\Exception\MailDisabledException;
 use Joomla\CMS\Mail\MailTemplate;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Router\Route;
 use Joomla\CMS\String\PunycodeHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryAwareTrait;
@@ -121,7 +122,11 @@ final class CustomReply extends CMSPlugin implements SubscriberInterface
 
         if ($this->app->isClient('site')) {
             $returnMenuId = (int) $this->params->get('redirect_url', 0);
-            $url          = Uri::base();
+            $url          = Route::_('index.php?option=com_contact&view=contact&id=' . $contact->id . '&catid=' . $contact->catid, false);
+            // Flush the data from the session
+            $this->app->setUserState('com_contact.contact.data', null);
+
+
 
             if ($returnMenuId > 0) {
                 $item = $this->app->getMenu()->getItem($returnMenuId);
