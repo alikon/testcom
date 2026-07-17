@@ -69,7 +69,7 @@
             <downloadurl type="full" format="zip">https://github.com/alikon/testcom/releases/download/v1.4/plg_content_swaggerui-2.1.0.zip</downloadurl>
         </downloads>
         <tags><tag>stable</tag></tags>
-        <sha256>65c413ebe27f52fc96852589e5908ef736e186cacaa6cb42be5c9a28c5f9a6fc</sha256>
+        <sha256>e292e4d2e4ea72dd777024416db472e161dc783d9358ec0c165ac6b4a19290f2</sha256>
         <targetplatform name="joomla" version="((5\.[01234])|(6\.[01234]))" />
     </update>
 </updates>
