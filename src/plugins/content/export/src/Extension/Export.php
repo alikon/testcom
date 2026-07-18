@@ -14,6 +14,7 @@ use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Toolbar\Toolbar;
+use Joomla\CMS\Factory;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -24,7 +25,6 @@ use Joomla\CMS\Toolbar\Toolbar;
  *
  * @since  __DEPLOY_VERSION__
  */
-//class PlgContentExport extends CMSPlugin
 final class Export extends CMSPlugin
 {
     /**
@@ -62,8 +62,11 @@ final class Export extends CMSPlugin
     {
         // Run in backend
         if ($this->app->isClient('administrator') === true) {
-            // Append button on Article
-            if ($this->app->input->getCmd('option') === 'com_content' && $this->app->input->getCmd('view') === 'article') {
+            $option = $this->app->input->getCmd('option');
+            $view   = $this->app->input->getCmd('view');
+
+            if ($option === 'com_content' && ($view === 'article' || $view === 'articles')) {
+                
                 if ($this->params->get('authorization') === 'Bearer') {
                     $auth = 'Authorization';
                     $key  = 'Bearer ' . $this->params->get('key');
@@ -74,26 +77,40 @@ final class Export extends CMSPlugin
                     $key  = $this->params->get('key');
                 }
 
-                $id            = $this->app->input->get('id');
                 $domain        = $this->params->get('url', 'http://localhost');
                 $this->postUrl = $domain . '/api/index.php/v1/content/articles';
                 $this->getUrl  = $domain . '/api/index.php/v1/content';
 
-                // Get an instance of the Toolbar
+                // Get an instance of the Toolbar ed esponiamo il bottone
                 $toolbar = Toolbar::getInstance('toolbar');
                 $toolbar->appendButton('Link', 'upload', 'Export', '#');
 
-                // Get an instance of the generic article model
-                $content = $this->app->bootComponent('com_content')->getMVCFactory();
-                /** @var Joomla\Component\Content\Administrator\Model\ArticleModel $model */
-                $model       = $content->createModel('Article', 'Administrator', ['ignore_request' => true]);
-                $item        = $model->getItem($id);
-                $item->catid = $this->params->get('catid');
-                $item->state = $this->params->get('state', 0);
-                unset($item->created_by, $item->typeAlias, $item->asset_id, $item->tagsHelper);
+                // Prepariamo l'array delle opzioni per il JS
+                $scriptOptions = [
+                    'apiKey' => $key,
+                    'catid'  => (int) $this->params->get('catid', 24),
+                    'get'    => $this->getUrl,
+                    'post'   => $this->postUrl,
+                    'auth'   => $auth,
+                    'view'   => $view, 
+                ];
 
+                // Se siamo nel singolo articolo, carichiamo i dati dell'articolo corrente
+                if ($view === 'article') {
+                    $id = $this->app->input->get('id');
+                    $content = $this->app->bootComponent('com_content')->getMVCFactory();
+                    /** @var Joomla\Component\Content\Administrator\Model\ArticleModel $model */
+                    $model       = $content->createModel('Article', 'Administrator', ['ignore_request' => true]);
+                    $item        = $model->getItem($id);
+                    
+                    // FORZATURA CATEGORIA E STATO DA PLUGIN PER ARTICOLO SINGOLO
+                    $item->catid = (int) $this->params->get('catid', 24);
+                    $item->state = (int) $this->params->get('state', 0);
+                    unset($item->created_by, $item->typeAlias, $item->asset_id, $item->tagsHelper);
 
-
+                    $scriptOptions['title']   = $item->title;
+                    $scriptOptions['article'] = $item;
+                }
 
                 $wa = $this->app->getDocument()->getWebAssetManager();
 
@@ -116,20 +133,72 @@ final class Export extends CMSPlugin
                 Text::script('PLG_CONTENT_EXPORT_INVALID_CONFIG_REQUIRED');
 
                 // Pass data to javascript
-                $this->app->getDocument()->addScriptOptions(
-                    'a-export',
-                    [
-                        'apiKey'  => $key,
-                        'catid'   => $this->params->get('catid'),
-                        'get'     => $this->getUrl,
-                        'post'    => $this->postUrl,
-                        'auth'    => $auth,
-                        'title'   => $item->title,
-                        'article' => $item,
-                    ]
-                );
+                $this->app->getDocument()->addScriptOptions('a-export', $scriptOptions);
                 $wa->registerAndUseScript('plg_content_export', 'plg_content_export/aexport.js', [], ['defer' => true], []);
             }
         }
+    }
+
+    /**
+     * Gestisce la richiesta AJAX proveniente dalla vista 'articles' (esportazione di massa).
+     *
+     * @return  array  I dati estratti degli articoli pronti per il JS
+     * @throws  \Exception
+     */
+    public function onAjaxExport(): array
+    {
+        if (!$this->app->checkToken('POST')) {
+            throw new \Exception(Text::_('JINVALID_TOKEN'), 403);
+        }
+
+        $ids = $this->app->input->post->get('ids', [], 'ARRAY');
+
+        if (empty($ids) || !\is_array($ids)) {
+            throw new \Exception('Nessun ID ricevuto dal server locale.', 400);
+        }
+
+        $ids = array_map('intval', $ids);
+
+        $db    = Factory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select($db->quoteName(['id', 'title', 'alias', 'introtext', 'fulltext', 'language', 'metakey', 'metadesc', 'images']))
+            ->from($db->quoteName('#__content'))
+            ->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
+
+        $db->setQuery($query);
+        $rows = $db->loadObjectList();
+
+        $articles = [];
+        $pluginCatid = (int) $this->params->get('catid', 24);
+        $pluginState = (int) $this->params->get('state', 0);
+
+        if (!empty($rows)) {
+            foreach ($rows as $row) {
+                $exportItem = new \stdClass();
+                $exportItem->title     = (string) $row->title;
+                $exportItem->alias     = (string) $row->alias;
+                $exportItem->introtext = (string) $row->introtext;
+                $exportItem->fulltext  = (string) $row->fulltext;
+                
+                // FORZATURA ASSOLUTA DEI VALORI DA PLUGIN
+                $exportItem->catid     = $pluginCatid;
+                $exportItem->state     = $pluginState;
+                $exportItem->language  = !empty($row->language) ? $row->language : '*';
+                
+                if (!empty($row->metakey)) $exportItem->metakey = $row->metakey;
+                if (!empty($row->metadesc)) $exportItem->metadesc = $row->metadesc;
+                
+                // Gestione e decodifica nativa dell'oggetto immagini per le API
+                if (!empty($row->images)) {
+                    $imagesObj = json_decode($row->images);
+                    $exportItem->images = json_last_error() === JSON_ERROR_NONE ? $imagesObj : $row->images;
+                }
+
+                $articles[] = $exportItem;
+            }
+        }
+
+        return array_values($articles);
     }
 }
