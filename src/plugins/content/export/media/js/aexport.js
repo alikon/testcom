@@ -6,254 +6,293 @@
 ((Joomla, document) => {
 
   document.addEventListener('DOMContentLoaded', () => {
-   
+
     const toolbar = document.getElementById('toolbar-upload');
+    if (!toolbar) return;
+
+    // Keep this in sync with Export::MAX_BULK_IDS on the server, it's
+    // only used here to fail fast client-side before hitting the AJAX call.
+    const MAX_BULK_IDS = 200;
+
     toolbar.addEventListener('click', fetchData);
 
-    async function fetchData() {
+    /**
+     * Small sprintf-like helper so user-facing messages can stay in the
+     * language files instead of being hardcoded in JS.
+     */
+    function t(key, ...args) {
+      const str = Joomla.Text._(key) || key;
+      let i = 0;
+      return str.replace(/%\d*\$?[sd]/g, () => args[i++]);
+    }
+
+    async function fetchData(e) {
+      if (e) e.preventDefault();
+
       const options = window.Joomla.getOptions('a-export');
-      //console.log('options',options);
       const validation = hasValidConfig(options);
 
       if (!validation.ok) {
-            showMessage(validation.message, 'error');
-            return;
+        showMessage(validation.message, 'error');
+        return;
       }
 
-      document.getElementById('toolbar-upload')
-        .insertAdjacentHTML('afterbegin', '<span id=\'loader\' class=\'spinner-grow spinner-grow-sm\' role=\'status\' aria-hidden=\'true\'></span>')
+      const oldLoader = document.getElementById('loader');
+      if (oldLoader) oldLoader.remove();
 
-      if (await checkCategory(options)) {
-          await checkArticle(options)
+      toolbar.insertAdjacentHTML('afterbegin', '<span id=\'loader\' class=\'spinner-grow spinner-grow-sm\' role=\'status\' aria-hidden=\'true\'></span>');
+
+      // Wrapped in try/finally so the loader is always cleared, even if
+      // checkArticle/postArticle/patchArticle throw (single-article path).
+      try {
+        if (await checkCategory(options)) {
+          if (options.view === 'articles') {
+            await processBulkExport(options);
+          } else {
+            await checkArticle(options, options.article, 1, 1);
+          }
+        }
+      } catch (error) {
+        console.error('[export] fetchData failed:', error);
+      } finally {
+        const loader = document.getElementById('loader');
+        if (loader) loader.style.display = 'none';
       }
-      const loader = document.getElementById('loader');
-      loader.style.display = 'none';
+    }
+
+    // Handles bulk export from the articles list view.
+    async function processBulkExport(options) {
+      const checkboxes = document.querySelectorAll('input[name="cid[]"]:checked');
+
+      if (checkboxes.length === 0) {
+        showMessage(Joomla.Text._('PLG_CONTENT_EXPORT_BULK_NO_SELECTION'), 'error');
+        return;
+      }
+
+      const maxIds = options.maxBulk || MAX_BULK_IDS;
+      if (checkboxes.length > maxIds) {
+        showMessage(t('PLG_CONTENT_EXPORT_BULK_TOO_MANY_SELECTED', maxIds), 'error');
+        return;
+      }
+
+      const ids = Array.from(checkboxes).map(cb => cb.value);
+      showMessage(t('PLG_CONTENT_EXPORT_BULK_SELECTED', ids.length), 'info');
+
+      // Use Joomla's documented CSRF token API rather than guessing which
+      // hidden field on the page happens to be the token.
+      const csrfToken = Joomla.getOptions('csrf.token', '');
+
+      try {
+        const postParams = new URLSearchParams();
+        if (csrfToken) {
+          postParams.append(csrfToken, '1');
+        }
+        ids.forEach(id => {
+          postParams.append('ids[]', id);
+        });
+
+        const localResp = await fetch('index.php?option=com_ajax&plugin=export&group=content&format=json', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: postParams
+        });
+
+        if (!localResp.ok) {
+          showMessage(Joomla.Text._('PLG_CONTENT_EXPORT_BULK_LOCAL_HTTP_ERROR'), 'error');
+          return;
+        }
+
+        const localData = await localResp.json();
+
+        if (!localData || !localData.success) {
+          showMessage(localData && localData.message ? localData.message : Joomla.Text._('PLG_CONTENT_EXPORT_BULK_LOCAL_HTTP_ERROR'), 'error');
+          return;
+        }
+
+        // com_ajax wraps the return value of the (single) event listener as
+        // data[0]. Handle a direct array too, in case that ever changes.
+        let articlesArray = [];
+        if (Array.isArray(localData.data)) {
+          articlesArray = Array.isArray(localData.data[0]) ? localData.data[0] : localData.data;
+        }
+
+        if (!articlesArray || articlesArray.length === 0) {
+          showMessage(Joomla.Text._('PLG_CONTENT_EXPORT_BULK_NO_ARTICLES'), 'error');
+          return;
+        }
+
+        const totalArticles = articlesArray.length;
+
+        // Sequential on purpose: avoids hammering the remote API with
+        // concurrent requests and keeps progress messages readable.
+        for (let i = 0; i < totalArticles; i++) {
+          const currentCount = i + 1;
+          const articlePayload = articlesArray[i];
+
+          if (!articlePayload || !articlePayload.title) {
+            console.warn(Joomla.Text._('PLG_CONTENT_EXPORT_ARTICLE_MISSING_TITLE'));
+            continue;
+          }
+
+          if (options.catid) {
+            articlePayload.catid = parseInt(options.catid, 10);
+          }
+
+          try {
+            await checkArticle(options, articlePayload, currentCount, totalArticles);
+          } catch (singleErr) {
+            console.error(`[export] article ${currentCount}/${totalArticles} failed:`, singleErr);
+          }
+        }
+
+        showMessage(t('PLG_CONTENT_EXPORT_BULK_COMPLETE', totalArticles), 'success');
+
+      } catch (err) {
+        console.error('[export] bulk export failed:', err);
+        showMessage(t('PLG_CONTENT_EXPORT_BULK_FATAL_ERROR', err.message), 'error');
+      }
     }
 
     async function checkCategory(options) {
-      let response;
       let myHeaders = new Headers();
       myHeaders.append('Content-Type', 'application/json');
       myHeaders.append(options.auth, options.apiKey);
 
-      let requestOptions = {
-        method: 'GET',
-        headers: myHeaders,
-        redirect: 'follow'
-      };
+      const url = options.get + '/categories/' + options.catid;
 
       try {
-        response = await fetch(options.get + '/categories/' + options.catid, requestOptions);
-        console.log('HTTP Response Code: ', response?.status)
-        console.log('HTTP Response Text: ', response?.statusText)
-        //showMessage(response?.status + ' ' + response?.statusText);
-        if (response?.ok) {
-          //console.log('The checkCategory response');
-          const resp = await response.json();
-          //console.log('the json', resp);
-          const output = resp?.data?.attributes?.alias ?? 'No data';
-          //console.log('the o', output);
+        const response = await fetch(url, { method: 'GET', headers: myHeaders, redirect: 'follow' });
+
+        if (response.ok) {
           showMessage(Joomla.Text._('PLG_CONTENT_EXPORT_CATEGORY_CHECK'), 'success');
           return true;
         }
-        showMessage(Joomla.Text._('PLG_CONTENT_EXPORT_CATEGORY_CHECK_ERROR') + ': ' + response?.status + ' - ' + response?.statusText, 'error');
+        showMessage(Joomla.Text._('PLG_CONTENT_EXPORT_CATEGORY_CHECK_ERROR') + ': ' + response.status, 'error');
         return false;
       } catch (error) {
-        let errorMsg = Joomla.Text._('PLG_CONTENT_EXPORT_NETWORK_ERROR');
-        if (error.name === 'TypeError' || error.message.includes('CORS')) {
-          errorMsg = Joomla.Text._('PLG_CONTENT_EXPORT_CORS_GET_ERROR');
-        } else if (error.message) {
-          errorMsg = error.message;
-        }
-        showMessage(errorMsg, 'error');
+        console.error('[export] category check failed:', error);
+        showMessage(t('PLG_CONTENT_EXPORT_CATEGORY_NETWORK_ERROR', error.message), 'error');
         return false;
       }
     }
 
-    async function postArticle(options) {
-      // Validate article data before posting
-      if (!options.article || !options.article.title || !options.article.catid) {
+    async function checkArticle(options, articleObj, current = 1, total = 1) {
+      const targetArticle = articleObj || options.article;
+      const titleToSearch = targetArticle?.title || options.title;
+
+      if (!titleToSearch) {
+        console.error('[export] checkArticle called without a title.');
+        return;
+      }
+
+      let myHeaders = new Headers();
+      myHeaders.append('Content-Type', 'application/json');
+      myHeaders.append(options.auth, options.apiKey);
+
+      const url = options.get + '/articles?filter[search]=' + encodeURIComponent(titleToSearch);
+
+      showMessage(t('PLG_CONTENT_EXPORT_ARTICLE_CHECKING', current, total, titleToSearch), 'info');
+
+      try {
+        const response = await fetch(url, { method: 'GET', headers: myHeaders, redirect: 'follow' });
+
+        if (!response.ok) {
+          showMessage(t('PLG_CONTENT_EXPORT_ARTICLE_CHECK_HTTP_ERROR', titleToSearch, response.status), 'error');
+          return;
+        }
+
+        const resp = await response.json();
+
+        if (!resp.data || resp.data.length === 0) {
+          await postArticle(options, targetArticle, current, total);
+        } else {
+          const remoteId = resp.data[0].id;
+          await patchArticle(options, remoteId, targetArticle, current, total);
+        }
+      } catch (error) {
+        console.error(`[export] checkArticle (${current}/${total}) failed:`, error);
+        showMessage(t('PLG_CONTENT_EXPORT_ARTICLE_VERIFY_NETWORK_ERROR', error.message), 'error');
+        throw error;
+      }
+    }
+
+    async function postArticle(options, targetArticle, current, total) {
+      if (!targetArticle || !targetArticle.title || !targetArticle.catid) {
         showMessage(Joomla.Text._('PLG_CONTENT_EXPORT_ARTICLE_SAVE_REQUIRED'), 'error');
         return false;
       }
 
-      let response;
       let myHeaders = new Headers();
       myHeaders.append('Content-Type', 'application/json');
       myHeaders.append(options.auth, options.apiKey);
 
-      //console.log('pay', options.article)
-      let raw = JSON.stringify(options.article);
-      let requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: raw,
-        redirect: 'follow'
-      };
-
       try {
-        response = await fetch(options.post, requestOptions);
-        console.log('HTTP Response Code: ', response?.status)
-        console.log('HTTP Response Text: ', response?.statusText)
-        //showMessage(response?.status + ' ' + response?.statusText);
-        if (response?.ok) {
-          //console.log('The checkCategory response');
-          const resp = await response.json();
-          //console.log('the json', resp);
-          const output = resp?.data?.attributes?.alias ?? 'No data';
-          //console.log('the o', output);
-          showMessage(Joomla.Text._('PLG_CONTENT_EXPORT_ARTICLE_CREATED'), 'success');
+        const response = await fetch(options.post, {
+          method: 'POST',
+          headers: myHeaders,
+          body: JSON.stringify(targetArticle),
+          redirect: 'follow'
+        });
+
+        if (response.ok) {
+          showMessage(`${Joomla.Text._('PLG_CONTENT_EXPORT_ARTICLE_CREATED')}: "${targetArticle.title}" (${current}/${total})`, 'success');
           return true;
         }
-        showMessage(Joomla.Text._('PLG_CONTENT_EXPORT_ARTICLE_NOT_CREATED') + ' ' + response?.status + ' ' + response?.statusText, 'error');
+        showMessage(`${Joomla.Text._('PLG_CONTENT_EXPORT_ARTICLE_NOT_CREATED')} (${response.status})`, 'error');
         return false;
       } catch (error) {
-        let errorMsg = Joomla.Text._('PLG_CONTENT_EXPORT_NETWORK_ERROR');
-        if (error.name === 'TypeError' || error.message.includes('CORS')) {
-          errorMsg = Joomla.Text._('PLG_CONTENT_EXPORT_CORS_POST_ERROR');
-        } else if (error.message) {
-          errorMsg = error.message;
-        }
-        showMessage(errorMsg, 'error');
-        return false;
+        console.error(`[export] postArticle (${current}/${total}) failed:`, error);
+        showMessage(t('PLG_CONTENT_EXPORT_ARTICLE_CREATE_NETWORK_ERROR', error.message), 'error');
+        throw error;
       }
     }
 
-    async function patchArticle(options, articleid) {
-      // Validate article data before patching
-      if (!options.article || !options.article.title) {
+    async function patchArticle(options, articleid, targetArticle, current, total) {
+      if (!targetArticle || !targetArticle.title) {
         showMessage(Joomla.Text._('PLG_CONTENT_EXPORT_ARTICLE_UPDATE_REQUIRED'), 'error');
         return false;
       }
 
-      let response;
       let myHeaders = new Headers();
       myHeaders.append('Content-Type', 'application/json');
       myHeaders.append(options.auth, options.apiKey);
 
-      //console.log('pay', options.article)
-      let raw = JSON.stringify(options.article);
-      let requestOptions = {
-        method: 'PATCH',
-        headers: myHeaders,
-        body: raw,
-        redirect: 'follow'
-      };
+      const url = options.post + '/' + articleid;
 
       try {
-        response = await fetch(options.post + '/' + articleid, requestOptions);
-        console.log('HTTP Response Code: ', response?.status)
-        console.log('HTTP Response Text: ', response?.statusText)
-        //showMessage(response?.status + ' ' + response?.statusText);
-        if (response?.ok) {
-         // console.log('The checkCategory response');
-          const resp = await response.json();
-          //console.log('the json', resp);
-          const output = resp?.data?.attributes?.alias ?? 'No data';
-          //console.log('the o', output);
-          showMessage(Joomla.Text._('PLG_CONTENT_EXPORT_ARTICLE_EXPORTED'), 'success');
+        const response = await fetch(url, {
+          method: 'PATCH',
+          headers: myHeaders,
+          body: JSON.stringify(targetArticle),
+          redirect: 'follow'
+        });
+
+        if (response.ok) {
+          showMessage(`${Joomla.Text._('PLG_CONTENT_EXPORT_ARTICLE_EXPORTED')}: "${targetArticle.title}" (${current}/${total})`, 'success');
           return true;
         }
-        showMessage(response?.status + ' ' + response?.statusText, 'error');
+        showMessage(t('PLG_CONTENT_EXPORT_ARTICLE_UPDATE_HTTP_ERROR', response.status), 'error');
         return false;
       } catch (error) {
-        let errorMsg = Joomla.Text._('PLG_CONTENT_EXPORT_NETWORK_ERROR');
-        if (error.name === 'TypeError' || error.message.includes('CORS')) {
-          errorMsg = Joomla.Text._('PLG_CONTENT_EXPORT_CORS_PATCH_ERROR');
-        } else if (error.message) {
-          errorMsg = error.message;
-        }
-        showMessage(errorMsg, 'error');
-        return false;
+        console.error(`[export] patchArticle (${current}/${total}) failed:`, error);
+        showMessage(t('PLG_CONTENT_EXPORT_ARTICLE_UPDATE_NETWORK_ERROR', error.message), 'error');
+        throw error;
       }
     }
 
-    async function checkArticle(options) {
-      let response;
-      let myHeaders = new Headers();
-      myHeaders.append('Content-Type', 'application/json');
-      myHeaders.append(options.auth, options.apiKey);
-
-      let requestOptions = {
-        method: 'GET',
-        headers: myHeaders,
-        redirect: 'follow'
-      };
-  
-  
-      try {
-        response = await fetch(options.get + '/articles?filter[search]=' + options.title, requestOptions);
-        console.log('HTTP Response Code: ', response?.status)
-        console.log('HTTP Response Text: ', response?.statusText)
-        //showMessage(response?.status + ' ' + response?.statusText);
-        if (response?.ok) {
-          showMessage(Joomla.Text._('PLG_CONTENT_EXPORT_ARTICLE_CHECK'), 'success');
-          //console.log('The checkArticle response');
-          const resp = await response.json();
-          //console.log('the json', resp);
-          const output = resp?.data[0]?.attributes?.title ?? 'No data';
-          //console.log('the length', resp.data.length);
-          if (resp.data.length === 0) {
-             //console.log('length', resp.data.length)
-             await postArticle(options);
-             return;
-          }
-          await patchArticle(options,resp?.data[0]?.id);
-          return;
-        }
-        showMessage(response?.status + ' ' + response?.statusText, 'error');
-      } catch (error) {
-        let errorMsg = 'Network error occurred';
-        if (error.name === 'TypeError' || error.message.includes('CORS')) {
-          errorMsg = 'CORS error: The GET method is not allowed. Add "GET" to Access-Control-Allow-Methods header on the API server.';
-        } else if (error.message) {
-          errorMsg = error.message;
-        }
-        showMessage(errorMsg, 'error');
-      }
-    }
     function hasValidConfig(options) {
-        if (!options || typeof options !== 'object') {
-            return { ok: false, message: Joomla.Text._('PLG_CONTENT_EXPORT_INVALID_CONFIG_OBJECT') };
-        }
+      if (!options || typeof options !== 'object') {
+        return { ok: false, message: Joomla.Text._('PLG_CONTENT_EXPORT_INVALID_CONFIG_OBJECT') };
+      }
+      const apiKey = String(options.apiKey ?? '').trim();
+      const auth = String(options.auth ?? '').trim();
+      const getUrl = String(options.get ?? '').trim();
+      const postUrl = String(options.post ?? '').trim();
 
-        // Coerce to string safely
-        const apiKey = String(options.apiKey ?? '').trim();
-        const auth   = String(options.auth ?? '').trim();
-        const getUrl = String(options.get ?? '').trim();
-        const postUrl = String(options.post ?? '').trim();
-
-        const hasApiKey = apiKey.length > 0;
-        const hasAuth   = auth.length > 0;
-        const hasGet    = getUrl.length > 0;
-        const hasPost   = postUrl.length > 0;
-
-        if (!hasApiKey || !hasAuth || !hasGet || !hasPost) {
-            return {
-                ok: false,
-                message: 'Invalid configuration: API key, auth, GET and POST URLs are required.',
-            };
-        }
-
-        // Detect a bare Bearer header with no token
-        if (apiKey.toLowerCase().startsWith('bearer')) {
-            const bearerParts = apiKey.split(/\s+/).filter(Boolean); // ["Bearer", "token"] or ["Bearer"]
-            if (bearerParts.length < 2 || bearerParts[1].length === 0) {
-                return {
-                    ok: false,
-                    message: 'Invalid configuration: Bearer token is missing a value.',
-                };
-            }
-        }
-
-        return {
-            ok: true,
-            // return normalized values so fetchData can use them safely
-            apiKey,
-            auth,
-            getUrl,
-            postUrl,
-        };
+      if (!apiKey || !auth || !getUrl || !postUrl) {
+        return { ok: false, message: Joomla.Text._('PLG_CONTENT_EXPORT_INVALID_CONFIG_REQUIRED') };
+      }
+      return { ok: true, apiKey, auth, getUrl, postUrl };
     }
 
     function showMessage(message, type = 'info') {
@@ -262,23 +301,24 @@
         loader.style.display = 'none';
       }
 
-      // Remove any existing message
       const existingMsg = document.getElementById('msg');
       if (existingMsg) {
         existingMsg.remove();
       }
 
       const alertClass = type === 'error' ? 'alert-danger' : type === 'success' ? 'alert-success' : 'alert-info';
-      // Insert after toolbar parent container to avoid affecting button layout
       const toolbarContainer = toolbar.closest('.subhead');
       const insertTarget = toolbarContainer || toolbar.parentElement;
-      insertTarget.insertAdjacentHTML('afterend', 
+
+      insertTarget.insertAdjacentHTML('afterend',
         `<div id="msg" class="alert ${alertClass}" role="alert" style="margin: 10px; border: 2px solid; border-radius: 4px;">${message}</div>`);
+
       const msgBox = document.getElementById('msg');
-      setTimeout(() => {
-        msgBox.remove();
-      }, 5000);
+      if (msgBox) {
+        setTimeout(() => {
+          msgBox.remove();
+        }, 5000);
+      }
     }
-    //
   });
 })(window.Joomla, document);
