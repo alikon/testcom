@@ -36,12 +36,12 @@ describe('Extension Upgrade Test for alikon/testcom (Latest Release -> PR Candid
     // This step is HIGHLY specific to the extension.
     // For MagicLogin, you might enable the plugin and set a parameter.
     // Example: Enable the plugin
-    cy.visit('administrator/index.php?option=com_plugins&view=plugins&filter_search=plg_system_magiclogin');
-    cy.get('tbody tr').contains('System - Magic Login').click(); // Click to edit
-    cy.get('#jform_enabled').select('1'); // Set enabled to Yes
-    cy.clickToolbarButton('save');
-    cy.get('#system-message-container').should('contain', 'Plugin saved');
-
+    cy.visit('administrator/index.php?option=com_plugins&view=plugins');
+    cy.searchForItem('plg_system_magiclogin');
+    cy.checkAllResults();
+    cy.contains('Enable').click();
+    cy.on('window:confirm', () => true);
+    cy.checkForSystemMessage('Plugin enabled.');
     // ------------------------------------------------------------------
     // 4. Upgrade using the current PR Candidate package (n) - e.g., from a local build
     // ------------------------------------------------------------------
@@ -55,6 +55,6 @@ describe('Extension Upgrade Test for alikon/testcom (Latest Release -> PR Candid
     // ------------------------------------------------------------------
     // For MagicLogin, verify the plugin is still enabled.
     cy.visit('administrator/index.php?option=com_plugins&view=plugins&filter_search=plg_system_magiclogin');
-    cy.get('tbody tr').contains('System - MagicLogin').parent().find('.badge-success').should('exist'); // Check if enabled badge is present
+    cy.get('tbody tr').contains('System - Magic Login').parent().find('.badge-success').should('exist'); // Check if enabled badge is present
   });
 });
