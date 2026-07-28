@@ -37,7 +37,7 @@ describe('Extension Upgrade Test for alikon/testcom (Latest Release -> PR Candid
     // For MagicLogin, you might enable the plugin and set a parameter.
     // Example: Enable the plugin
     cy.visit('administrator/index.php?option=com_plugins&view=plugins&filter_search=plg_system_magiclogin');
-    cy.get('tbody tr').contains('System - MagicLogin').click(); // Click to edit
+    cy.get('tbody tr').contains('System - Magic Login').click(); // Click to edit
     cy.get('#jform_enabled').select('1'); // Set enabled to Yes
     cy.clickToolbarButton('save');
     cy.get('#system-message-container').should('contain', 'Plugin saved');
