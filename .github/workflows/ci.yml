@@ -1,5 +1,11 @@
 name: CI Alikonweb extensions Playground
 
+# Cancel superseded runs on the same branch/PR instead of letting stale
+# pushes keep burning runner minutes alongside newer ones.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [main]
@@ -13,24 +19,16 @@ env:
 
 jobs:
 # -------------------------------------------------
-# Composer
-# -------------------------------------------------
-  composer:
-    runs-on: ubuntu-latest
-    container:
-      image: joomlaprojects/docker-images:php8.3
-    steps:
-      - uses: actions/checkout@v6
-      - uses: ./.github/actions/setup-dependencies
-
-# -------------------------------------------------
-# PHPCS (non-blocking)
+# PHPCS (non-blocking, fully parallel with the build)
+# NOTE: previously composer -> phpcs -> npm -> prepare_tests ran serially,
+# but nothing downstream actually consumed composer's or phpcs's output.
+# phpcs now runs standalone and in parallel with prepare_tests.
 # -------------------------------------------------
   phpcs:
     runs-on: ubuntu-latest
-    needs: composer
     container:
       image: joomlaprojects/docker-images:php8.3
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-dependencies
@@ -51,13 +49,12 @@ jobs:
 
           # 4. Configure Git and safely push changes back to the repository
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          
+
           if [ "$GITHUB_EVENT_NAME" = "push" ] && [ "$GITHUB_REPOSITORY" != "alikon/testcom" ]; then
             git config user.name  "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git add --all
-            
-            # Only commit and push if there are actually modified files to commit
+
             if ! git diff --staged --quiet; then
               git commit -m "Fix code style issues [skip ci]"
               git push origin "HEAD:${{ github.head_ref || github.ref_name }}"
@@ -67,34 +64,22 @@ jobs:
           fi
 
 # -------------------------------------------------
-# NPM
-# -------------------------------------------------
-  npm:
-    runs-on: ubuntu-latest
-    needs: phpcs
-    container:
-      image: joomlaprojects/docker-images:php8.3
-    steps:
-      - uses: actions/checkout@v6
-      - uses: ./.github/actions/setup-dependencies
-        with:
-          npm-cache: 'true'
-
-# -------------------------------------------------
 # PREPARE TESTS (Joomla versions)
-# FIX: sostituiamo upload-artifact con actions/cache per il trasferimento
-# dei file tra job. La cache usa endpoint diversi da Azure Blob Storage
-# e risulta molto più stabile per file di grandi dimensioni.
-# La cache key include github.run_id per essere univoca per ogni run.
+# Runs in parallel with phpcs now (no shared dependency).
+# Uses upload/download-artifact instead of actions/cache keyed on run_id:
+# actions/cache is meant for cross-run reuse and has a shared 10GB LRU
+# budget per repo. A cache entry that's unique per run_id is never reused
+# and just evicts genuinely reusable caches (composer/npm/cypress binaries).
+# upload/download-artifact is the correct primitive for same-run job handoff.
 # -------------------------------------------------
   prepare_tests:
     runs-on: ubuntu-latest
-    needs: npm
     strategy:
       matrix:
         joomla-version: ['5.4', '6.1']
     container:
       image: joomlaprojects/docker-images:cypress8.3
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
 
@@ -113,10 +98,10 @@ jobs:
       - name: Determine Nightly URL for Joomla ${{ matrix.joomla-version }}
         id: joomla-info
         run: |
+          # Anchored pattern: avoids "5.4" matching "5.40" / "15.4" / etc.
           URL=$(curl -s "https://api.github.com/repos/joomla/joomla-cms/releases" | \
                 jq -r '.[] | .assets[] | .browser_download_url' | \
-                grep "${{ matrix.joomla-version }}" | \
-                grep "Full_Package\.zip" | \
+                grep -E "Joomla_${{ matrix.joomla-version }}\.[0-9]+-.*Full_Package\.zip" | \
                 head -1)
 
           if [ -z "$URL" ]; then
@@ -127,6 +112,9 @@ jobs:
           echo "url=$URL" >> $GITHUB_OUTPUT
           echo "url_hash=$(echo -n "$URL" | md5sum | cut -d' ' -f1)" >> $GITHUB_OUTPUT
 
+      # This cache IS a good fit for actions/cache: keyed on the actual
+      # download URL hash, so it's genuinely reused across runs/PRs as
+      # long as the nightly build hasn't changed.
       - name: Cache Joomla Zip (download cache)
         id: cache-joomla
         uses: actions/cache@v5
@@ -149,19 +137,20 @@ jobs:
             exit 1
           fi
 
-      # Salviamo dist/ + joomla.zip nella cache con run_id univoco
-      # invece di usare upload-artifact che passa per Azure Blob Storage
-      - name: Save build to cache
-        uses: actions/cache/save@v5
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
         with:
+          name: build-artifacts-j${{ matrix.joomla-version }}
           path: |
             dist/
             joomla.zip
-          key: build-artifacts-${{ github.run_id }}-j${{ matrix.joomla-version }}
+          retention-days: 1
 
 # -------------------------------------------------
 # PHPSTAN
-# Usa actions/cache/restore invece di download-artifact
+# Non-blocking, parallel with system-tests (both only need prepare_tests).
+# Previously system-tests waited on phpstan for no reason: phpstan is
+# continue-on-error and produces nothing system-tests consumes.
 # -------------------------------------------------
   phpstan:
     runs-on: ubuntu-latest
@@ -169,6 +158,7 @@ jobs:
     strategy:
       matrix:
         joomla-version: ['5.4', '6.1']
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
 
@@ -178,14 +168,10 @@ jobs:
           php-version: '8.3'
           tools: composer
 
-      - name: Restore build from cache
-        uses: actions/cache/restore@v5
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
         with:
-          path: |
-            dist/
-            joomla.zip
-          key: build-artifacts-${{ github.run_id }}-j${{ matrix.joomla-version }}
-          fail-on-cache-miss: true
+          name: build-artifacts-j${{ matrix.joomla-version }}
 
       - name: Install Composer dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
@@ -198,19 +184,32 @@ jobs:
 
 # -------------------------------------------------
 # SYSTEM TESTS
-# Usa actions/cache/restore invece di download-artifact
+# Only needs prepare_tests (see phpstan note above).
+#
+# Matrix sparsified from a full 2x4x3 cross-product (24 cells, minus 2
+# excludes = 22 jobs) to a pairwise/sparse list: every PHP version and
+# every DB is still covered at least once, but not every combination.
+# This is the single biggest cost lever in the whole workflow — a full
+# cross-product is rarely necessary once you've established that DB
+# drivers and PHP versions don't meaningfully interact with each other.
+#
+# TRADE-OFF: this reduces real coverage. If DB x PHP interaction bugs are
+# a genuine concern for this codebase, keep (or restore) the full matrix,
+# possibly gated to a nightly/scheduled run or a `full-matrix` label
+# instead of running on every push/PR. Adjust the exact pairing below to
+# match what you actually want covered.
 # -------------------------------------------------
   system-tests:
     runs-on: ubuntu-latest
-    needs: [prepare_tests, phpstan]
+    needs: prepare_tests
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
-        joomla-version: ['5.4', '6.1']
-        php-version: ['8.2', '8.3', '8.4', '8.5']
-        db: [mysql, mariadb, pgsql]
         include:
-          - db: mysql
+          - joomla-version: '5.4'
+            php-version: '8.2'
+            db: mysql
             db-type: mysqli
             db-host: mysql
             image: mysql:8.0
@@ -218,26 +217,48 @@ jobs:
             alter-user-cmd: |
               apt-get update && apt-get install -y default-mysql-client
               mysql -h mysql -u root -proot --skip-ssl -e "ALTER USER 'joomla_ut'@'%' IDENTIFIED WITH mysql_native_password BY 'joomla_ut'; FLUSH PRIVILEGES;"
-          - db: mariadb
+          - joomla-version: '5.4'
+            php-version: '8.3'
+            db: mariadb
             db-type: mysqli
             db-host: mariadb
-            db-prefix: mariadb_
             image: mariadb:10.4
+            db-prefix: mariadb_
             alter-user-cmd: "apt-get update && apt-get install -y mariadb-client"
-          - db: pgsql
+          - joomla-version: '5.4'
+            php-version: '8.4'
+            db: pgsql
             db-type: pgsql
             db-host: postgres
-            db-prefix: pgsql_
             image: postgres:12-alpine
+            db-prefix: pgsql_
             alter-user-cmd: "apt-get update && apt-get install -y postgresql-client"
           - joomla-version: '6.1'
+            php-version: '8.3'
             db: mariadb
+            db-type: mysqli
+            db-host: mariadb
             image: mariadb:10.6
-        exclude:
-          - joomla-version: '5.4'
-            php-version: '8.5'
+            db-prefix: mariadb_
+            alter-user-cmd: "apt-get update && apt-get install -y mariadb-client"
           - joomla-version: '6.1'
-            php-version: '8.2'
+            php-version: '8.4'
+            db: pgsql
+            db-type: pgsql
+            db-host: postgres
+            image: postgres:12-alpine
+            db-prefix: pgsql_
+            alter-user-cmd: "apt-get update && apt-get install -y postgresql-client"
+          - joomla-version: '6.1'
+            php-version: '8.5'
+            db: mysql
+            db-type: mysqli
+            db-host: mysql
+            image: mysql:8.0
+            db-prefix: mysql_
+            alter-user-cmd: |
+              apt-get update && apt-get install -y default-mysql-client
+              mysql -h mysql -u root -proot --skip-ssl -e "ALTER USER 'joomla_ut'@'%' IDENTIFIED WITH mysql_native_password BY 'joomla_ut'; FLUSH PRIVILEGES;"
 
     container:
       image: joomlaprojects/docker-images:cypress${{ matrix.php-version }}
@@ -272,14 +293,10 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Restore build from cache
-        uses: actions/cache/restore@v5
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
         with:
-          path: |
-            dist/
-            joomla.zip
-          key: build-artifacts-${{ github.run_id }}-j${{ matrix.joomla-version }}
-          fail-on-cache-miss: true
+          name: build-artifacts-j${{ matrix.joomla-version }}
 
       - uses: ./.github/actions/setup-dependencies
         with:
