@@ -369,20 +369,13 @@ jobs:
           cd $GITHUB_WORKSPACE
           DB_USER=${{ matrix.db == 'pgsql' && 'root' || 'joomla_ut' }}
           DB_PASS=${{ matrix.db == 'pgsql' && 'root' || 'joomla_ut' }}
-          # Any file matching Update_*.cy.js anywhere under tests/cypress/integration
-          # is treated as an upgrade test and excluded from the normal run.
-          NORMAL_SPECS=$(find tests/cypress/integration -name '*.cy.js' ! -name 'Update_*.cy.js' | tr '\n' ',' | sed 's/,$//')
-
-          if [ -z "$NORMAL_SPECS" ]; then
-            echo "::error::No normal spec files found (excluding Update_*.cy.js)."
-            exit 1
-          fi
-
+          # specPattern (and its directory order) stays defined once, in
+          # cypress.config.js. excludeSpecPattern just filters Update_*
+          # files out of that same run — no separate list to keep in sync.
           npx cypress run \
             --browser=chrome \
             --e2e \
-            --spec "$NORMAL_SPECS" \
-            --config video=false \
+            --config "video=false,excludeSpecPattern=**/Update_*.cy.js" \
             --expose mailpitUrl=http://mailpit:8025,cmsPath=/tests/www/${{ matrix.db }},db_type=${{ matrix.db-type }},db_host=${{ matrix.db-host }},db_name=test_joomla,db_user=$DB_USER,db_password=$DB_PASS,db_prefix=${{ matrix.db-prefix }},email=admin@example.org,logFile=/var/log/apache2/error.log \
             --config baseUrl=http://localhost/${{ matrix.db }}
 
@@ -391,18 +384,11 @@ jobs:
           cd $GITHUB_WORKSPACE
           DB_USER=${{ matrix.db == 'pgsql' && 'root' || 'joomla_ut' }}
           DB_PASS=${{ matrix.db == 'pgsql' && 'root' || 'joomla_ut' }}
-          # Matches every Update_*.cy.js file, however many there are.
-          UPGRADE_SPECS=$(find tests/cypress/integration -name 'Update_*.cy.js' | tr '\n' ',' | sed 's/,$//')
-
-          if [ -z "$UPGRADE_SPECS" ]; then
-            echo "No Update_*.cy.js upgrade tests found — skipping."
-            exit 0
-          fi
-
+          # Matches any Update_*.cy.js file under any specPattern directory.
           npx cypress run \
             --browser=chrome \
             --e2e \
-            --spec "$UPGRADE_SPECS" \
+            --spec "tests/cypress/integration/**/Update_*.cy.js" \
             --config video=false \
             --expose mailpitUrl=http://mailpit:8025,cmsPath=/tests/www/${{ matrix.db }},db_type=${{ matrix.db-type }},db_host=${{ matrix.db-host }},db_name=test_joomla,db_user=$DB_USER,db_password=$DB_PASS,db_prefix=${{ matrix.db-prefix }},email=admin@example.org,logFile=/var/log/apache2/error.log \
             --config baseUrl=http://localhost/${{ matrix.db }}
