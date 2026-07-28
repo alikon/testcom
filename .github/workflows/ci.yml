@@ -66,11 +66,21 @@ jobs:
 # -------------------------------------------------
 # PREPARE TESTS (Joomla versions)
 # Runs in parallel with phpcs now (no shared dependency).
-# Uses upload/download-artifact instead of actions/cache keyed on run_id:
-# actions/cache is meant for cross-run reuse and has a shared 10GB LRU
-# budget per repo. A cache entry that's unique per run_id is never reused
-# and just evicts genuinely reusable caches (composer/npm/cypress binaries).
-# upload/download-artifact is the correct primitive for same-run job handoff.
+#
+# NOTE: this uses actions/cache (not upload/download-artifact) for the
+# build handoff, on purpose. upload/download-artifact routes through
+# Azure Blob Storage, which becomes unreliable ("Artifact download failed
+# after 5 retries") once multiple jobs pull the same large artifact
+# concurrently — exactly what happens here with 6 system-tests jobs +
+# 2 phpstan jobs all fetching the same build in a short window.
+# actions/cache uses a different, more stable backend for this.
+#
+# The trade-off: keying on github.run_id means these cache entries are
+# never reused across runs and just occupy space in the repo's 10GB
+# cache budget until GitHub's LRU eviction or the 7-day unused-entry
+# cutoff clears them. That's an acceptable cost for reliability here —
+# just don't be surprised if you see cache eviction warnings on other,
+# genuinely-reusable caches (composer/npm/cypress) if the budget gets tight.
 # -------------------------------------------------
   prepare_tests:
     runs-on: ubuntu-latest
@@ -137,14 +147,13 @@ jobs:
             exit 1
           fi
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+      - name: Save build to cache
+        uses: actions/cache/save@v5
         with:
-          name: build-artifacts-j${{ matrix.joomla-version }}
           path: |
             dist/
             joomla.zip
-          retention-days: 1
+          key: build-artifacts-${{ github.run_id }}-j${{ matrix.joomla-version }}
 
 # -------------------------------------------------
 # PHPSTAN
@@ -168,10 +177,14 @@ jobs:
           php-version: '8.3'
           tools: composer
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
+      - name: Restore build from cache
+        uses: actions/cache/restore@v5
         with:
-          name: build-artifacts-j${{ matrix.joomla-version }}
+          path: |
+            dist/
+            joomla.zip
+          key: build-artifacts-${{ github.run_id }}-j${{ matrix.joomla-version }}
+          fail-on-cache-miss: true
 
       - name: Install Composer dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
@@ -293,10 +306,14 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
+      - name: Restore build from cache
+        uses: actions/cache/restore@v5
         with:
-          name: build-artifacts-j${{ matrix.joomla-version }}
+          path: |
+            dist/
+            joomla.zip
+          key: build-artifacts-${{ github.run_id }}-j${{ matrix.joomla-version }}
+          fail-on-cache-miss: true
 
       - uses: ./.github/actions/setup-dependencies
         with:
