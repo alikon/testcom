@@ -27,7 +27,7 @@ describe('Extension Upgrade Test for alikon/testcom (Latest Release -> PR Candid
       expect(zipAsset, 'Latest MagicLogin release zip asset found').to.exist;
 
       cy.installExtensionFromUrl(zipAsset.browser_download_url);
-      cy.get('#system-message-container').should('contain', 'Installation of the package was successful');
+      cy.get('#system-message-container').should('contain', 'Installation of the plugin was successful');
     });
 
     // ------------------------------------------------------------------
@@ -48,7 +48,7 @@ describe('Extension Upgrade Test for alikon/testcom (Latest Release -> PR Candid
     // This assumes you have a built ZIP of the PR candidate in your environment.
     const prCandidateUrl = `${Cypress.config('baseUrl')}/plg_system_magiclogin-current.zip`; 
     cy.installExtensionFromUrl(prCandidateUrl);
-    cy.get('#system-message-container').should('contain', 'Installation of the package was successful');
+    cy.get('#system-message-container').should('contain', 'Installation of the plugin was successful');
 
     // ------------------------------------------------------------------
     // 5. Verify data/configuration survived the update
