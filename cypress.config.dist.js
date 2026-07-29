@@ -21,7 +21,6 @@ export default defineConfig({
       'tests/cypress/integration/plugins/**/*.cy.{js,jsx,ts,tsx}',
       'tests/cypress/integration/modules/**/*.cy.{js,jsx,ts,tsx}',      
     ],
-    excludeSpecPattern: '**/Update_*.cy.js',
     supportFile: 'tests/cypress/support/index.js',
     scrollBehavior: 'center',
     browser: 'firefox',
