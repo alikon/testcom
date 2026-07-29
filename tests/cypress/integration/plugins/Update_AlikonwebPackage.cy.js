@@ -25,12 +25,18 @@ describe('Package Upgrade Test for alikon/testcom (Latest Release -> PR Candidat
     //    (rimuove in cascata anche tutte le sotto-estensioni)
     // ------------------------------------------------------------------
     cy.visit('administrator/index.php?option=com_installer&view=manage');
-    cy.searchForItem(PACKAGE_ELEMENT);
+    cy.searchForItem('pkg_alikonweb');
     cy.get('body').then(($body) => {
       if ($body.find('table tbody tr').length > 0) {
         cy.checkAllResults();
-        cy.clickToolbarButton('delete');
-        cy.get('#system-message-container').should('contain', 'Uninstalling the package was successful');
+        cy.get('button.button-status-group.btn.btn-action.dropdown-toggle').click();
+        // Second click on the 'Uninstall' button
+        cy.get('button.button-delete.dropdown-item').click();
+        // Third click on the 'Yes' button to confirm
+        cy.get('div.joomla-dialog-container')
+          .find('button.button.button-primary.btn.btn-primary[data-button-ok]')
+          .click();
+        cy.checkForSystemMessage('was successful')
       }
     });
 
