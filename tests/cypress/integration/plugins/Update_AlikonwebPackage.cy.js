@@ -10,7 +10,7 @@ describe('Package Upgrade Test for alikon/testcom (Latest Release -> PR Candidat
   const PLUGIN_NAME = 'System - Magic Login'; // nome visualizzato in com_plugins
 
   const PR_ZIP_PUBLIC_URL = `${Cypress.config('baseUrl')}/pkg-alikonweb-current.zip`;
-  const CMS_PATH = Cypress.env('cmsPath'); // es. /tests/www/mysql
+  const CMS_PATH = Cypress.expose('cmsPath'); // es. /tests/www/mysql
   const FAKE_UPDATE_XML_RELATIVE = 'pr-build/update.xml';
   const FAKE_UPDATE_XML_PUBLIC_URL = `${Cypress.config('baseUrl')}/${FAKE_UPDATE_XML_RELATIVE}`;
   const FAKE_VERSION = '99.99.99';
