@@ -148,6 +148,7 @@ describe('Package Upgrade Test for alikon/testcom (Latest Release -> PR Candidat
   });
 
   it('3. enables MagicLogin plugin (state that must survive the update)', () => {
+    cy.db_enableExtension('0', 'plg_system_magiclogin');
     cy.visit('administrator/index.php?option=com_plugins&view=plugins');
     cy.searchForItem(PLUGIN_NAME);
     cy.checkAllResults();
