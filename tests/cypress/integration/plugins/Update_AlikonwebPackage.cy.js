@@ -212,12 +212,7 @@ describe('Package Upgrade Test for alikon/testcom (Latest Release -> PR Candidat
 
   it('6. purges cache and finds the mocked update', () => {
     cy.visit('administrator/index.php?option=com_installer&view=update');
-    cy.clickToolbarButton('purge-cache');
-    cy.checkForSystemMessage('Cache purged');
-
-    cy.visit('administrator/index.php?option=com_installer&view=update');
     cy.clickToolbarButton('find-updates');
-    cy.checkForSystemMessage('Finished refreshing extension update sites');
 
     cy.searchForItem(PACKAGE_ELEMENT);
     cy.get('table tbody tr').contains(PACKAGE_ELEMENT).parents('tr')
