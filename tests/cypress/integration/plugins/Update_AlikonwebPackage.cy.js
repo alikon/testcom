@@ -112,7 +112,7 @@ describe('Package Upgrade Test for alikon/testcom (Latest Release -> PR Candidat
     // Pulizia esplicita: rimuovi l'update site orfano lasciato dal package
     // disinstallato, altrimenti com_installer&view=manage può incappare in
     // un extension_id null durante la prossima "Find Updates"/render
-    //cy.removeOrphanedUpdateSite(PACKAGE_NAME);
+    //cy.removeOrphanedUpdateSite(PACKAGE_NAME); todo
   });
 
   it('2. installs latest stable package release from GitHub', () => {
