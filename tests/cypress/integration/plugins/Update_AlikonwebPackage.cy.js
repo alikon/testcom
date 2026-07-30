@@ -181,15 +181,33 @@ describe('Package Upgrade Test for alikon/testcom (Latest Release -> PR Candidat
     cy.writeFile(`${CMS_PATH}/${FAKE_UPDATE_XML_RELATIVE}`, fakeUpdateXml);
   });
 
-  it('5. points the package update site at the fake update.xml', () => {
-    cy.visit('administrator/index.php?option=com_installer&view=updatesites');
-    cy.searchForItem(PACKAGE_NAME);
-    cy.get('table tbody tr').contains(PACKAGE_NAME).parents('tr').within(() => {
-      cy.get('a').first().click();
+  it('5. points the package update site at the fake update.xml (via DB — the UI form does not allow editing location for this site type)', () => {
+    // Find the update_site_id linked to our package extension.
+    const findUpdateSiteId = `
+      SELECT us.update_site_id
+      FROM #__update_sites us
+      JOIN #__update_sites_extensions use ON use.update_site_id = us.update_site_id
+      JOIN #__extensions ext ON ext.extension_id = use.extension_id
+      WHERE ext.element = '${PACKAGE_ELEMENT}' AND ext.type = 'package'
+    `;
+ 
+    cy.task('queryDB', findUpdateSiteId).then((rows) => {
+      expect(rows && rows.length, `update site found for element "${PACKAGE_ELEMENT}"`).to.be.greaterThan(0);
+      const updateSiteId = rows[0].update_site_id;
+ 
+      // Point it at the fake update.xml, make sure it's enabled, and reset
+      // last_check_timestamp so the next "Find Updates" doesn't skip it as
+      // recently checked.
+      const updateLocation = `
+        UPDATE #__update_sites
+        SET location = '${FAKE_UPDATE_XML_PUBLIC_URL}',
+            enabled = 1,
+            last_check_timestamp = 0
+        WHERE update_site_id = ${updateSiteId}
+      `;
+ 
+      cy.task('queryDB', updateLocation);
     });
-    cy.get('#jform_location').clear().type(FAKE_UPDATE_XML_PUBLIC_URL);
-    cy.clickToolbarButton('save-close');
-    cy.checkForSystemMessage('Update site saved');
   });
 
   it('6. purges cache and finds the mocked update', () => {
