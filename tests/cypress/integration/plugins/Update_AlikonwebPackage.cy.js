@@ -215,7 +215,10 @@ describe('Package Upgrade Test for alikon/testcom (Latest Release -> PR Candidat
     cy.get('#toolbar-search').click();
 
     cy.searchForItem(PACKAGE_ELEMENT);
-    cy.get('table tbody tr').contains(PACKAGE_ELEMENT).parents('tr')
+    cy.get('table tbody tr')
+      .contains('th', PACKAGE_NAME)
+      .parents('tr')
+      .find('span.badge.bg-success')
       .should('contain', FAKE_VERSION);
   });
 
