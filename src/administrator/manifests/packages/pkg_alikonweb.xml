@@ -29,4 +29,8 @@
         <file type="plugin" id="deltrash" group="task">plg_task_deltrash.zip</file>
         <file type="plugin" id="githubissues" group="task">plg_task_githubissues.zip</file>
     </files>
+    <updateservers>
+		<!-- Note: No spaces or linebreaks allowed between the server tags -->
+		<server type="extension" name="Weblinks Update Site">https://raw.githubusercontent.com/joomla-extensions/weblinks/master/manifest.xml</server>
+	</updateservers>
 </extension>
