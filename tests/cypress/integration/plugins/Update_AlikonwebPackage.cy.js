@@ -90,7 +90,7 @@ describe('Package Upgrade Test for alikon/testcom (Latest Release -> PR Candidat
   afterEach(function () {
     if (this.currentTest.state === 'failed') {
       cy.log('Previous step failed — cleaning up any orphaned update site before aborting the chain');
-      cy.removeOrphanedUpdateSite(PACKAGE_NAME);
+      //cy.removeOrphanedUpdateSite(PACKAGE_NAME);
     }
   });
 
@@ -112,7 +112,7 @@ describe('Package Upgrade Test for alikon/testcom (Latest Release -> PR Candidat
     // Pulizia esplicita: rimuovi l'update site orfano lasciato dal package
     // disinstallato, altrimenti com_installer&view=manage può incappare in
     // un extension_id null durante la prossima "Find Updates"/render
-    cy.removeOrphanedUpdateSite(PACKAGE_NAME);
+    //cy.removeOrphanedUpdateSite(PACKAGE_NAME);
   });
 
   it('2. installs latest stable package release from GitHub', () => {
