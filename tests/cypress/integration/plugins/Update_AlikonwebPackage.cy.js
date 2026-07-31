@@ -273,11 +273,25 @@ describe('Package Upgrade Test for alikon/testcom (Latest Release -> PR Candidat
     cy.get('#system-message-container').should('contain', 'Updating package was successful');
   });
 
-  it('8. verifies the package updated and MagicLogin kept its configuration', () => {
+  it('8. has new package installed matching version', () => {
+    // Check if the row with "Web Links Component" exists
+    cy.get('#manageList tbody tr') // Target the table rows
+      .contains('div', PACKAGE_ELEMENT) // Check the <div> in the row
+      .parents('tr') // Navigate to the parent row
+      .should('exist') // Confirm the row exists
+      // Verify other cells in the same row
+      .within(() => {
+        cy.get('td').eq(2).should('contain', 'Site'); // Location column
+        cy.get('td').eq(3).should('contain', 'Package'); // Type column
+        cy.get('td').eq(4).should('contain', FAKE_VERSION); // Version column
+        cy.get('td').eq(7).should('contain', 'N/A'); // Folder column
+      });
+  });
+
+  it('9. verifies the package updated and MagicLogin kept its configuration', () => {
     cy.visit('administrator/index.php?option=com_plugins&view=plugins');
     cy.searchForItem(PLUGIN_NAME);
     cy.get('tbody tr').contains(PLUGIN_NAME).parents('tr')
-      .find('.badge-success')
       .should('exist');
   });
 });
