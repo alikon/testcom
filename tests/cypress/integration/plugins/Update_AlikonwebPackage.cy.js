@@ -270,7 +270,7 @@ describe('Package Upgrade Test for alikon/testcom (Latest Release -> PR Candidat
     cy.searchForItem(PACKAGE_ELEMENT);
     cy.checkAllResults();
     cy.get('#toolbar-upload').click();
-    cy.get('#system-message-container').should('contain', 'successfully updated');
+    cy.get('#system-message-container').should('contain', 'Updating package was successful');
   });
 
   it('8. verifies the package updated and MagicLogin kept its configuration', () => {
