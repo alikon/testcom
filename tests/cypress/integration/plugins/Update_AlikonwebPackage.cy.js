@@ -158,7 +158,13 @@ describe('Package Upgrade Test for alikon/testcom (Latest Release -> PR Candidat
   });
 
   it('4. writes the fake update.xml for the package into the webroot', () => {
-    const fakeUpdateXml = `<?xml version="1.0" encoding="utf-8"?>
+    if (!CMS_PATH) {
+      throw new Error('Cypress.env("cmsPath") is not set — check cypress.config.js env block');
+    }
+
+    // Pass relative path to the Cypress task
+    cy.task('getRelativeFileSha512', 'pkg-alikonweb-current.zip').then((sha512Hash) => {
+      const fakeUpdateXml = `<?xml version="1.0" encoding="utf-8"?>
 <updates>
   <update>
     <name>${PACKAGE_NAME}</name>
@@ -166,19 +172,21 @@ describe('Package Upgrade Test for alikon/testcom (Latest Release -> PR Candidat
     <element>${PACKAGE_ELEMENT}</element>
     <type>package</type>
     <version>${FAKE_VERSION}</version>
+    <client>site</client>
     <infourl title="testcom">https://github.com/alikon/testcom</infourl>
     <downloads>
       <downloadurl type="full" format="zip">${PR_ZIP_PUBLIC_URL}</downloadurl>
     </downloads>
-    <targetplatform name="joomla" version="(5|6)\\.\\d+\\.\\d+"/>
+    <tags>
+      <tag>stable</tag>
+    </tags>
+    <sha512>${sha512Hash}</sha512>
+    <targetplatform name="joomla" version=".*"/>
   </update>
 </updates>`;
 
-    if (!CMS_PATH) {
-      throw new Error('Cypress.env("cmsPath") is not set — check cypress.config.js env block');
-    }
-
-    cy.writeFile(`${CMS_PATH}/${FAKE_UPDATE_XML_RELATIVE}`, fakeUpdateXml);
+      cy.writeFile(`${CMS_PATH}/${FAKE_UPDATE_XML_RELATIVE}`, fakeUpdateXml);
+    });
   });
 
   it('5. points the package update site at the fake update.xml (via DB — the UI form does not allow editing location for this site type)', () => {
@@ -206,11 +214,45 @@ describe('Package Upgrade Test for alikon/testcom (Latest Release -> PR Candidat
         WHERE update_site_id = ${updateSiteId}
       `;
  
+      const purgeCachedUpdates = `
+        DELETE FROM #__updates WHERE element = '${PACKAGE_ELEMENT}'
+      `;
       cy.task('queryDB', updateLocation);
+      cy.task('queryDB', purgeCachedUpdates);
     });
   });
 
-  it('6. purges cache and finds the mocked update', () => {
+  it('debug: verifies update.xml is reachable via HTTP', () => {
+    cy.request({
+      url: FAKE_UPDATE_XML_PUBLIC_URL,
+      failOnStatusCode: false,
+    }).then((response) => {
+      expect(response.status, `HTTP status of ${FAKE_UPDATE_XML_PUBLIC_URL}`).to.eq(200);
+      expect(response.headers['content-type']).to.include('xml');
+      expect(response.body).to.include(PACKAGE_ELEMENT);
+    });
+  });
+
+  it('debug: check update_sites state in DB', () => {
+    const query = `
+      SELECT update_site_id, name, type, location, enabled, last_check_timestamp 
+      FROM #__update_sites 
+      WHERE location LIKE '%pr-build%' OR name = '${PACKAGE_NAME}'
+    `;
+
+    cy.task('queryDB', query).then((rows) => {
+      cy.log('Update Sites in DB:', JSON.stringify(rows, null, 2));
+    
+      if (rows && rows.length > 0) {
+        const site = rows[0];
+        expect(site.enabled).to.eq(1);
+        // If last_check_timestamp is still 0 after "Find Updates", Joomla never attempted the HTTP request
+        expect(site.last_check_timestamp, 'last_check_timestamp should be updated').to.be.greaterThan(0);
+      }
+    });
+  });
+
+  it('6. finds the mocked update', () => {
     cy.visit('administrator/index.php?option=com_installer&view=update');
     cy.get('#toolbar-search').click();
 
