@@ -274,6 +274,8 @@ describe('Package Upgrade Test for alikon/testcom (Latest Release -> PR Candidat
   });
 
   it('8. has new package installed matching version', () => {
+    cy.visit('/administrator/index.php?option=com_installer&view=manage&filter=');
+    cy.setFilter('core', 'Non-core Extensions');
     // Check if the row with "Web Links Component" exists
     cy.get('#manageList tbody tr') // Target the table rows
       .contains('div', PACKAGE_ELEMENT) // Check the <div> in the row
