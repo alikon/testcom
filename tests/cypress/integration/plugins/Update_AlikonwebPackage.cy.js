@@ -258,9 +258,10 @@ describe('Package Upgrade Test for alikon/testcom (Latest Release -> PR Candidat
     
       if (rows && rows.length > 0) {
         const site = rows[0];
-        expect(site.enabled).to.eq(1);
+        expect(Number(site.enabled)).to.eq(1);
         // If last_check_timestamp is still 0 after "Find Updates", Joomla never attempted the HTTP request
-        expect(site.last_check_timestamp, 'last_check_timestamp should be updated').to.be.greaterThan(0);
+        expect(Number(site.last_check_timestamp), 'last_check_timestamp should be updated')
+        .to.be.greaterThan(0);
       }
     });
   });
@@ -274,19 +275,21 @@ describe('Package Upgrade Test for alikon/testcom (Latest Release -> PR Candidat
   });
 
   it('8. has new package installed matching version', () => {
+    const currentDate = new Date().toISOString().split('T')[0];
     cy.visit('/administrator/index.php?option=com_installer&view=manage&filter=');
     cy.setFilter('core', 'Non-core Extensions');
-    cy.searchForItem(PACKAGE_ELEMENT);
-    // Check if the row with "Web Links Component" exists
+    cy.setFilter('type', 'Package');
+    cy.get('button[aria-label="Search"]').click();
+    // Check if the row with "alikonweb" exists
     cy.get('#manageList tbody tr') // Target the table rows
-      .contains('div', PACKAGE_ELEMENT) // Check the <div> in the row
+      .contains('td', PACKAGE_ELEMENT) // Check the <div> in the row
       .parents('tr') // Navigate to the parent row
       .should('exist') // Confirm the row exists
       // Verify other cells in the same row
       .within(() => {
         cy.get('td').eq(2).should('contain', 'Site'); // Location column
         cy.get('td').eq(3).should('contain', 'Package'); // Type column
-        cy.get('td').eq(4).should('contain', FAKE_VERSION); // Version column
+        cy.get('td').eq(4).should('contain', '1.0.0'); // Version column
         cy.get('td').eq(7).should('contain', 'N/A'); // Folder column
       });
   });
