@@ -35,7 +35,7 @@ final class Export extends CMSPlugin
      * @var    integer
      * @since  __DEPLOY_VERSION__
      */
-    private const MAX_BULK_IDS = 200;
+    private const MAX_BULK_IDS = 15;
 
     /**
      * Application object
