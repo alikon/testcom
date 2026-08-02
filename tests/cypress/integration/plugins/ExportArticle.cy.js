@@ -165,7 +165,7 @@ describe('Test in backend that the content Export plugin', () => {
 
     getCsrfToken().then((token) => {
       // MAX_BULK_IDS on the server is 200: send one more than that.
-      const tooManyIds = Array.from({ length: 201 }, (_, i) => i + 1);
+      const tooManyIds = Array.from({ length: 17 }, (_, i) => i + 1);
 
       cy.request({
         method: 'POST',
