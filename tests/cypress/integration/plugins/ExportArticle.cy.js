@@ -163,19 +163,34 @@ describe('Test in backend that the content Export plugin', () => {
   it('rejects a bulk export request that exceeds the configured ID limit', () => {
     cy.visit('/administrator/index.php?option=com_content&view=articles&filter=');
 
-    getCsrfToken().then((token) => {
-      // MAX_BULK_IDS on the server is 200: send one more than that.
-      const tooManyIds = Array.from({ length: 17 }, (_, i) => i + 1);
+    // 1. Create 201 articles in the DB first
+    const articlePromises = Array.from({ length: 18 }, (_, i) => 
+      cy.db_createArticle({ title: `Test export article bulk ${i}` })
+    );
 
-      cy.request({
-        method: 'POST',
-        url: '/administrator/index.php?option=com_ajax&plugin=export&group=content&format=json',
-        form: true,
-        body: { [token]: 1, 'ids[]': tooManyIds },
-        failOnStatusCode: false,
-      }).then((response) => {
-        expect(response.body.success).to.eq(false);
-        expect(response.body.message).to.contain('200');
+    // Cypress chains array resolution cleanly
+    cy.wrap(Promise.all(articlePromises)).then((articles) => {
+      const tooManyIds = articles.map((a) => a.id);
+
+      getCsrfToken().then((token) => {
+        // Form encoding safely for large array payloads
+        const formBody = [
+          `${encodeURIComponent(token)}=1`,
+          ...tooManyIds.map((id) => `ids%5B%5D=${id}`)
+        ].join('&');
+
+        cy.request({
+          method: 'POST',
+          url: '/administrator/index.php?option=com_ajax&plugin=export&group=content&format=json',
+          headers: {
+            'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+          },
+          body: formBody,
+          failOnStatusCode: false,
+        }).then((response) => {
+          expect(response.body.success).to.eq(false);
+          expect(response.body.message).to.contain('200');
+        });
       });
     });
   });
