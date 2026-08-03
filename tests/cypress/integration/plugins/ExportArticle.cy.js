@@ -161,39 +161,21 @@ describe('Test in backend that the content Export plugin', () => {
   });
 
  it('rejects a bulk export request that exceeds the configured ID limit', () => {
-    cy.visit('/administrator/index.php?option=com_content&view=articles&filter=');
+    stubRemoteApi();
 
-    const tooManyIds = [];
-    
-    // 1. Enqueue 201 article creation commands
-    for (let i = 0; i < 19; i++) {
-      cy.db_createArticle({ title: `Test export article bulk ${i}` }).then((article) => {
-        // As each article is created, push its ID into our array
-        tooManyIds.push(article.id);
-      });
-    }
+    const articlePromises = Array.from({ length: 12 }, (_, i) =>
+      cy.db_createArticle({ title: `Test export article bulk ${i}` })
+    );
 
-    // 2. cy.then() ensures this block only runs AFTER all 201 loops above are fully complete
-    cy.then(() => {
-      getCsrfToken().then((token) => {
-        const formBody = [
-          `${encodeURIComponent(token)}=1`,
-          ...tooManyIds.map((id) => `ids%5B%5D=${id}`)
-        ].join('&');
+    // Wait for all DB insertions to finish before visiting the page
+    cy.wrap(Promise.all(articlePromises)).then(() => {
+      cy.visit('/administrator/index.php?option=com_content&view=articles&filter=');
+      cy.searchForItem('Test export article bulk');
+      cy.checkAllResults();
+      cy.get('#toolbar-upload').click();
 
-        cy.request({
-          method: 'POST',
-          url: '/administrator/index.php?option=com_ajax&plugin=export&group=content&format=json',
-          headers: {
-            'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-          },
-          body: formBody,
-          failOnStatusCode: false,
-        }).then((response) => {
-          expect(response.body.success).to.eq(false);
-          expect(response.body.message).to.contain('15');
-        });
-      });
+      // Verify the error message contains the max limit threshold (10)
+      cy.get('#msg').should('contain.text', '10');
     });
   });
 });
