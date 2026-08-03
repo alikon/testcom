@@ -191,7 +191,7 @@ describe('Test in backend that the content Export plugin', () => {
           failOnStatusCode: false,
         }).then((response) => {
           expect(response.body.success).to.eq(false);
-          expect(response.body.message).to.contain('200');
+          expect(response.body.message).to.contain('15');
         });
       });
     });
