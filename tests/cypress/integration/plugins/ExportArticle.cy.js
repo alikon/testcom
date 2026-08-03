@@ -160,20 +160,22 @@ describe('Test in backend that the content Export plugin', () => {
     });
   });
 
-  it('rejects a bulk export request that exceeds the configured ID limit', () => {
+ it('rejects a bulk export request that exceeds the configured ID limit', () => {
     cy.visit('/administrator/index.php?option=com_content&view=articles&filter=');
 
-    // 1. Create 201 articles in the DB first
-    const articlePromises = Array.from({ length: 18 }, (_, i) => 
-      cy.db_createArticle({ title: `Test export article bulk ${i}` })
-    );
+    const tooManyIds = [];
+    
+    // 1. Enqueue 201 article creation commands
+    for (let i = 0; i < 19; i++) {
+      cy.db_createArticle({ title: `Test export article bulk ${i}` }).then((article) => {
+        // As each article is created, push its ID into our array
+        tooManyIds.push(article.id);
+      });
+    }
 
-    // Cypress chains array resolution cleanly
-    cy.wrap(Promise.all(articlePromises)).then((articles) => {
-      const tooManyIds = articles.map((a) => a.id);
-
+    // 2. cy.then() ensures this block only runs AFTER all 201 loops above are fully complete
+    cy.then(() => {
       getCsrfToken().then((token) => {
-        // Form encoding safely for large array payloads
         const formBody = [
           `${encodeURIComponent(token)}=1`,
           ...tooManyIds.map((id) => `ids%5B%5D=${id}`)
