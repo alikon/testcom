@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="content" method="upgrade">
+    <name>plg_content_ntfy</name>
+    <author>Alikon</author>
+    <creationDate>August 2026</creationDate>
+    <version>1.1.0</version>
+    <description>Invia notifiche push via ntfy alla pubblicazione di nuovi articoli.</description>
+    <namespace path="src">Alikonweb\Plugin\Content\Ntfy</namespace>
+    <files>
+        <folder plugin="content">services</folder>
+        <folder>src</folder>
+    </files>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field 
+                    name="ntfy_server" 
+                    type="url" 
+                    default="https://ntfy.sh" 
+                    label="Server ntfy" 
+                    required="true" 
+                />
+                <field 
+                    name="ntfy_topic" 
+                    type="text" 
+                    label="Topic ntfy" 
+                    required="true" 
+                />
+                <field 
+                    name="ntfy_token" 
+                    type="password" 
+                    label="Access Token (Opzionale)" 
+                />
+                <field 
+                    name="ntfy_priority" 
+                    type="list" 
+                    default="3" 
+                    label="Priorità Notifica">
+                    <option value="5">Massima (5)</option>
+                    <option value="4">Alta (4)</option>
+                    <option value="3">Normale (3)</option>
+                    <option value="2">Bassa (2)</option>
+                    <option value="1">Minima (1)</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>
