@@ -2,11 +2,8 @@
 
 namespace Alikonweb\Plugin\Content\Ntfy\Extension;
 
-\defined('_JEXEC') or die;
-
-use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Component\ComponentHelper;
-use Joomla\CMS\Event\Contact\SubmitContactEvent;
+use Joomla\CMS\Event\Model;
 use Joomla\CMS\Language\Multilanguage;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
@@ -17,8 +14,14 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\String\PunycodeHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryAwareTrait;
+use Joomla\CMS\Version;
+use Joomla\Component\Content\Site\Helper\RouteHelper;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\SubscriberInterface;
+use Joomla\Http\HttpFactory;
+use Joomla\Registry\Registry;
+
+\defined('_JEXEC') or die;
 
 final class Ntfy extends CMSPlugin implements SubscriberInterface
 {
@@ -38,7 +41,7 @@ final class Ntfy extends CMSPlugin implements SubscriberInterface
     /**
      * Gestore dell'evento onContentAfterSave
      */
-    public function onAfterContentSave(Event $event): void
+    public function onAfterContentSave(Model\AfterSaveEvent $event): void
     {
         // Estrazione argomenti in modo nativo per gli Event di Joomla
         $context = $event['context'];
@@ -87,12 +90,17 @@ final class Ntfy extends CMSPlugin implements SubscriberInterface
             $body = mb_substr($body, 0, 247) . '...';
         }
 
+         // Prepare connection
+        $options = new Registry();
+        $options->set('userAgent', (new Version())->getUserAgent('Joomla', true, false));
+
+        $http = (new HttpFactory())->getHttp($options);
         // Invio notifica via HTTP POST
         try {
-            $http = HttpFactory::getHttp();
-            $http->post($url, $body, $headers);
-        } catch (\Throwable $e) {
+            $http->post($url, $body, $headers, 20);
+        } catch (\RuntimeException $e) {
             $this->getApplication()->getLogger()->error('Errore invio ntfy: ' . $e->getMessage());
+            Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');
         }
     }
 }
