@@ -3,11 +3,11 @@
     <name>plg_content_ntfy</name>
     <author>Alikon</author>
     <creationDate>August 2026</creationDate>
-    <version>1.1.0</version>
+    <version>1.0.0</version>
     <description>Invia notifiche push via ntfy alla pubblicazione di nuovi articoli.</description>
     <namespace path="src">Alikonweb\Plugin\Content\Ntfy</namespace>
     <files>
-        <folder plugin="content">services</folder>
+        <folder plugin="ntfy">services</folder>
         <folder>src</folder>
     </files>
     <config>
