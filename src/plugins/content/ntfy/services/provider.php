@@ -1,6 +1,6 @@
 <?php
 
-defined('_JEXEC') or die;
+\defined('_JEXEC') or die;
 
 use Alikonweb\Plugin\Content\Ntfy\Extension\Ntfy;
 use Joomla\CMS\Extension\PluginInterface;
