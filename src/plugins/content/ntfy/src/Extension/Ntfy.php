@@ -100,7 +100,7 @@ final class Ntfy extends CMSPlugin implements SubscriberInterface
             $http->post($url, $body, $headers, 20);
         } catch (\RuntimeException $e) {
             $this->getApplication()->getLogger()->error('Errore invio ntfy: ' . $e->getMessage());
-            Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+            $this->getApplication()->enqueueMessage($e->getMessage(), 'error');
         }
     }
 }
