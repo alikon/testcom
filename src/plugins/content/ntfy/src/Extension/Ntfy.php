@@ -112,8 +112,8 @@ final class Ntfy extends CMSPlugin implements SubscriberInterface
 
         try {
             $response = $http->post($server . '/' . $topic, $body, $headers, 20);
-            if ($response->code < 200 || $response->code >= 300) {
-                $message = 'Errore invio ntfy: HTTP ' . $response->code;
+            if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
+                $message = 'Errore invio ntfy: HTTP ' . $response->getStatusCode();
                 $this->getApplication()->getLogger()->error($message);
                 $this->getApplication()->enqueueMessage($message, 'error');
             }
