@@ -2,16 +2,8 @@
 
 namespace Alikonweb\Plugin\Content\Ntfy\Extension;
 
-use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\Model;
-use Joomla\CMS\Language\Multilanguage;
-use Joomla\CMS\Language\Text;
-use Joomla\CMS\Log\Log;
-use Joomla\CMS\Mail\Exception\MailDisabledException;
-use Joomla\CMS\Mail\MailTemplate;
 use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\CMS\Router\Route;
-use Joomla\CMS\String\PunycodeHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryAwareTrait;
 use Joomla\CMS\Version;
@@ -28,36 +20,61 @@ final class Ntfy extends CMSPlugin implements SubscriberInterface
     use DatabaseAwareTrait;
     use UserFactoryAwareTrait;
 
-    /**
-     * Mappatura degli eventi a cui il plugin risponde
-     */
     public static function getSubscribedEvents(): array
     {
         return [
-            'onContentAfterSave' => 'onAfterContentSave',
+            'onContentAfterSave'    => 'onAfterContentSave',
+            'onContentChangeState'  => 'onContentChangeState',
         ];
     }
 
     /**
-     * Gestore dell'evento onContentAfterSave
+     * Notifies for articles saved directly in published state for the first time.
      */
     public function onAfterContentSave(Model\AfterSaveEvent $event): void
     {
-        // Estrazione argomenti in modo nativo per gli Event di Joomla
-        $context = $event['context'];
-        $article = $event['item'];
-        $isNew   = $event['isNew'];
-
-        // Esegui solo per gli articoli di com_content
-        if ($context !== 'com_content.article') {
+        if ($event->getContext() !== 'com_content.article') {
             return;
         }
 
-        // Procedi solo se l'articolo è nello stato "Pubblicato" (state = 1) ed è NUOVO
-        if ((int) $article->state !== 1 || !$isNew) {
+        $article = $event->getItem();
+
+        if (!$event->getIsNew() || (int) $article->state !== 1) {
             return;
         }
 
+        $this->sendNtfyNotification($article);
+    }
+
+    /**
+     * Notifies for articles transitioning to published state (e.g. draft → published).
+     */
+    public function onContentChangeState(Model\AfterChangeStateEvent $event): void
+    {
+        if ($event->getContext() !== 'com_content.article' || $event->getValue() !== 1) {
+            return;
+        }
+
+        $pks = $event->getPks();
+
+        if (empty($pks)) {
+            return;
+        }
+
+        $db    = $this->getDatabase();
+        $query = $db->getQuery(true)
+            ->select($db->quoteName(['id', 'title', 'introtext', 'catid', 'language', 'alias']))
+            ->from($db->quoteName('#__content'))
+            ->whereIn($db->quoteName('id'), $pks);
+
+        foreach ($db->setQuery($query)->loadObjectList() as $article) {
+            $article->slug = $article->alias ? ($article->id . ':' . $article->alias) : $article->id;
+            $this->sendNtfyNotification($article);
+        }
+    }
+
+    private function sendNtfyNotification(object $article): void
+    {
         $server   = rtrim($this->params->get('ntfy_server', 'https://ntfy.sh'), '/');
         $topic    = trim($this->params->get('ntfy_topic', ''));
         $token    = trim($this->params->get('ntfy_token', ''));
@@ -67,10 +84,8 @@ final class Ntfy extends CMSPlugin implements SubscriberInterface
             return;
         }
 
-        // Generazione URL dell'articolo nel frontend
         $articleUrl = Uri::root() . RouteHelper::getArticleRoute($article->slug, $article->catid, $article->language);
 
-        $url = $server . '/' . $topic;
         $headers = [
             'Title'    => 'Nuovo Articolo: ' . $article->title,
             'Priority' => (string) $priority,
@@ -82,22 +97,26 @@ final class Ntfy extends CMSPlugin implements SubscriberInterface
             $headers['Authorization'] = 'Bearer ' . $token;
         }
 
-        $body = !empty($article->introtext) 
-            ? strip_tags($article->introtext) 
+        $body = !empty($article->introtext)
+            ? strip_tags($article->introtext)
             : 'Un nuovo articolo è stato pubblicato!';
 
         if (mb_strlen($body) > 250) {
             $body = mb_substr($body, 0, 247) . '...';
         }
 
-         // Prepare connection
         $options = new Registry();
         $options->set('userAgent', (new Version())->getUserAgent('Joomla', true, false));
 
         $http = (new HttpFactory())->getHttp($options);
-        // Invio notifica via HTTP POST
+
         try {
-            $http->post($url, $body, $headers, 20);
+            $response = $http->post($server . '/' . $topic, $body, $headers, 20);
+            if ($response->code < 200 || $response->code >= 300) {
+                $message = 'Errore invio ntfy: HTTP ' . $response->code;
+                $this->getApplication()->getLogger()->error($message);
+                $this->getApplication()->enqueueMessage($message, 'error');
+            }
         } catch (\RuntimeException $e) {
             $this->getApplication()->getLogger()->error('Errore invio ntfy: ' . $e->getMessage());
             $this->getApplication()->enqueueMessage($e->getMessage(), 'error');
