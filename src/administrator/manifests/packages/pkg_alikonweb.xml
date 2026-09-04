@@ -16,7 +16,7 @@
     <files>
         <!-- The id for each extension is the element stored in the DB -->
         <file type="module" id="mod_jstats" client="site">mod_jstats.zip</file>
-        <file type="module" id="mod_backward" client="admin">mod_backward.zip</file>
+        <!-- <file type="module" id="mod_backward" client="admin">mod_backward.zip</file> --> 
         <file type="module" id="mod_github_portfolio" client="site">mod_github_portfolio.zip</file>
         <file type="module" id="mod_changelog" client="site">mod_changelog.zip</file>
         <file type="plugin" id="updatefromcli" group="console">plg_console_updatefromcli.zip</file>
@@ -29,4 +29,8 @@
         <file type="plugin" id="deltrash" group="task">plg_task_deltrash.zip</file>
         <file type="plugin" id="githubissues" group="task">plg_task_githubissues.zip</file>
     </files>
+    <updateservers>
+		<!-- Note: No spaces or linebreaks allowed between the server tags -->
+		<server type="extension" name="Alikonweb Update Site">https://raw.githubusercontent.com/alikon/testcom/src/administrator/manifests/packages/pkg_alikonweb.xml</server>
+	</updateservers>
 </extension>
