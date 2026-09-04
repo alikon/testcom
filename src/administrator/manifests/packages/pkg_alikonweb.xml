@@ -31,6 +31,6 @@
     </files>
     <updateservers>
 		<!-- Note: No spaces or linebreaks allowed between the server tags -->
-		<server type="extension" name="Alikonweb Update Site">https://raw.githubusercontent.com/joomla-extensions/weblinks/master/manifest.xml</server>
+		<server type="extension" name="Alikonweb Update Site">https://raw.githubusercontent.com/alikon/testcom/src/administrator/manifests/packages/pkg_alikonweb.xml</server>
 	</updateservers>
 </extension>
