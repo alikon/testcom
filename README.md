@@ -6,6 +6,7 @@ Build Status
 | Actions                                                                                                                                         | PHP                                                                           | Node                                                                                 | npm                                                                              |
 |-------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|----------------------------------------------------------------------------------|
 | [![Build Status](https://github.com/alikon/testcom/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/alikon/testcom) | [![PHP](https://img.shields.io/badge/PHP-V8.1.0-green)](https://www.php.net/) | [![node-lts](https://img.shields.io/badge/Node-V20.0-green)](https://nodejs.org/en/) | [![npm](https://img.shields.io/badge/npm-v10.1.0-green)](https://nodejs.org/en/) |
+![Alt](https://repobeats.axiom.co/api/embed/1dfea5a542103e5a72c3e3798e8e224bed6444c5.svg "Repobeats analytics image")
 
 ## Requirements
 Joomla >= 5.0
