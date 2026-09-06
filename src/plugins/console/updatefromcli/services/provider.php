@@ -15,7 +15,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
-use Joomla\Plugin\Console\Updatefromcli\Extension\UpdatefromcliConsolePlugin;
+use Alikonweb\Plugin\Console\Updatefromcli\Extension\UpdatefromcliConsolePlugin;
 
 return new class () implements ServiceProviderInterface {
     public function register(Container $container): void
