@@ -1,4 +1,11 @@
 <?php
+/**
+ * @package     Joomla.Plugin
+ * @subpackage  Content.ntfy
+ *
+ * @copyright   Copyright (C) 2026 Alikon. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ */
 
 namespace Alikonweb\Plugin\Content\Ntfy\Extension;
 
@@ -146,7 +153,7 @@ final class Ntfy extends CMSPlugin implements SubscriberInterface
         try {
             $response = $http->post($server . '/' . $topic, $body, $headers, 20);
             if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
-                $message = Text::_('PLG_CONTENT_NTFY_ERROR_SENDING');
+                $message = Text::_('PLG_CONTENT_NTFY_ERROR_SENDING') . ' ' . $response->getStatusCode();
                 $this->getApplication()->getLogger()->error($message);
                 $this->getApplication()->enqueueMessage($message, 'error');
             }
