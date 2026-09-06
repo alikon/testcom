@@ -3,6 +3,7 @@
 namespace Alikonweb\Plugin\Content\Ntfy\Extension;
 
 use Joomla\CMS\Event\Model;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryAwareTrait;
@@ -14,24 +15,46 @@ use Joomla\Http\HttpFactory;
 use Joomla\Registry\Registry;
 
 \defined('_JEXEC') or die;
-
+/**
+ * NTFY content plugin extension.
+ *
+ * Sends push notifications through the NTFY service when a Joomla article
+ * is published.
+ *
+ * @since  1.0.0
+ */
 final class Ntfy extends CMSPlugin implements SubscriberInterface
 {
     use DatabaseAwareTrait;
     use UserFactoryAwareTrait;
 
+    /**
+     * Returns an array of events this subscriber will listen to.
+     *
+     * @return  array
+     *
+     * @since   1.0.0
+     */
     public static function getSubscribedEvents(): array
     {
         return [
-            'onContentAfterSave'    => 'onAfterContentSave',
+            'onContentAfterSave'    => 'onContentAfterSave',
             'onContentChangeState'  => 'onContentChangeState',
         ];
     }
 
     /**
-     * Notifies for articles saved directly in published state for the first time.
+     * Handles content after it has been saved.
+     *
+     * Sends an NTFY notification when a new article is saved and published.
+     *
+     * @param   Model\AfterSaveEvent $event  The event instance.
+     *
+     * @return  void
+     *
+     * @since   1.0.0
      */
-    public function onAfterContentSave(Model\AfterSaveEvent $event): void
+    public function onContentAfterSave(Model\AfterSaveEvent $event): void
     {
         if ($event->getContext() !== 'com_content.article') {
             return;
@@ -73,8 +96,18 @@ final class Ntfy extends CMSPlugin implements SubscriberInterface
         }
     }
 
+    /**
+     * Sends an article publication notification through NTFY.
+     *
+     * @param   object  $article  The published article.
+     *
+     * @return  void
+     *
+     * @since   1.0.0
+     */
     private function sendNtfyNotification(object $article): void
     {
+        $this->loadLanguage();
         $server   = rtrim($this->params->get('ntfy_server', 'https://ntfy.sh'), '/');
         $topic    = trim($this->params->get('ntfy_topic', ''));
         $token    = trim($this->params->get('ntfy_token', ''));
@@ -87,7 +120,7 @@ final class Ntfy extends CMSPlugin implements SubscriberInterface
         $articleUrl = Uri::root() . RouteHelper::getArticleRoute($article->slug, $article->catid, $article->language);
 
         $headers = [
-            'Title'    => 'Nuovo Articolo: ' . $article->title,
+            'Title'    => Text::_('PLG_CONTENT_NTFY_TITLE') . $article->title,
             'Priority' => (string) $priority,
             'Tags'     => 'newspaper,joomla',
             'Click'    => $articleUrl,
@@ -99,7 +132,7 @@ final class Ntfy extends CMSPlugin implements SubscriberInterface
 
         $body = !empty($article->introtext)
             ? strip_tags($article->introtext)
-            : 'Un nuovo articolo è stato pubblicato!';
+            : Text::_('PLG_CONTENT_NTFY_DEFAULT_BODY');
 
         if (mb_strlen($body) > 250) {
             $body = mb_substr($body, 0, 247) . '...';
@@ -113,12 +146,12 @@ final class Ntfy extends CMSPlugin implements SubscriberInterface
         try {
             $response = $http->post($server . '/' . $topic, $body, $headers, 20);
             if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
-                $message = 'Errore invio ntfy: HTTP ' . $response->getStatusCode();
+                $message = Text::_('PLG_CONTENT_NTFY_ERROR_SENDING');
                 $this->getApplication()->getLogger()->error($message);
                 $this->getApplication()->enqueueMessage($message, 'error');
             }
         } catch (\RuntimeException $e) {
-            $this->getApplication()->getLogger()->error('Errore invio ntfy: ' . $e->getMessage());
+            $this->getApplication()->getLogger()->error(Text::_('PLG_CONTENT_NTFY_ERROR_SENDING') . ' ' . $e->getMessage());
             $this->getApplication()->enqueueMessage($e->getMessage(), 'error');
         }
     }
