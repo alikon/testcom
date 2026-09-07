@@ -12,7 +12,7 @@
 
     // Keep this in sync with Export::MAX_BULK_IDS on the server, it's
     // only used here to fail fast client-side before hitting the AJAX call.
-    const MAX_BULK_IDS = 200;
+    //const MAX_BULK_IDS = 100;
 
     toolbar.addEventListener('click', fetchData);
 
@@ -69,7 +69,7 @@
         return;
       }
 
-      const maxIds = options.maxBulk || MAX_BULK_IDS;
+      const maxIds = options.maxBulk; // || MAX_BULK_IDS;
       if (checkboxes.length > maxIds) {
         showMessage(t('PLG_CONTENT_EXPORT_BULK_TOO_MANY_SELECTED', maxIds), 'error');
         return;
