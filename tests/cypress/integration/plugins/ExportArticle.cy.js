@@ -162,7 +162,7 @@ describe('Test in backend that the content Export plugin', () => {
 
  it('rejects a bulk export request that exceeds the configured ID limit', () => {
     stubRemoteApi();
-
+    cy.db_updateExtensionParameter('max_bulk_ids', 10, 'plg_content_export');
     const articlePromises = Array.from({ length: 12 }, (_, i) =>
       cy.db_createArticle({ title: `Test export article bulk ${i}` })
     );
