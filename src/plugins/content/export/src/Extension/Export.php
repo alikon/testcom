@@ -35,7 +35,7 @@ final class Export extends CMSPlugin
      * @var    integer
      * @since  __DEPLOY_VERSION__
      */
-    private const MAX_BULK_IDS = 15;
+    protected $maxBulkIds = 5;
 
     /**
      * Application object
@@ -112,7 +112,7 @@ final class Export extends CMSPlugin
             'post'      => $this->postUrl,
             'auth'      => $auth,
             'view'      => $view,
-            'maxBulk'   => self::MAX_BULK_IDS,
+            'maxBulk'   => $this->getMaxBulkIds(),
         ];
 
         // For the single article view, pre-load the current article data
@@ -215,8 +215,8 @@ final class Export extends CMSPlugin
             throw new \Exception(Text::_('PLG_CONTENT_EXPORT_BULK_NO_IDS'), 400);
         }
 
-        if (\count($ids) > self::MAX_BULK_IDS) {
-            throw new \Exception(Text::sprintf('PLG_CONTENT_EXPORT_BULK_TOO_MANY_IDS', self::MAX_BULK_IDS), 400);
+        if (\count($ids) > $this->getMaxBulkIds()) {
+            throw new \Exception(Text::sprintf('PLG_CONTENT_EXPORT_BULK_TOO_MANY_IDS', $this->getMaxBulkIds()), 400);
         }
 
         $db    = Factory::getDbo();
@@ -292,4 +292,17 @@ final class Export extends CMSPlugin
     {
         return (int) $this->params->get('state', 0);
     }
+
+    /**
+     * Returns the maximum number of IDs allowed in a bulk operation.
+     *
+     * @return  integer
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    private function getMaxBulkIds(): int
+    {
+        return max(1, (int) $this->params->get('max_bulk_ids', 5));
+    }
+
 }
