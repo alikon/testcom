@@ -30,6 +30,7 @@ This repository contains various Joomla extensions. To ensure the download count
 | **Github Portfolio** | v1.2.0 | [Download mod_github_portfolio-1.2.0.zip](https://github.com/alikon/testcom/releases/download/v1.4/mod_github_portfolio-1.2.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.4/mod_github_portfolio-1.2.0.zip?label=downloads) |
 | **Joomla Statistics** | v1.2.0 | [Download mod_jstats-1.2.0.zip](https://github.com/alikon/testcom/releases/download/v1.4/mod_jstats-1.2.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.4/mod_jstats-1.2.0.zip?label=downloads) |
 | **Changelog** | v1.2.0 | [Download mod_changelog-1.2.0.zip](https://github.com/alikon/testcom/releases/download/v1.4/mod_changelog-1.2.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.4/mod_changelog-1.2.0.zip?label=downloads) |
+| **Update from CLI** | v1.0.0 | [Download plg_console_updatefromcli-1.0.0.zip](https://github.com/alikon/testcom/releases/download/v1.4/plg_console_updatefromcli-1.0.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.4/plg_console_updatefromcli-1.0.0.zip?label=downloads) |
 
 
 ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/total)
