@@ -42,9 +42,35 @@
 
       toolbar.insertAdjacentHTML('afterbegin', '<span id=\'loader\' class=\'spinner-grow spinner-grow-sm\' role=\'status\' aria-hidden=\'true\'></span>');
 
+      /**
+       * Returns the selected article IDs.
+       *
+       * @returns {string[]} Selected article IDs.
+       */
+       const getSelectedArticles = () => Array.from(
+        document.querySelectorAll('input[name="cid[]"]:checked')
+       ).map((checkbox) => checkbox.value);
       // Wrapped in try/finally so the loader is always cleared, even if
       // checkArticle/postArticle/patchArticle throw (single-article path).
-      try {
+       try {
+        if (options.view === 'articles') {
+          const selectedArticles = getSelectedArticles();
+
+          if (selectedArticles.length === 0) {
+            showMessage(t('PLG_CONTENT_EXPORT_BULK_NO_SELECTION'), 'error');
+
+            return;
+          }
+          const maxIds = options.maxBulk; // || MAX_BULK_IDS;
+          if (selectedArticles.length > maxIds) {
+            showMessage(t('PLG_CONTENT_EXPORT_BULK_TOO_MANY_SELECTED', maxIds), 'error');
+
+            return;
+          }
+
+          options.articles = selectedArticles;
+        }
+
         if (await checkCategory(options)) {
           if (options.view === 'articles') {
             await processBulkExport(options);
@@ -284,13 +310,21 @@
       if (!options || typeof options !== 'object') {
         return { ok: false, message: Joomla.Text._('PLG_CONTENT_EXPORT_INVALID_CONFIG_OBJECT') };
       }
-      const apiKey = String(options.apiKey ?? '').trim();
-      const auth = String(options.auth ?? '').trim();
-      const getUrl = String(options.get ?? '').trim();
+      const apiKey  = String(options.apiKey ?? '').trim();
+      const auth    = String(options.auth ?? '').trim();
+      const getUrl  = String(options.get ?? '').trim();
       const postUrl = String(options.post ?? '').trim();
 
       if (!apiKey || !auth || !getUrl || !postUrl) {
         return { ok: false, message: Joomla.Text._('PLG_CONTENT_EXPORT_INVALID_CONFIG_REQUIRED') };
+      }
+      // When using a Bearer token, ensure there is a non-empty token segment
+      const lowerApiKey = String(apiKey).trim().toLowerCase();
+      if (lowerApiKey.startsWith('bearer')) {
+        const token = String(apiKey).slice(6).trim(); // strip 'Bearer' prefix
+        if (!token) {
+          return { ok: false, message: Joomla.Text._('PLG_CONTENT_EXPORT_INVALID_CONFIG_REQUIRED') };
+        }
       }
       return { ok: true, apiKey, auth, getUrl, postUrl };
     }
@@ -310,10 +344,18 @@
       const toolbarContainer = toolbar.closest('.subhead');
       const insertTarget = toolbarContainer || toolbar.parentElement;
 
-      insertTarget.insertAdjacentHTML('afterend',
-        `<div id="msg" class="alert ${alertClass}" role="alert" style="margin: 10px; border: 2px solid; border-radius: 4px;">${message}</div>`);
+      const msgBox = document.createElement('div');
 
-      const msgBox = document.getElementById('msg');
+      msgBox.id = 'msg';
+      msgBox.className = `alert ${alertClass}`;
+      msgBox.setAttribute('role', 'alert');
+      msgBox.style.margin = '10px';
+      msgBox.style.border = '2px solid';
+      msgBox.style.borderRadius = '4px';
+      msgBox.textContent = message;
+
+      insertTarget.insertAdjacentElement('afterend', msgBox);
+
       if (msgBox) {
         setTimeout(() => {
           msgBox.remove();
