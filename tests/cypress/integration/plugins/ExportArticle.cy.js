@@ -162,20 +162,20 @@ describe('Test in backend that the content Export plugin', () => {
 
  it('rejects a bulk export request that exceeds the configured ID limit', () => {
     stubRemoteApi();
-    cy.db_updateExtensionParameter('max_bulk_ids', 10, 'plg_content_export');
-    const articlePromises = Array.from({ length: 12 }, (_, i) =>
-      cy.db_createArticle({ title: `Test export article bulk ${i}` })
-    );
-
+    cy.db_updateExtensionParameter('max_bulk_ids', 3, 'plg_content_export');
     // Wait for all DB insertions to finish before visiting the page
-    cy.wrap(Promise.all(articlePromises)).then(() => {
+    cy.then(() => {
+      for (let i = 0; i < 4; i += 1) {
+        cy.db_createArticle({ title: `Test export article bulk ${i}` });
+      }
+    }).then(() => {
       cy.visit('/administrator/index.php?option=com_content&view=articles&filter=');
       cy.searchForItem('Test export article bulk');
       cy.checkAllResults();
       cy.get('#toolbar-upload').click();
 
-      // Verify the error message contains the max limit threshold (10)
-      cy.get('#msg').should('contain.text', '10');
+      // Verify the error message contains the max limit threshold (3)
+      cy.get('#msg').should('contain.text', '3');
     });
   });
 });
