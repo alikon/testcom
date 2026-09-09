@@ -11,6 +11,7 @@
 namespace Alikonweb\Plugin\Content\Export\Extension;
 
 use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Helper\ContentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
@@ -99,6 +100,11 @@ final class Export extends CMSPlugin
         $domain        = $this->params->get('url', 'http://localhost');
         $this->postUrl = $domain . '/api/index.php/v1/content/articles';
         $this->getUrl  = $domain . '/api/index.php/v1/content';
+
+        $canDo = ContentHelper::getActions('com_content');
+        if (!$canDo->get('core.admin')) {
+            return;
+        }
 
         // Get an instance of the Toolbar and add the export button
         $toolbar = Toolbar::getInstance('toolbar');
