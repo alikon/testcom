@@ -7,6 +7,8 @@ Build Status
 |-------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|----------------------------------------------------------------------------------|
 | [![Build Status](https://github.com/alikon/testcom/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/alikon/testcom) | [![PHP](https://img.shields.io/badge/PHP-V8.1.0-green)](https://www.php.net/) | [![node-lts](https://img.shields.io/badge/Node-V20.0-green)](https://nodejs.org/en/) | [![npm](https://img.shields.io/badge/npm-v10.1.0-green)](https://nodejs.org/en/) |
 
+![Repository activity analytics from Repobeats](https://repobeats.axiom.co/api/embed/1dfea5a542103e5a72c3e3798e8e224bed6444c5.svg "Repobeats analytics image")
+
 ## Requirements
 Joomla >= 5.0
 
@@ -21,13 +23,15 @@ This repository contains various Joomla extensions. To ensure the download count
 | **Content Export** | v2.2.0 | [Download plg_content_export-2.2.0.zip](https://github.com/alikon/testcom/releases/download/v1.4/plg_content_export-2.2.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.4/plg_content_export-2.2.0.zip?label=downloads) |
 | **Task Delete trashed** | v1.8.0 | [Download plg_task_deltrash-1.8.0.zip](https://github.com/alikon/testcom/releases/download/v1.4/plg_task_deltrash-1.8.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.4/plg_task_deltrash-1.8.0.zip?label=downloads) |
 | **MagicLogin** | v1.1.0 | [Download plg_system_magiclogin-1.1.0.zip](https://github.com/alikon/testcom/releases/download/v1.4/plg_system_magiclogin-1.1.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.4/plg_system_magiclogin-1.1.0.zip?label=downloads) |
+| **Custom Reply** | v1.1.0 | [Download plg_contact_customreply-1.1.0.zip](https://github.com/alikon/testcom/releases/download/v1.4/plg_contact_customreply-1.1.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.4/plg_contact_customreply-1.1.0.zip?label=downloads) |
+| **SwaggerUI** | v2.1.0 | [Download plg_content_swaggerui-2.1.0.zip](https://github.com/alikon/testcom/releases/download/v1.4/plg_content_swaggerui-2.1.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.4/plg_content_swaggerui-2.1.0.zip?label=downloads) |
 | **SafeMode** | v1.1.0 | [Download plg_system_safemode-1.1.0.zip](https://github.com/alikon/testcom/releases/download/v1.4/plg_system_safemode-1.1.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.4/plg_system_safemode-1.1.0.zip?label=downloads) |
 | **SafeMode** | v1.1.0 | [Download plg_console_safemode-1.1.0.zip](https://github.com/alikon/testcom/releases/download/v1.4/plg_console_safemode-1.1.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.4/plg_console_safemode-1.1.0.zip?label=downloads) |
-| **SwaggerUI** | v2.1.0 | [Download plg_content_swaggerui-2.1.0.zip](https://github.com/alikon/testcom/releases/download/v1.4/plg_content_swaggerui-2.1.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.4/plg_content_swaggerui-2.1.0.zip?label=downloads) |
 | **Github Portfolio** | v1.2.0 | [Download mod_github_portfolio-1.2.0.zip](https://github.com/alikon/testcom/releases/download/v1.4/mod_github_portfolio-1.2.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.4/mod_github_portfolio-1.2.0.zip?label=downloads) |
 | **Joomla Statistics** | v1.2.0 | [Download mod_jstats-1.2.0.zip](https://github.com/alikon/testcom/releases/download/v1.4/mod_jstats-1.2.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.4/mod_jstats-1.2.0.zip?label=downloads) |
 | **Changelog** | v1.2.0 | [Download mod_changelog-1.2.0.zip](https://github.com/alikon/testcom/releases/download/v1.4/mod_changelog-1.2.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.4/mod_changelog-1.2.0.zip?label=downloads) |
-| **Custom Reply** | v1.1.0 | [Download plg_contact_customreply-1.1.0.zip](https://github.com/alikon/testcom/releases/download/v1.4/plg_contact_customreply-1.1.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.4/plg_contact_customreply-1.1.0.zip?label=downloads) |
+| **Update from CLI** | v1.0.0 | [Download plg_console_updatefromcli-1.0.0.zip](https://github.com/alikon/testcom/releases/download/v1.4/plg_console_updatefromcli-1.0.0.zip) | ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/v1.4/plg_console_updatefromcli-1.0.0.zip?label=downloads) |
+
 
 ![Downloads](https://img.shields.io/github/downloads/alikon/testcom/total)
 

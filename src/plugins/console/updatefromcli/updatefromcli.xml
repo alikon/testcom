@@ -20,9 +20,20 @@
         <folder>language</folder>
         <folder>field</folder>
     </files>
+    <config>
+        <fields name="params" addfieldpath="/plugins/console/updatefromcli/field">
+            <fieldset name="basic">
+                <field name="license" type="note" 
+                    label="PLG_CONSOLE_UPDATEFROMCLI_GPL_LICENSE" 
+                    description=""
+                    class="alert alert-success" />
+                
+                <field name="plugin_links" type="links" label="PLG_CONSOLE_UPDATEFROMCLI_LINKS_LABEL" />
+                <field name="plugin_version" type="version" label="PLG_CONSOLE_UPDATEFROMCLI_VERSION_LABEL" />                
+            </fieldset>
+        </fields>
+    </config>
     <updateservers>
         <server type="extension" name="Console - Update from CLI">https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/console/updatefromcli/updateserver.xml</server>
     </updateservers>
 </extension>
-
-

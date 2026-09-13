@@ -1,0 +1,11 @@
+<changelogs>
+    <changelog>
+        <element>ntfy</element>
+        <folder>content</folder>
+        <type>plugin</type>
+        <version>1.0.0</version>
+        <note>
+            <item>Not listed on Joomla Extension Directory</item>
+        </note>
+    </changelog>
+</changelogs>

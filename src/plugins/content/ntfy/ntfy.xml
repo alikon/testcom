@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="content" method="upgrade">
+    <name>plg_content_ntfy</name>
+    <author>Alikon</author>
+    <creationDate>August 2026</creationDate>
+    <copyright>Copyright (C) 2026 Alikon. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>alikon@alikonweb.it</authorEmail>
+	<authorUrl>www.alikonweb.it</authorUrl>
+    <version>1.0.0</version>    
+    <description>PLG_CONTENT_NTFY_XML_DESCRIPTION</description>
+    <namespace path="src">Alikonweb\Plugin\Content\Ntfy</namespace>
+    <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/content/ntfy/changelog.xml</changelogurl>
+    <files>
+        <folder plugin="ntfy">services</folder>
+        <folder>src</folder>
+        <folder>language</folder>
+		<folder>field</folder>
+    </files>
+    <config>
+        <fields name="params" addfieldpath="/plugins/content/ntfy/field">
+			<fieldset name="basic">
+				<field name="license" type="note" 
+                    label="PLG_CONTENT_NTFY_GPL_LICENSE" 
+                    description=""
+                    class="alert alert-success" />
+                
+                <field name="plugin_links" type="links" label="PLG_CONTENT_NTFY_LINKS_LABEL" />
+				<field name="plugin_version" type="version" label="PLG_CONTENT_NTFY_VERSION_LABEL" />
+                <field 
+                    name="ntfy_server" 
+                    type="url" 
+                    default="https://ntfy.sh" 
+                    label="PLG_CONTENT_NTFY_SERVER_LABEL" 
+                    required="true" 
+                />
+                <field 
+                    name="ntfy_topic" 
+                    type="text" 
+                    label="PLG_CONTENT_NTFY_TOPIC_LABEL" 
+                    required="true" 
+                />
+                <field 
+                    name="ntfy_token" 
+                    type="password" 
+                    label="PLG_CONTENT_NTFY_TOKEN_LABEL" 
+                />
+                <field 
+                    name="ntfy_priority" 
+                    type="list" 
+                    default="3" 
+                    label="PLG_CONTENT_NTFY_PRIORITY_LABEL">
+                    <option value="5">PLG_CONTENT_NTFY_PRIORITY_MAX</option>
+                    <option value="4">PLG_CONTENT_NTFY_PRIORITY_HIGH</option>
+                    <option value="3">PLG_CONTENT_NTFY_PRIORITY_NORMAL</option>
+                    <option value="2">PLG_CONTENT_NTFY_PRIORITY_MIN</option>
+                    <option value="1">PLG_CONTENT_NTFY_PRIORITY_LOW</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+    <updateservers>
+		<server type="extension" name="Content - Ntfy">https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/content/ntfy/updateserver.xml</server>
+	</updateservers>
+</extension>
