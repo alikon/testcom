@@ -51,6 +51,8 @@ class ChangelogHelper
             $xml = @simplexml_load_string($body);
 
             if (!$xml) {
+                Log::add('Failed to parse changelog XML from URL: ' . $url, Log::WARNING, 'mod_changelog');
+
                 return null;
             }
 
