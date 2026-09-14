@@ -12,7 +12,9 @@ namespace Alikonweb\Module\Changelog\Site\Helper;
 
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\Http\HttpFactory;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\Version;
+use Joomla\Http\HttpFactory;
 use Joomla\Registry\Registry;
 
 /**
@@ -31,69 +33,66 @@ class ChangelogHelper
      *
      * @since   1.0.0
      */
-    public static function getChangelogData($url)
+    public static function getChangelogData(string $url): ?array
     {
         try {
-            $options =  new Registry();
-            // Set a timeout so your site doesn't hang if GitHub is slow
+            $options = new Registry();
             $options->set('timeout', 10);
-            $transport = HttpFactory::getHttp($options);
-            $response  = $transport->get($url);
+            $options->set('userAgent', (new Version())->getUserAgent('Joomla', true, false));
 
-            if ($response->code !== 200) {
+            $response   = (new HttpFactory())->getHttp($options)->get($url);
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode >= 300) {
+                Log::add('Failed to fetch changelog: HTTP status ' . $statusCode, Log::WARNING, 'mod_changelog');
                 return null;
             }
 
-            $xml = simplexml_load_string($response->body);
+            $body = $response->getBody();
+
+            $xml = @simplexml_load_string($body);
 
             if (!$xml) {
+                Log::add('Failed to parse changelog XML from URL: ' . $url, Log::WARNING, 'mod_changelog');
+
                 return null;
             }
 
-            $logs       = [];
+            if (strtolower($xml->getName()) === 'html') {
+                Log::add('Changelog URL returned HTML instead of XML. Use a raw URL.', Log::WARNING, 'mod_changelog');
+
+                return null;
+            }
+
             $changelogs = [];
 
             foreach ($xml->changelog as $changelog) {
                 $item          = new \stdClass();
-                $item->element = (string)$changelog->element;
-                $item->type    = (string)$changelog->type;
-                $item->version = (string)$changelog->version;
+                $item->element = (string) $changelog->element;
+                $item->type    = (string) $changelog->type;
+                $item->version = (string) $changelog->version;
 
-                // Process each section
-                $sections = ['security', 'fix', 'language', 'addition', 'change', 'remove', 'note'];
-
-                foreach ($sections as $section) {
-                    if (isset($changelog->{$section}, $changelog->{$section}->item)) {
-                        $item->{$section} = new \stdClass();
-
-                        // Check if there are multiple items
-                        if (\count($changelog->{$section}->item) > 1) {
-                            // Multiple items - convert to array
-                            $items = [];
-                            foreach ($changelog->{$section}->item as $subItem) {
-                                $items[] = trim((string)$subItem);
-                            }
-                            $item->{$section}->item = $items;
-                        } else {
-                            // Single item - convert to array with one element for consistency
-                            $item->{$section}->item = [trim((string)$changelog->{$section}->item)];
-                        }
+                foreach (['security', 'fix', 'language', 'addition', 'change', 'remove', 'note'] as $section) {
+                    if (!isset($changelog->{$section}, $changelog->{$section}->item)) {
+                        continue;
                     }
+
+                    $item->{$section}       = new \stdClass();
+                    $item->{$section}->item = array_map(
+                        static fn(\SimpleXMLElement $i): string => trim((string) $i),
+                        iterator_to_array($changelog->{$section}->item, false)
+                    );
                 }
 
                 $changelogs[] = $item;
             }
 
-            // Reverse to show the latest version first
-            return array_reverse($changelogs);
+            usort($changelogs, static fn(\stdClass $a, \stdClass $b): int => version_compare($b->version, $a->version));
+
+            return $changelogs;
 
         } catch (\Exception $e) {
-            // Log the exception so operational issues can be diagnosed
-            \Joomla\CMS\Log\Log::add(
-                'Error fetching changelog: ' . $e->getMessage(),
-                \Joomla\CMS\Log\Log::ERROR,
-                'mod_changelog'
-            );
+            Log::add('Error fetching changelog: ' . $e->getMessage(), Log::ERROR, 'mod_changelog');
 
             return null;
         }
