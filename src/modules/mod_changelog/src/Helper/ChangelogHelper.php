@@ -40,18 +40,26 @@ class ChangelogHelper
             $options->set('timeout', 10);
             $options->set('userAgent', (new Version())->getUserAgent('Joomla', true, false));
 
-            $body = (new HttpFactory())->getHttp($options)->get($url)->getBody();
+            $response   = (new HttpFactory())->getHttp($options)->get($url);
+            $statusCode = $response->getStatusCode();
 
-            if (stripos(trim($body), '<html') === 0 || stripos(trim($body), '<!DOCTYPE') === 0) {
-                Log::add('Changelog URL returned HTML instead of XML. Use a raw URL.', Log::WARNING, 'mod_changelog');
-
+            if ($statusCode < 200 || $statusCode >= 300) {
+                Log::add('Failed to fetch changelog: HTTP status ' . $statusCode, Log::WARNING, 'mod_changelog');
                 return null;
             }
+
+            $body = $response->getBody();
 
             $xml = @simplexml_load_string($body);
 
             if (!$xml) {
                 Log::add('Failed to parse changelog XML from URL: ' . $url, Log::WARNING, 'mod_changelog');
+
+                return null;
+            }
+
+            if (strtolower($xml->getName()) === 'html') {
+                Log::add('Changelog URL returned HTML instead of XML. Use a raw URL.', Log::WARNING, 'mod_changelog');
 
                 return null;
             }
