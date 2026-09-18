@@ -160,7 +160,64 @@ describe('Test in backend that the content Export plugin', () => {
     });
   });
 
- it('rejects a bulk export request that exceeds the configured ID limit', () => {
+  // Variant of stubRemoteApi() that simulates an existing remote article so the
+  // client goes through the update (PATCH) flow instead of creation (POST).
+  const stubRemoteApiWithExistingArticle = (articleId = 123) => {
+    cy.intercept('GET', `${remoteDomain}/api/index.php/v1/content/categories/*`, {
+      statusCode: 200,
+      body: {},
+    }).as('remoteCategoryCheck');
+
+    cy.intercept('GET', `${remoteDomain}/api/index.php/v1/content/articles*`, {
+      statusCode: 200,
+      body: {
+        data: [{ id: articleId, attributes: { title: 'Existing remote article' } }],
+      },
+    }).as('remoteArticleSearch');
+
+    cy.intercept('PATCH', `${remoteDomain}/api/index.php/v1/content/articles/${articleId}`, {
+      statusCode: 200,
+      body: { data: { id: articleId } },
+    }).as('remoteArticleUpdate');
+  };
+
+  it('exports an article by updating an existing remote article via PATCH', () => {
+    const remoteArticleId = 123;
+    cy.db_createArticle({
+      title: 'Test export article patch',
+      introtext: '<p>Patch flow intro</p>',
+      catid: 2,
+      state: 1,
+    }).then(() => {
+      stubRemoteApiWithExistingArticle(remoteArticleId);
+      cy.intercept('POST', '**/index.php?option=com_ajax&plugin=export&group=content&format=json').as('bulkExportAjax');
+
+      cy.visit('/administrator/index.php?option=com_content&view=articles&filter=');
+      cy.searchForItem('Test export article patch');
+      cy.checkAllResults();
+      cy.get('#toolbar-upload').click();
+
+      cy.wait('@bulkExportAjax').then((interception) => {
+        expect(interception.response.statusCode).to.eq(200);
+        expect(interception.response.body.success).to.eq(true);
+      });
+
+      cy.wait('@remoteArticleSearch');
+
+      cy.wait('@remoteArticleUpdate').then((interception) => {
+        expect(interception.request.method).to.eq('PATCH');
+        expect(interception.request.url).to.include(`/content/articles/${remoteArticleId}`);
+        const body = typeof interception.request.body === 'string'
+          ? JSON.parse(interception.request.body)
+          : interception.request.body;
+        expect(body).to.have.property('title', 'Test export article patch');
+      });
+
+      cy.get('#msg').should('contain.text', 'Bulk export complete');
+    });
+  });
+
+  it('rejects a bulk export request that exceeds the configured ID limit', () => {
     stubRemoteApi();
     cy.db_updateExtensionParameter('max_bulk_ids', 3, 'plg_content_export');
     // Wait for all DB insertions to finish before visiting the page
