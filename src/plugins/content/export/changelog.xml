@@ -108,4 +108,16 @@
             <item>Namespace</item>
         </addition>
     </changelog>
+    <changelog>
+        <element>export</element>
+        <folder>content</folder>
+        <type>plugin</type>
+        <version>3.0.0</version>
+        <addition>
+            <item>Allow to export multiple article</item>
+        </addition>
+        <note>
+            <item>More system tests</item>
+        </note>
+    </changelog>
 </changelogs>
