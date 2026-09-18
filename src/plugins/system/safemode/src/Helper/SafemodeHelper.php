@@ -25,7 +25,7 @@ use Joomla\Database\DatabaseInterface;
  * Provides shared functionality for SafeMode state management across
  * system plugin and CLI command implementations.
  *
- * @since  __DEPLOY_VERSION__
+ * @since  1.0.0
  */
 class SafemodeHelper
 {
@@ -33,7 +33,7 @@ class SafemodeHelper
      * Path to the state file
      *
      * @var    string
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     private string $stateFile;
 
@@ -41,7 +41,7 @@ class SafemodeHelper
      * Database instance
      *
      * @var    DatabaseInterface
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     private DatabaseInterface $db;
 
@@ -49,7 +49,7 @@ class SafemodeHelper
      * List of plugins to exclude from SafeMode operations
      *
      * @var    array
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     private array $excludedPlugins = [
         'plg_system_safemode',
@@ -60,7 +60,7 @@ class SafemodeHelper
      * Flag to track if logger has been registered
      *
      * @var    bool
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     private static bool $loggerRegistered = false;
 
@@ -70,7 +70,7 @@ class SafemodeHelper
      * @param   DatabaseInterface|null  $db         Database instance
      * @param   string|null            $stateFile  Custom state file path
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     public function __construct(?DatabaseInterface $db = null, ?string $stateFile = null)
     {
@@ -84,7 +84,7 @@ class SafemodeHelper
      *
      * @return  void
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     private function ensureLoggerRegistered(): void
     {
@@ -99,7 +99,7 @@ class SafemodeHelper
      *
      * @return  array  Array of integer plugin IDs
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     public function readDisabledIds(): array
     {
@@ -145,7 +145,7 @@ class SafemodeHelper
      *
      * @return  bool  True on success, false on failure
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     public function writeDisabledIds(array $ids): bool
     {
@@ -179,7 +179,7 @@ class SafemodeHelper
      *
      * @return  bool  True on success, false on failure
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     public function clearDisabledIds(): bool
     {
@@ -204,7 +204,7 @@ class SafemodeHelper
      *
      * @return  bool  True if SafeMode is active
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     public function isSafeModeActive(): bool
     {
@@ -217,7 +217,7 @@ class SafemodeHelper
      *
      * @return  array  Array of plugin objects
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     public function getDisableablePlugins(): array
     {
@@ -244,7 +244,7 @@ class SafemodeHelper
      *
      * @return  array  Array of plugin objects
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     public function getRestorablePlugins(array $disabledIds): array
     {
@@ -274,7 +274,7 @@ class SafemodeHelper
      *
      * @return  array  Array of disabled plugin objects
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     public function disablePlugins(bool $dryRun = false): array
     {
@@ -310,7 +310,7 @@ class SafemodeHelper
      *
      * @return  array  Array of restored plugin objects
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     public function restorePlugins(bool $dryRun = false): array
     {
@@ -352,7 +352,7 @@ class SafemodeHelper
      *
      * @return  bool  True on success, false on failure
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     public function setAdminFlag(bool $active): bool
     {
@@ -395,7 +395,7 @@ class SafemodeHelper
      *
      * @return  string
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     public function getStateFile(): string
     {

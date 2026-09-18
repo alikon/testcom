@@ -21,7 +21,7 @@ use Joomla\CMS\Version;
 /**
  * Dispatcher class for mod_backward
  *
- * @since  __DEPLOY_VERSION__
+ * @since  1.0.0
  */
 class Dispatcher extends AbstractModuleDispatcher
 {
@@ -30,7 +30,7 @@ class Dispatcher extends AbstractModuleDispatcher
      *
      * @return  array
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     protected function getLayoutData()
     {

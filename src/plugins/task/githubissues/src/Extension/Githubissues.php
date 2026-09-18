@@ -60,7 +60,7 @@ final class Githubissues extends CMSPlugin implements SubscriberInterface, Datab
      * Database object.
      *
      * @var    JDatabaseDriver
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     protected $db;
 

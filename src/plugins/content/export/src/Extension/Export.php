@@ -25,7 +25,7 @@ use Joomla\CMS\Toolbar\Toolbar;
  * Add a button to post a webservice, from either the single article view
  * or the articles list view (bulk export).
  *
- * @since  __DEPLOY_VERSION__
+ * @since  1.0.0
  */
 final class Export extends CMSPlugin
 {
@@ -34,7 +34,7 @@ final class Export extends CMSPlugin
      * AJAX request, to avoid abuse / resource exhaustion.
      *
      * @var    integer
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     protected $maxBulkIds = 5;
 
@@ -42,7 +42,7 @@ final class Export extends CMSPlugin
      * Application object
      *
      * @var    CMSApplication
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     protected $app;
 
@@ -50,7 +50,7 @@ final class Export extends CMSPlugin
      * URL to get the data.
      *
      * @var    string
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     protected $getUrl = '';
 
@@ -58,7 +58,7 @@ final class Export extends CMSPlugin
      * URL to send the data.
      *
      * @var    string
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     protected $postUrl = '';
 
@@ -68,7 +68,7 @@ final class Export extends CMSPlugin
      *
      * @return  void
      *
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     public function onBeforeRender(): void
     {
@@ -192,7 +192,7 @@ final class Export extends CMSPlugin
      *
      * @throws  \Exception
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     public function onAjaxExport(): array
     {
@@ -280,7 +280,7 @@ final class Export extends CMSPlugin
      *
      * @return  integer
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     private function getConfiguredCatId(): int
     {
@@ -292,7 +292,7 @@ final class Export extends CMSPlugin
      *
      * @return  integer
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     private function getConfiguredState(): int
     {
@@ -304,7 +304,7 @@ final class Export extends CMSPlugin
      *
      * @return  integer
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     private function getMaxBulkIds(): int
     {

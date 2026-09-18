@@ -27,7 +27,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 /**
  * Updatefromcli CLI Command
  *
- * @since  __DEPLOY_VERSION__
+ * @since  1.0.0
  */
 final class UpdatefromcliCommand extends AbstractCommand
 {
@@ -35,7 +35,7 @@ final class UpdatefromcliCommand extends AbstractCommand
      * The default command name
      *
      * @var    string
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     protected static $defaultName = 'extension:update';
 
@@ -47,7 +47,7 @@ final class UpdatefromcliCommand extends AbstractCommand
      *
      * @return  integer  The command exit code
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     protected function doExecute(InputInterface $input, OutputInterface $output): int
     {
@@ -135,7 +135,7 @@ final class UpdatefromcliCommand extends AbstractCommand
      *
      * @return array
      *
-     * @since __DEPLOY_VERSION__
+     * @since 1.0.0
      */
     protected function getExtensionInfo(array $extensions): array
     {
@@ -161,7 +161,7 @@ final class UpdatefromcliCommand extends AbstractCommand
      *
      * @return  void
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     protected function configure(): void
     {

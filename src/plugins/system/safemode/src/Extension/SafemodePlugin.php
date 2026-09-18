@@ -21,7 +21,7 @@ use Joomla\Event\SubscriberInterface;
 /**
  * SafeMode System Plugin
  *
- * @since  __DEPLOY_VERSION__
+ * @since  1.0.0
  */
 class SafemodePlugin extends CMSPlugin implements SubscriberInterface
 {
@@ -29,7 +29,7 @@ class SafemodePlugin extends CMSPlugin implements SubscriberInterface
      * Load the language file on instantiation.
      *
      * @var    boolean
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     protected $autoloadLanguage = true;
 
@@ -37,7 +37,7 @@ class SafemodePlugin extends CMSPlugin implements SubscriberInterface
      * SafeMode helper instance
      *
      * @var    SafemodeHelper
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     private $helper;
 
@@ -46,7 +46,7 @@ class SafemodePlugin extends CMSPlugin implements SubscriberInterface
      *
      * @return  array
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     public static function getSubscribedEvents(): array
     {
@@ -61,7 +61,7 @@ class SafemodePlugin extends CMSPlugin implements SubscriberInterface
      * @param   \Joomla\Event\DispatcherInterface  $dispatcher  The event dispatcher
      * @param   array                              $config      An optional associative array of configuration settings
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     public function __construct($dispatcher, array $config)
     {
@@ -76,7 +76,7 @@ class SafemodePlugin extends CMSPlugin implements SubscriberInterface
      *
      * @return  void
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     public function onAfterInitialise(Event $event): void
     {
@@ -124,7 +124,7 @@ class SafemodePlugin extends CMSPlugin implements SubscriberInterface
      *
      * @return  void
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     private function showAdminBanner(): void
     {
@@ -143,7 +143,7 @@ class SafemodePlugin extends CMSPlugin implements SubscriberInterface
      *
      * @return  void
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     private function clearSafeModeMessages(): void
     {

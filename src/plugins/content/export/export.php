@@ -22,7 +22,7 @@ use Joomla\Registry\Registry;
 /**
  * Add a button to post a webservice
  *
- * @since  __DEPLOY_VERSION__
+ * @since  1.0.0
  */
 class PlgContentExport extends CMSPlugin
 {
@@ -30,7 +30,7 @@ class PlgContentExport extends CMSPlugin
      * Application object
      *
      * @var    CMSApplication
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     protected $app;
 
@@ -38,7 +38,7 @@ class PlgContentExport extends CMSPlugin
      * Database driver
      *
      * @var    DatabaseDriver
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     protected $db;
 
@@ -46,7 +46,7 @@ class PlgContentExport extends CMSPlugin
      * URL to get the data.
      *
      * @var    string
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     protected $getUrl = '';
 
@@ -54,7 +54,7 @@ class PlgContentExport extends CMSPlugin
      * URL to send the data.
      *
      * @var    string
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     protected $postUrl = '';
 
@@ -62,7 +62,7 @@ class PlgContentExport extends CMSPlugin
      * URL to send the data.
      *
      * @var    string
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     protected $verb = '';
 
@@ -70,7 +70,7 @@ class PlgContentExport extends CMSPlugin
      * URL to send the data.
      *
      * @var    string
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     protected $options = '';
 
@@ -78,7 +78,7 @@ class PlgContentExport extends CMSPlugin
      * URL to send the data.
      *
      * @var    string
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     protected $headers = [];
 
@@ -86,7 +86,7 @@ class PlgContentExport extends CMSPlugin
      * URL to send the data.
      *
      * @var    string
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     protected $json = null;
 
@@ -95,7 +95,7 @@ class PlgContentExport extends CMSPlugin
      *
      * @return  void
      *
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     public function onBeforeRender()
     {
@@ -123,7 +123,7 @@ class PlgContentExport extends CMSPlugin
      *
      * @return  array or void  Will be converted into the JSON response to the module.
      *
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     public function onAjaxExport()
     {
@@ -167,7 +167,7 @@ class PlgContentExport extends CMSPlugin
      *
      * @return  boolean
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      *
      * @throws  RuntimeException  If there is an error sending the data.
      */
@@ -199,7 +199,7 @@ class PlgContentExport extends CMSPlugin
      *
      * @return  boolean
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      *
      * @throws  RuntimeException  If there is an error sending the data.
      */
@@ -237,7 +237,7 @@ class PlgContentExport extends CMSPlugin
      *
      * @return  boolean
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      *
      * @throws  RuntimeException  If there is an error sending the data.
      */

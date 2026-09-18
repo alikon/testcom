@@ -29,7 +29,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 /**
  * SafeMode CLI Command
  *
- * @since  __DEPLOY_VERSION__
+ * @since  1.0.0
  */
 final class SafemodeCommand extends AbstractCommand
 {
@@ -39,13 +39,13 @@ final class SafemodeCommand extends AbstractCommand
      * The default command name
      *
      * @var    string
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     protected static $defaultName = 'safe:mode';
 
     /**
      * @var CMSApplicationInterface
-     * @since __DEPLOY_VERSION__
+     * @since 1.0.0
      */
     private $app;
 
@@ -53,7 +53,7 @@ final class SafemodeCommand extends AbstractCommand
      * SafeMode helper instance
      *
      * @var    SafemodeHelper
-     * @since  __DEPLOY_VERSION__
+     * @since  1.0.0
      */
     private $helper;
 
@@ -62,7 +62,7 @@ final class SafemodeCommand extends AbstractCommand
       *
       * @param  DatabaseInterface|null  $db  Optional DB instance, falls back to container/Factory.
       *
-      * @since  __DEPLOY_VERSION__
+      * @since  1.0.0
       */
     public function __construct(?DatabaseInterface $db = null)
     {
@@ -93,7 +93,7 @@ final class SafemodeCommand extends AbstractCommand
      *
      * @return  void
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     protected function configure(): void
     {
@@ -110,7 +110,7 @@ final class SafemodeCommand extends AbstractCommand
      *
      * @return  integer  The command exit code
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     protected function doExecute(InputInterface $input, OutputInterface $output): int
     {
@@ -144,7 +144,7 @@ final class SafemodeCommand extends AbstractCommand
      *
      * @return  int  Exit code
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     private function handleStatus(OutputInterface $output): int
     {
@@ -169,7 +169,7 @@ final class SafemodeCommand extends AbstractCommand
      *
      * @return  int  Exit code
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     private function handleOn(OutputInterface $output, bool $dryRun): int
     {
@@ -213,7 +213,7 @@ final class SafemodeCommand extends AbstractCommand
      *
      * @return  int  Exit code
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   1.0.0
      */
     private function handleOff(OutputInterface $output, bool $dryRun): int
     {
