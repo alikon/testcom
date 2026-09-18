@@ -87,12 +87,14 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
     }
 
     /**
-     * @param   ExecuteTaskEvent  $event  The onExecuteTask event
+     * Executes the delete-trash task based on the configured parameters.
      *
-     * @return void
+     * @param   ExecuteTaskEvent  $event  The onExecuteTask event.
      *
-     * @since 4.1.0
-     * @throws Exception
+     * @return  integer  The task status code.
+     *
+     * @since   4.1.0
+     * @throws  \Exception
      */
     public function deleteTrash(ExecuteTaskEvent $event): int
     {
@@ -147,6 +149,15 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         return Status::OK;
     }
 
+    /**
+     * Deletes trashed categories for a given component extension.
+     *
+     * @param   string  $component  The component extension (e.g. 'com_content').
+     *
+     * @return  void
+     *
+     * @since   4.1.0
+     */
     private function delCategories($component): void
     {
         $cat    = 0;
@@ -186,6 +197,13 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         }
     }
 
+    /**
+     * Deletes trashed articles and their related records.
+     *
+     * @return  void
+     *
+     * @since   4.1.0
+     */
     private function delArticles(): void
     {
         $art      = 0;
@@ -265,6 +283,15 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         }
     }
 
+    /**
+     * Deletes trashed modules for the given client types.
+     *
+     * @param   array  $type  Client types to process: 'site', 'admin', or both.
+     *
+     * @return  void
+     *
+     * @since   4.1.0
+     */
     private function delModules(array $type = []): void
     {
         $mod      = 0;
@@ -305,6 +332,15 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         }
     }
 
+    /**
+     * Deletes trashed redirects and optionally purges all redirect records.
+     *
+     * @param   bool  $purge  Whether to purge all redirects before deleting trashed ones.
+     *
+     * @return  void
+     *
+     * @since   4.1.0
+     */
     private function delRedirects(Bool $purge = false): void
     {
         $red = 0;
@@ -333,6 +369,13 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         }
     }
 
+    /**
+     * Deletes trashed tags.
+     *
+     * @return  void
+     *
+     * @since   4.1.0
+     */
     private function delTags(): void
     {
         $art = 0;
@@ -358,6 +401,13 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         }
     }
 
+    /**
+     * Deletes trashed scheduled tasks.
+     *
+     * @return  void
+     *
+     * @since   4.1.0
+     */
     private function delTasks(): void
     {
         $art = 0;
@@ -383,6 +433,15 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         }
     }
 
+    /**
+     * Deletes trashed menu items for the given client types.
+     *
+     * @param   array  $type  Client types to process: 'site', 'admin', or both.
+     *
+     * @return  void
+     *
+     * @since   4.1.0
+     */
     private function delMenuItems(array $type = []): void
     {
         $art      = 0;
@@ -424,6 +483,13 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         }
     }
 
+    /**
+     * Deletes trashed contacts.
+     *
+     * @return  void
+     *
+     * @since   4.1.0
+     */
     private function delContacts(): void
     {
         $art = 0;
@@ -569,6 +635,13 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         return true;
     }
 
+    /**
+     * Loads a Super User identity into the application session to grant elevated access.
+     *
+     * @return  void
+     *
+     * @since   4.1.0
+     */
     private function setGrant(): void
     {
         // Get all usergroups with Super User access
