@@ -7,7 +7,7 @@
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>alikon@alikonweb.it</authorEmail>
 	<authorUrl>www.alikonweb.it</authorUrl>
-	<version>3.0.0</version>
+	<version>4.0.0</version>
 	<description>PLG_CONTENT_EXPORT_XML_DESCRIPTION</description>
 	<namespace path="src">Alikonweb\Plugin\Content\Export</namespace>
 	<changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/content/export/changelog.xml</changelogurl>
@@ -86,6 +86,17 @@
 					step="1"
 					default="5"
 				/>
+				<field
+					name="download_format"
+					type="list"
+					label="PLG_CONTENT_EXPORT_DOWNLOAD_FORMAT_LABEL"
+					description="PLG_CONTENT_EXPORT_DOWNLOAD_FORMAT_DESC"
+					default="none"
+				>
+					<option value="none">PLG_CONTENT_EXPORT_DOWNLOAD_FORMAT_NONE</option>
+					<option value="json">JSON</option>
+					<option value="xml">XML</option>
+				</field>
 				<field
 					name="timeout"
 					type="integer"
