@@ -1,5 +1,3 @@
-Now let me extract and read the key files.# Joomla Content Plugin — Ntfy
-
 **Location:** `src/plugins/content/ntfy`
 **Type:** Joomla Content plugin (`plg_content_ntfy`), namespace `Alikonweb\Plugin\Content\Ntfy`
 
