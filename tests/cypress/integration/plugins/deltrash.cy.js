@@ -1,4 +1,4 @@
-describe('Test that the Joomla Task Plugin: Deltrash Test', () => {
+describe('Test that the Joomla Task Plugin: Deltrash', () => {
   /**
    * Create a deltrash scheduler task with the given params, run it via the
    * "Run Task" button and assert it completes successfully.
@@ -73,7 +73,7 @@ describe('Test that the Joomla Task Plugin: Deltrash Test', () => {
     cy.visit('/administrator/index.php?option=com_content&view=articles&filter[published]=-2');
     // cy.get('.display-5').should('contain', 'No Articles have been created yet');
     // cy.checkForSystemMessage('No Matching Results');
-    cy.contains('No Matching Results').should('exist');
+    cy.contains('No Articles have been created yet').should('exist');
   });
 
   it('empties trashed categories for the selected component', () => {
@@ -156,6 +156,6 @@ describe('Test that the Joomla Task Plugin: Deltrash Test', () => {
       redirects: 1, redirectspurge: 0, tags: 1, tasks: 0,
     }, 'Combined deltrash task');
     cy.visit('/administrator/index.php?option=com_content&view=articles&filter[published]=-2');
-    cy.contains('No Matching Results').should('exist');
+    cy.contains('No Articles have been created yet').should('exist');
   });
 });
