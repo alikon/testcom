@@ -77,11 +77,11 @@ describe('Test that the Joomla Task Plugin: Deltrash Test', () => {
   });
 
   it('empties trashed categories for the selected component', () => {
-    cy.db_createCategory({ title: 'Test trash category', extension: 'com_content', published: -2 });
-    // cy.visit('/administrator/index.php?option=com_categories&task=category.add&extension=com_content');
-    // cy.get('#jform_title').should('exist').type('Test category');
-    // cy.get('#jform_published').should('exist').select('Trashed');
-    // cy.clickToolbarButton('Save & Close');
+    // cy.db_createCategory({ title: 'Test trash category', extension: 'com_content', published: -2 });
+    cy.visit('/administrator/index.php?option=com_categories&task=category.add&extension=com_content');
+    cy.get('#jform_title').should('exist').type('Test category');
+    cy.get('#jform_published').should('exist').select('Trashed');
+    cy.clickToolbarButton('Save & Close');
     runDeltrashTask({ categories: 1, components: ['com_content'] });
     // waitForCategoryDeleted();
     cy.visit('/administrator/index.php?option=com_categories&view=categories&extension=com_content&filter[published]=-2');
