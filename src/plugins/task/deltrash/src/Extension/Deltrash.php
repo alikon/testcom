@@ -10,7 +10,6 @@
 
 namespace Alikonweb\Plugin\Task\Deltrash\Extension;
 
-use Joomla\CMS\Access\Access;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
@@ -37,7 +36,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
 
     /**
      * @var string[]
-     * @since 4.1.0
+     * @since 1.0.0
      */
     protected const TASKS_MAP = [
         'plg_task_deltrash' => [
@@ -52,21 +51,15 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      * The application object.
      *
      * @var  CMSApplication
-     * @since 4.1.0
+     * @since 1.0.0
      */
     protected $app;
-
-    /**
-     * @var  DatabaseInterface
-     * @since  4.1.0
-     */
-    protected $db;
 
     /**
      * Autoload the language file.
      *
      * @var boolean
-     * @since 4.1.0
+     * @since 1.0.0
      */
     protected $autoloadLanguage = true;
 
@@ -75,7 +68,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      *
      * @return string[]
      *
-     * @since 4.1.0
+     * @since 1.0.0
      */
     public static function getSubscribedEvents(): array
     {
@@ -93,60 +86,77 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      *
      * @return  integer  The task status code.
      *
-     * @since   4.1.0
+     * @since   1.0.0
      * @throws  \Exception
      */
     public function deleteTrash(ExecuteTaskEvent $event): int
     {
-        //$this->createRootUser();
 
-        $this->setGrant();
+        if (!$this->setGrant()) {
+            $this->logTask(Text::_('PLG_TASK_DELTRASH_GRANT_FAILED'), 'error');
 
-        if ($event->getArgument('params')->articles ?? false) {
-            $this->delArticles();
+            return Status::KNOCKOUT;
         }
 
-        if ($event->getArgument('params')->categories ?? false) {
-            $components = $event->getArgument('params')->components ?? [];
+        $params  = $event->getArgument('params');
+        $hasErrors = false;
+
+        // Build the list of enabled sub-routines as closures
+        $routines = [];
+
+        if ($params->articles ?? false) {
+            $routines['articles'] = fn() => $this->deleteArticles();
+        }
+
+        if ($params->categories ?? false) {
+            $components = $params->components ?? [];
 
             foreach ($components as $component) {
-                $this->delCategories($component);
+                $routines['categories:' . $component] = fn() => $this->delCategories($component);
             }
         }
 
-        if ($event->getArgument('params')->modules ?? false) {
-            $module = $event->getArgument('params')->moduletype ?? [];
-            $this->delModules($module);
+        if ($params->modules ?? false) {
+            $module = $params->moduletype ?? [];
+            $routines['modules'] = fn() => $this->delModules($module);
         }
 
-        if ($event->getArgument('params')->redirects ?? false) {
-            $purge = $event->getArgument('params')->redirectspurge ?? false;
-            $this->delRedirects($purge);
+        if ($params->redirects ?? false) {
+            $purge = $params->redirectspurge ?? false;
+            $routines['redirects'] = fn() => $this->delRedirects($purge);
         }
 
-        if ($event->getArgument('params')->tags ?? false) {
-            $this->delTags();
+        if ($params->tags ?? false) {
+            $routines['tags'] = fn() => $this->delTags();
         }
 
-        if ($event->getArgument('params')->tasks ?? false) {
-            $this->delTasks();
+        if ($params->tasks ?? false) {
+            $routines['tasks'] = fn() => $this->delTasks();
         }
 
-        if ($event->getArgument('params')->contacts ?? false) {
-            $this->delContacts();
+        if ($params->contacts ?? false) {
+            $routines['contacts'] = fn() => $this->delContacts();
         }
 
-        if ($event->getArgument('params')->menus ?? false) {
-            $menus = $event->getArgument('params')->menutype ?? [];
-            $this->delMenuItems($menus);
+        if ($params->menus ?? false) {
+            $menus = $params->menutype ?? [];
+            $routines['menus'] = fn() => $this->delMenuItems($menus);
         }
 
-        //$user = User::getInstance($this->app->getIdentity()->id);
+        // Run each routine in isolation: one failure must not abort the rest
+        foreach ($routines as $name => $routine) {
+            try {
+                $routine();
+            } catch (\Throwable $e) {
+                $hasErrors = true;
+                $this->logTask(
+                    Text::sprintf('PLG_TASK_DELTRASH_ROUTINE_FAILED', $name, $e->getMessage()),
+                    'error'
+                );
+            }
+        }
 
-        // Trigger delete of user
-        //$user->delete();
-
-        return Status::OK;
+        return $hasErrors ? Status::KNOCKOUT : Status::OK;
     }
 
     /**
@@ -156,36 +166,46 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      *
      * @return  void
      *
-     * @since   4.1.0
+     * @since   1.0.0
      */
     private function delCategories($component): void
     {
         $cat    = 0;
         $noleaf = 0;
-        $cmodel = $this->app->bootComponent('com_categories')
-            ->getMVCFactory()
-            ->createModel('Categories', 'Administrator', ['ignore_request' => true]);
+
+        $factory = $this->app->bootComponent('com_categories')->getMVCFactory();
+
+        $cmodel = $factory->createModel('Categories', 'Administrator', ['ignore_request' => true]);
         $cmodel->setState('filter.published', -2);
         $cmodel->setState('filter.extension', $component);
         $cmodel->setState('category.extension', $component);
+
         // Extract the component name
         $parts = explode('.', $component);
         $cmodel->setState('category.component', $parts[0]);
-        $this->app->input->set('extension', $component);
+        $cmodel->setState('extension', $component);
 
-        $ctrashed = $cmodel->getItems();
+        // The core content plugin (canDeleteCategories) reads 'extension' from the
+        // request input; without it PHP 8.4 raises a null-array-offset deprecation.
+        $input    = $this->app->input;
+        $previous = $input->get('extension', null);
+        $input->set('extension', $component);
 
-        $model = $this->app->bootComponent('com_categories')
-            ->getMVCFactory()
-            ->createModel('Category', 'Administrator', ['ignore_request' => true]);
-        //$model->setCurrentUser($this->app->getIdentity());
+        try {
+            $ctrashed = $cmodel->getItems();
 
-        foreach ($ctrashed as $item) {
-            if (!$model->delete($item->id)) {
-                $noleaf++;
+            $model = $factory->createModel('Category', 'Administrator', ['ignore_request' => true]);
+
+            foreach ($ctrashed as $item) {
+                if (!$model->delete($item->id)) {
+                    $noleaf++;
+                }
+
+                $cat++;
             }
-
-            $cat++;
+        } finally {
+            // Always restore the previous input value, even on exception
+            $input->set('extension', $previous);
         }
 
         if ($cat - $noleaf > 0) {
@@ -198,98 +218,13 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
     }
 
     /**
-     * Deletes trashed articles and their related records.
-     *
-     * @return  void
-     *
-     * @since   4.1.0
-     */
-    private function delArticles(): void
-    {
-        $art      = 0;
-        $language = $this->getApplication()->getLanguage();
-        $language->load('com_associations', JPATH_ADMINISTRATOR, 'en-GB', false, true);
-        $language->load('com_associations', JPATH_ADMINISTRATOR, null, true);
-        /** @var \Joomla\Component\Content\Administrator\Model\ArticlesModel $model */
-        $model = $this->app->bootComponent('com_content')
-            ->getMVCFactory()->createModel('Articles', 'Administrator', ['ignore_request' => true]);
-        $model->setState('filter.published', -2);
-        $atrashed = $model->getItems();
-
-        /** @var \Joomla\Component\Content\Administrator\Model\ArticleModel $model */
-        //$amodel = $this->app->bootComponent('com_content')
-        //    ->getMVCFactory()->createModel('Article', 'Administrator', ['ignore_request' => true]);
-        // Dirty hack for the inafmous Workflow
-        $table = Table::getInstance('Content');
-        foreach ($atrashed as $item) {
-            if ($table->delete($item->id)) {
-                $art++;
-            }
-            $db    = $this->getDatabase();
-            // frontpage
-            $query = $db->getQuery(true)
-                ->delete($db->quoteName('#__content_frontpage'))
-                ->where($db->quoteName('content_id') . ' = :contentid')
-                ->bind(':contentid', $item->id, ParameterType::INTEGER);
-            $db->setQuery($query);
-            $db->execute();
-            // tags ??
-            $query = $db->getQuery(true)
-                ->delete($db->quoteName('#__contentitem_tag_map'))
-                ->where($db->quoteName('content_item_id') . '= :contentitemid')
-                ->bind(':contentitemid', $item->id, ParameterType::INTEGER);
-            $db->setQuery($query);
-            $db->execute();
-            $query = $db->getQuery(true)
-                ->delete($db->quoteName('#__ucm_content'))
-                ->where($db->quoteName('core_content_item_id') . '= :corecontentitemid')
-                ->bind(':corecontentitemid', $item->id, ParameterType::INTEGER);
-            $db->setQuery($query);
-            $db->execute();
-            $query = $db->getQuery(true)
-                ->delete($db->quoteName('#__ucm_base'))
-                ->where($db->quoteName('ucm_item_id') . '= :ucmitemid')
-                ->bind(':ucmitemid', $item->id, ParameterType::INTEGER);
-            $db->setQuery($query);
-            $db->execute();
-            // versions
-            $a     = 'com_content.article.' . $item->id;
-            $query = $db->getQuery(true)
-                ->delete($db->quoteName('#__history'))
-                ->where($db->quoteName('item_id') . '= :ucmitemid')
-                ->bind(':ucmitemid', $a);
-            $db->setQuery($query);
-            $db->execute();
-            // infamous workflow
-            $extension = 'com_content.article';
-            $query     = $db->getQuery(true)
-                ->delete($db->quoteName('#__workflow_associations'))
-                ->where($db->quoteName('item_id') . '= :wrkflid')
-                ->where($db->quoteName('extension') . ' = :extension')
-                ->bind(':wrkflid', $item->id, ParameterType::INTEGER)
-                ->bind(':extension', $extension);
-            $db->setQuery($query);
-            $db->execute();
-            // language associations
-            /** @var \Joomla\Component\Content\Administrator\Model\ArticleModel $model */
-            $amodel = $this->app->bootComponent('com_associations')
-                ->getMVCFactory()->createModel('Associations', 'Administrator', ['ignore_request' => true]);
-            $amodel->clean();
-        }
-
-        if ($art > 0) {
-            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_ARTICLES', $art), 'info');
-        }
-    }
-
-    /**
      * Deletes trashed modules for the given client types.
      *
      * @param   array  $type  Client types to process: 'site', 'admin', or both.
      *
      * @return  void
      *
-     * @since   4.1.0
+     * @since   1.1.0
      */
     private function delModules(array $type = []): void
     {
@@ -338,9 +273,9 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      *
      * @return  void
      *
-     * @since   4.1.0
+     * @since   1.1.0
      */
-    private function delRedirects(Bool $purge = false): void
+    private function delRedirects(bool $purge = false): void
     {
         $red = 0;
         /** @var \Joomla\Component\Redirect\Administrator\Model\LinksModel $model */
@@ -373,19 +308,19 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      *
      * @return  void
      *
-     * @since   4.1.0
+     * @since   1.2.0
      */
     private function delTags(): void
     {
         $art = 0;
-        /** @var \Joomla\Component\Content\Administrator\Model\ArticlesModel $model */
+        /** @var \Joomla\Component\Content\Administrator\Model\TagsModel $model */
         $model = $this->app->bootComponent('com_tags')
             ->getMVCFactory()->createModel('Tags', 'Administrator', ['ignore_request' => true]);
         $model->setState('filter.published', -2);
         $model->setState('filter.extension', '');
         $atrashed = $model->getItems();
 
-        /** @var \Joomla\Component\Content\Administrator\Model\ArticleModel $model */
+        /** @var \Joomla\Component\Content\Administrator\Model\TagsModel $model */
         $amodel = $this->app->bootComponent('com_tags')
             ->getMVCFactory()->createModel('Tag', 'Administrator', ['ignore_request' => true]);
 
@@ -405,18 +340,18 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      *
      * @return  void
      *
-     * @since   4.1.0
+     * @since   1.2.0
      */
     private function delTasks(): void
     {
         $art = 0;
-        /** @var \Joomla\Component\Content\Administrator\Model\ArticlesModel $model */
+        /** @var \Joomla\Component\Content\Administrator\Model\TasksModel $model */
         $model = $this->app->bootComponent('com_scheduler')
             ->getMVCFactory()->createModel('Tasks', 'Administrator', ['ignore_request' => true]);
         $model->setState('filter.state', -2);
         $atrashed = $model->getItems();
 
-        /** @var \Joomla\Component\Content\Administrator\Model\ArticleModel $model */
+        /** @var \Joomla\Component\Content\Administrator\Model\TaskModel $model */
         $amodel = $this->app->bootComponent('com_scheduler')
             ->getMVCFactory()->createModel('Task', 'Administrator', ['ignore_request' => true]);
         $amodel->setCurrentUser($this->app->getIdentity());
@@ -439,7 +374,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      *
      * @return  void
      *
-     * @since   4.1.0
+     * @since   1.2.0
      */
     private function delMenuItems(array $type = []): void
     {
@@ -448,7 +383,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         $atrashed = [];
 
         if (\in_array('admin', $type)) {
-            /** @var \Joomla\Component\Content\Administrator\Model\ArticlesModel $model */
+            /** @var \Joomla\Component\Content\Administrator\Model\ItemsModel $model */
             $model = $this->app->bootComponent('com_menus')
                 ->getMVCFactory()->createModel('Items', 'Administrator', ['ignore_request' => true]);
             $model->setState('filter.published', -2);
@@ -458,7 +393,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         }
 
         if (\in_array('site', $type)) {
-            /** @var \Joomla\Component\Content\Administrator\Model\ArticlesModel $model */
+            /** @var \Joomla\Component\Content\Administrator\Model\ItemsModel $model */
             $model = $this->app->bootComponent('com_menus')
                 ->getMVCFactory()->createModel('Items', 'Administrator', ['ignore_request' => true]);
             $model->setState('filter.published', -2);
@@ -466,7 +401,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         }
 
         $trashed = array_merge($strashed, $atrashed);
-        /** @var \Joomla\Component\Content\Administrator\Model\ArticleModel $model */
+        /** @var \Joomla\Component\Content\Administrator\Model\ItemModel $model */
         $mmodel = $this->app->bootComponent('com_menus')
             ->getMVCFactory()->createModel('Item', 'Administrator', ['ignore_request' => true]);
         //$mmodel->setCurrentUser($this->app->getIdentity());
@@ -487,7 +422,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      *
      * @return  void
      *
-     * @since   4.1.0
+     * @since   1.3.0
      */
     private function delContacts(): void
     {
@@ -513,35 +448,152 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_CONTACTS_DELETED', $art), 'info');
         }
     }
-    
+
     /**
-     * Loads a Super User identity into the application session to grant elevated access.
+     * Loads a Super User identity into the application to grant elevated access.
+    *
+    * @return  boolean  True when a super user identity was loaded.
+    *
+    * @since   1.1.0
+    */
+    private function setGrant(): bool
+    {
+        $db = $this->getDatabase();
+
+        // Find enabled users belonging to any group with core.admin (Super User) access
+        $query = $db->getQuery(true)
+            ->select('DISTINCT ' . $db->quoteName('u.id'))
+            ->from($db->quoteName('#__users', 'u'))
+            ->join(
+                'INNER',
+            $db->quoteName('#__user_usergroup_map', 'm'),
+            $db->quoteName('m.user_id') . ' = ' . $db->quoteName('u.id')
+        )
+        ->where($db->quoteName('u.block') . ' = 0');
+        //->where($db->quoteName('u.activation') . ' = ' . $db->quote(''));
+
+        $userIds = $db->setQuery($query)->loadColumn();
+
+        $userFactory = Factory::getContainer()->get(UserFactoryInterface::class);
+
+        foreach ($userIds as $uid) {
+            $user = $userFactory->loadUserById((int) $uid);
+
+            // Authorise check instead of group guessing: is this user a Super User?
+            if ($user->authorise('core.admin')) {
+                $this->app->getSession()->set('user', $user);
+                $this->app->loadIdentity($user);
+
+                return true;
+            }
+        }
+
+        $this->logTask(Text::_('PLG_TASK_DELTRASH_NO_SUPERUSER'), 'error');
+
+        return false;
+    }
+    /**
+     * Deletes trashed articles and their related records.
      *
      * @return  void
      *
-     * @since   4.1.0
+     * @since   1.0.0
      */
-    private function setGrant(): void
+    private function deleteArticles(): void
     {
-        // Get all usergroups with Super User access
-        $db    = $this->db;
-        $query = $db->getQuery(true)
-             ->select([$db->qn('id')])
-            ->from($db->qn('#__usergroups'));
-        $groups = $db->setQuery($query)->loadColumn();
-
-        // Get the groups that are Super Users
-        $groups = array_filter($groups, function ($gid) {
-            return Access::checkGroup($gid, 'core.admin');
-        });
-
-        foreach ($groups as $gid) {
-            $uids = Access::getUsersByGroup($gid);
-            $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($uids[0]);
-            $this->app->getSession()->set('user', $user);
-            $this->app->loadIdentity($user);
-
-            break;
+        $deleted = 0;
+        $failed  = 0;
+    
+        // Language strings used by the associations cleanup below
+        $language = $this->getApplication()->getLanguage();
+        $language->load('com_associations', JPATH_ADMINISTRATOR, 'en-GB', false, true);
+        $language->load('com_associations', JPATH_ADMINISTRATOR, null, true);
+    
+        /** @var \Joomla\Component\Content\Administrator\Model\ArticlesModel $listModel */
+        $listModel = $this->app->bootComponent('com_content')
+            ->getMVCFactory()
+            ->createModel('Articles', 'Administrator', ['ignore_request' => true]);
+        $listModel->setState('filter.published', -2);
+        $trashed = $listModel->getItems();
+    
+        if (empty($trashed)) {
+            return;
         }
+    
+        /** @var \Joomla\Component\Content\Administrator\Model\ArticleModel $articleModel */
+        $articleModel = $this->app->bootComponent('com_content')
+            ->getMVCFactory()
+            ->createModel('Article', 'Administrator', ['ignore_request' => true]);
+    
+        foreach ($trashed as $item) {
+            $id  = (int) $item->id;
+            $pks = [$id];
+    
+            // Model path: dispatches onContentBeforeDelete/onContentAfterDelete,
+            // deletes the asset, #__content_frontpage, #__history, #__associations
+            // and the #__workflow_associations row.
+            if ($articleModel->delete($pks)) {
+                $deleted++;
+    
+                // Core does not clean these on article delete, so keep the extra SQL.
+                $this->deleteArticleAuxiliaryData($id);
+            } else {
+                $failed++;
+                $this->logTask(
+                    Text::sprintf('PLG_TASK_DELTRASH_ARTICLE_FAILED', $id, $articleModel->getError()),
+                    'warning'
+                );
+            }
+        }
+    
+        // Global orphan cleanup - run once, not once per article.
+        /** @var \Joomla\Component\Associations\Administrator\Model\AssociationsModel $assocModel */
+        $assocModel = $this->app->bootComponent('com_associations')
+            ->getMVCFactory()
+            ->createModel('Associations', 'Administrator', ['ignore_request' => true]);
+        $assocModel->clean();
+    
+        if ($deleted > 0) {
+            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_ARTICLES', $deleted), 'info');
+        }
+    
+        if ($failed > 0) {
+            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_ARTICLES_FAILED', $failed), 'warning');
+        }
+    }
+
+    /**
+     * Removes the auxiliary rows that core does not clean when an article is deleted.
+     *
+     * @param   integer  $id  The article id.
+     *
+     * @return  void
+     *
+     * @since   2.0.0
+     */
+    private function deleteArticleAuxiliaryData(int $id): void
+    {
+        $db = $this->getDatabase();
+
+        // Tag mappings
+        $query = $db->getQuery(true)
+            ->delete($db->quoteName('#__contentitem_tag_map'))
+            ->where($db->quoteName('content_item_id') . ' = :id')
+            ->bind(':id', $id, ParameterType::INTEGER);
+        $db->setQuery($query)->execute();
+
+        // UCM content
+        $query = $db->getQuery(true)
+            ->delete($db->quoteName('#__ucm_content'))
+            ->where($db->quoteName('core_content_item_id') . ' = :id')
+            ->bind(':id', $id, ParameterType::INTEGER);
+        $db->setQuery($query)->execute();
+
+        // UCM base
+        $query = $db->getQuery(true)
+            ->delete($db->quoteName('#__ucm_base'))
+            ->where($db->quoteName('ucm_item_id') . ' = :id')
+            ->bind(':id', $id, ParameterType::INTEGER);
+        $db->setQuery($query)->execute();
     }
 }
