@@ -2,30 +2,56 @@
 
 /**
  * @package     Joomla.Plugin
- * @subpackage  Content.exportbutton
+ * @subpackage  Content.export
  *
- * @copyright   Copyright (C) 2021 Alikon. All rights reserved.
+ * @copyright   Copyright (C) 2023 Alikon. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-\defined('_JEXEC') or die;
+namespace Alikonweb\Plugin\Content\Export\Extension;
 
 use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Helper\ContentHelper;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\CMS\Router\Route;
 use Joomla\CMS\Toolbar\Toolbar;
-use Joomla\Registry\Registry;
+use Joomla\Event\SubscriberInterface;
+
+// phpcs:disable PSR1.Files.SideEffects
+\defined('_JEXEC') or die;
+// phpcs:enable PSR1.Files.SideEffects
 
 /**
- * Add a button to post a webservice
+ * Add a button to post a webservice, from either the single article view
+ * or the articles list view (bulk export).
  *
  * @since  1.0.0
  */
-class PlgContentExport extends CMSPlugin
+final class Export extends CMSPlugin implements SubscriberInterface
 {
+    /**
+     * @return array
+     * @since 1.0.0
+     */
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            'onBeforeRender'       => 'onBeforeRender',
+            'onAjaxExport'         => 'onAjaxExport',
+            'onAjaxExportDownload' => 'onAjaxExportDownload',
+        ];
+    }
+
+    /**
+     * Maximum number of article IDs accepted in a single bulk export
+     * AJAX request, to avoid abuse / resource exhaustion.
+     *
+     * @var    integer
+     * @since  1.0.0
+     */
+    protected $maxBulkIds = 5;
+
     /**
      * Application object
      *
@@ -33,14 +59,6 @@ class PlgContentExport extends CMSPlugin
      * @since  1.0.0
      */
     protected $app;
-
-    /**
-     * Database driver
-     *
-     * @var    DatabaseDriver
-     * @since  1.0.0
-     */
-    protected $db;
 
     /**
      * URL to get the data.
@@ -59,235 +77,361 @@ class PlgContentExport extends CMSPlugin
     protected $postUrl = '';
 
     /**
-     * URL to send the data.
-     *
-     * @var    string
-     * @since  1.0.0
-     */
-    protected $verb = '';
-
-    /**
-     * URL to send the data.
-     *
-     * @var    string
-     * @since  1.0.0
-     */
-    protected $options = '';
-
-    /**
-     * URL to send the data.
-     *
-     * @var    string
-     * @since  1.0.0
-     */
-    protected $headers = [];
-
-    /**
-     * URL to send the data.
-     *
-     * @var    string
-     * @since  1.0.0
-     */
-    protected $json = null;
-
-    /**
-     * Render the button.
+     * Render the button, on both the single article view and the
+     * articles list view.
      *
      * @return  void
      *
      * @since  1.0.0
      */
-    public function onBeforeRender()
+    public function onBeforeRender(): void
     {
-        // Run in backend
-        if ($this->app->isClient('administrator') === true) {
-            // Get the input object
-            $input = $this->app->input;
-
-            // Get an instance of the Toolbar
-            $toolbar = Toolbar::getInstance('toolbar');
-
-            // Append button on Article
-            if ($input->getCmd('option') === 'com_content' && $input->getCmd('view') === 'article') {
-                $id = $input->get('id');
-
-                // Add your custom button here
-                $url = Route::_('index.php?option=com_ajax&group=content&plugin=export&format=json&id=' . $id);
-                $toolbar->appendButton('Link', 'upload', 'Export', $url);
-            }
+        // Run in backend only
+        if ($this->app->isClient('administrator') !== true) {
+            return;
         }
-    }
 
-    /**
-     * First step to send the data. Content.
-     *
-     * @return  array or void  Will be converted into the JSON response to the module.
-     *
-     * @since  1.0.0
-     */
-    public function onAjaxExport()
-    {
-        $id  = $this->app->input->get('id');
+        $option = $this->app->input->getCmd('option');
+        $view   = $this->app->input->getCmd('view');
+
+        if ($option !== 'com_content' || ($view !== 'article' && $view !== 'articles')) {
+            return;
+        }
+
+        $auth = '';
+        $key  = '';
+
+        if ($this->params->get('authorization') === 'Bearer') {
+            $auth = 'Authorization';
+            $key  = 'Bearer ' . $this->params->get('key');
+        }
+
+        if ($this->params->get('authorization') === 'X-Joomla-Token') {
+            $auth = 'X-Joomla-Token';
+            $key  = $this->params->get('key');
+        }
 
         $domain        = $this->params->get('url', 'http://localhost');
         $this->postUrl = $domain . '/api/index.php/v1/content/articles';
         $this->getUrl  = $domain . '/api/index.php/v1/content';
-        $this->options = new Registry();
-        $this->options->set('Content-Type', 'application/json');
 
-        if ($this->params->get('authorization') === 'Bearer') {
-            $this->headers = ['Authorization' => 'Bearer ' . $this->params->get('key')];
+        $canDo = ContentHelper::getActions('com_content');
+        if (!$canDo->get('core.admin')) {
+            return;
         }
 
-        if ($this->params->get('authorization') === 'X-Joomla-Token') {
-            $this->headers = ['X-Joomla-Token' => $this->params->get('key')];
+        // Get an instance of the Toolbar and add the export button
+        $toolbar = Toolbar::getInstance('toolbar');
+        $toolbar->appendButton('Link', 'upload', 'Export', '#');
+
+        $downloadFormat = $this->params->get('download_format', 'none');
+        if ($downloadFormat !== 'none') {
+            $toolbar->appendButton('Link', 'download', 'Download ' . strtoupper($downloadFormat), '#download-export');
         }
 
+        // Build the options array shared by both views
+        $scriptOptions = [
+            'apiKey'         => $key,
+            'catid'          => $this->getConfiguredCatId(),
+            'get'            => $this->getUrl,
+            'post'           => $this->postUrl,
+            'auth'           => $auth,
+            'view'           => $view,
+            'maxBulk'        => $this->getMaxBulkIds(),
+            'downloadFormat' => $this->params->get('download_format', 'none'),
+        ];
 
-        // Get an instance of the generic articles model
-        $content = Factory::getApplication()->bootComponent('com_content')->getMVCFactory();
-        /** @var Joomla\Component\Content\Administrator\Model\ArticleModel $model */
-        $model = $content->createModel('Article', 'Administrator', ['ignore_request' => true]);
+        // For the single article view, pre-load the current article data
+        if ($view === 'article') {
+            $id      = $this->app->input->getInt('id');
+            $content = $this->app->bootComponent('com_content')->getMVCFactory();
+            /** @var \Joomla\Component\Content\Administrator\Model\ArticleModel $model */
+            $model = $content->createModel('Article', 'Administrator', ['ignore_request' => true]);
+            $item  = $model->getItem($id);
 
-        $item        = $model->getItem($id);
-        $item->catid = $this->params->get('catid');
-        $item->state = $this->params->get('state', 0);
-        unset($item->created_by);
+            // Category and publish state are always enforced by the plugin
+            // configuration, never left to whatever the article currently has.
+            $item->catid = $this->getConfiguredCatId();
+            $item->state = $this->getConfiguredState();
+            unset($item->created_by, $item->typeAlias, $item->asset_id, $item->tagsHelper);
 
-        if ($this->sendData($item)) {
-            // There was an error sending data.
-            $this->app->enqueueMessage(Text::_('Exported to ' . $domain), 'success');
+            $scriptOptions['title']   = $item->title;
+            $scriptOptions['article'] = $item;
         }
 
-        $this->app->redirect(Route::_('index.php?option=com_content&view=article&layout=edit&id=' . $id, false), 200);
+        $wa = $this->app->getDocument()->getWebAssetManager();
+
+        // Load language strings for JavaScript
+        $this->loadLanguage();
+
+        Text::script('PLG_CONTENT_EXPORT_CATEGORY_CHECK');
+        Text::script('PLG_CONTENT_EXPORT_CATEGORY_CHECK_ERROR');
+        Text::script('PLG_CONTENT_EXPORT_CATEGORY_NETWORK_ERROR');
+        Text::script('PLG_CONTENT_EXPORT_NETWORK_ERROR');
+        Text::script('PLG_CONTENT_EXPORT_CORS_GET_ERROR');
+        Text::script('PLG_CONTENT_EXPORT_CORS_POST_ERROR');
+        Text::script('PLG_CONTENT_EXPORT_CORS_PATCH_ERROR');
+        Text::script('PLG_CONTENT_EXPORT_ARTICLE_SAVE_REQUIRED');
+        Text::script('PLG_CONTENT_EXPORT_ARTICLE_UPDATE_REQUIRED');
+        Text::script('PLG_CONTENT_EXPORT_ARTICLE_CREATED');
+        Text::script('PLG_CONTENT_EXPORT_ARTICLE_NOT_CREATED');
+        Text::script('PLG_CONTENT_EXPORT_ARTICLE_EXPORTED');
+        Text::script('PLG_CONTENT_EXPORT_ARTICLE_CHECK');
+        Text::script('PLG_CONTENT_EXPORT_ARTICLE_CHECKING');
+        Text::script('PLG_CONTENT_EXPORT_ARTICLE_CHECK_HTTP_ERROR');
+        Text::script('PLG_CONTENT_EXPORT_ARTICLE_VERIFY_NETWORK_ERROR');
+        Text::script('PLG_CONTENT_EXPORT_ARTICLE_CREATE_NETWORK_ERROR');
+        Text::script('PLG_CONTENT_EXPORT_ARTICLE_UPDATE_NETWORK_ERROR');
+        Text::script('PLG_CONTENT_EXPORT_ARTICLE_UPDATE_HTTP_ERROR');
+        Text::script('PLG_CONTENT_EXPORT_ARTICLE_MISSING_TITLE');
+        Text::script('PLG_CONTENT_EXPORT_INVALID_CONFIG_OBJECT');
+        Text::script('PLG_CONTENT_EXPORT_INVALID_CONFIG_REQUIRED');
+        Text::script('PLG_CONTENT_EXPORT_BULK_NO_SELECTION');
+        Text::script('PLG_CONTENT_EXPORT_BULK_TOO_MANY_SELECTED');
+        Text::script('PLG_CONTENT_EXPORT_BULK_SELECTED');
+        Text::script('PLG_CONTENT_EXPORT_BULK_LOCAL_HTTP_ERROR');
+        Text::script('PLG_CONTENT_EXPORT_BULK_NO_ARTICLES');
+        Text::script('PLG_CONTENT_EXPORT_BULK_COMPLETE');
+        Text::script('PLG_CONTENT_EXPORT_BULK_FATAL_ERROR');
+        Text::script('PLG_CONTENT_EXPORT_DOWNLOAD_COMPLETE');
+
+        // Pass data to javascript
+        $this->app->getDocument()->addScriptOptions('a-export', $scriptOptions);
+        $wa->registerAndUseScript('plg_content_export', 'plg_content_export/aexport.js', [], ['defer' => true], []);
     }
 
     /**
-     * Check category existence
+     * AJAX handler used by the 'articles' list view to fetch a sanitised
+     * export payload for a set of selected article IDs.
      *
-     * @return  boolean
+     * The category and publish state applied to the exported payload are
+     * always enforced from the plugin configuration and never trusted
+     * from client input. Only users allowed to edit content may call
+     * this endpoint.
      *
-     * @since   1.0.0
+     * @return  array
      *
-     * @throws  RuntimeException  If there is an error sending the data.
-     */
-    private function checkCategory($catid)
-    {
-        // Don't let the request take longer than n seconds to avoid page timeout issues
-        try {
-            $response = HttpFactory::getHttp($this->options)->get($this->getUrl . '/categories/'. $catid, $this->headers, $this->params->get('timeout', 3));
-        } catch (\Exception $e) {
-            $this->app->enqueueMessage(Text::_('CheckCat:' . $e->getMessage()), 'error');
-            return false;
-        }
-
-        if ($response->code === 404) {
-            $this->app->enqueueMessage(Text::_('Category not found' . $response->code), 'error');
-            return false;
-        }
-
-        if ($response->code !== 200) {
-            $this->app->enqueueMessage(Text::_('CheckCat:' . $response->code), 'error');
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Check category existence
-     *
-     * @return  boolean
+     * @throws  \Exception
      *
      * @since   1.0.0
-     *
-     * @throws  RuntimeException  If there is an error sending the data.
      */
-    private function checkArticle($item)
+    public function onAjaxExport(): array
     {
-        // Check if already exists
-        $title     = $item->title;
-        $searchUrl = $this->getUrl . '/articles?filter[search]=' . urlencode($title);
-
-        try {
-            $response = HttpFactory::getHttp($this->options)->get($searchUrl, $this->headers, $this->params->get('timeout', 3));
-        } catch (\Exception $e) {
-            $this->app->enqueueMessage(Text::_('SearchArt:' . $e->getMessage()), 'error');
-            return false;
+        if (!$this->app->checkToken('POST')) {
+            throw new \Exception(Text::_('JINVALID_TOKEN'), 403);
         }
 
+        $user = $this->app->getIdentity();
 
-        if ($response->code !== 200) {
-            $this->app->enqueueMessage(Text::_('SearchArt:' . $response->code), 'error');
-            return false;
+        // Gate the whole endpoint behind a real ACL check: a valid CSRF
+        // token alone is not authorization to read article bodies.
+        if ($user === null || $user->guest || (!$user->authorise('core.edit', 'com_content') && !$user->authorise('core.edit.own', 'com_content'))) {
+            throw new \Exception(Text::_('JERROR_ALERTNOAUTHOR'), 403);
         }
 
-        $this->verb ='post';
-        $this->json = json_decode($response->body);
+        $ids = $this->app->input->post->get('ids', [], 'ARRAY');
 
-        if (\count($this->json->data) > 0) {
-            $this->verb ='patch';
+        if (empty($ids) || !\is_array($ids)) {
+            throw new \Exception(Text::_('PLG_CONTENT_EXPORT_BULK_NO_IDS'), 400);
         }
 
-        return true;
-    }
+        // Sanitise: only positive integers, deduplicated.
+        $ids = array_values(array_unique(array_filter(array_map('intval', $ids), static fn ($id) => $id > 0)));
 
-    /**
-     * Send the data to the j4 server
-     *
-     * @return  boolean
-     *
-     * @since   1.0.0
-     *
-     * @throws  RuntimeException  If there is an error sending the data.
-     */
-    private function sendData($item)
-    {
-        $this->verb ='get';
-
-        if (!$this->checkCategory($item->catid)) {
-            return false;
+        if (empty($ids)) {
+            throw new \Exception(Text::_('PLG_CONTENT_EXPORT_BULK_NO_IDS'), 400);
         }
 
-        if (!$this->checkArticle($item)) {
-            return false;
+        if (\count($ids) > $this->getMaxBulkIds()) {
+            throw new \Exception(Text::sprintf('PLG_CONTENT_EXPORT_BULK_TOO_MANY_IDS', $this->getMaxBulkIds()), 400);
         }
 
-        $content = json_encode($item);
+        $db    = Factory::getDbo();
+        $query = $db->getQuery(true);
 
+        $query->select($db->quoteName(['id', 'title', 'alias', 'introtext', 'fulltext', 'language', 'metakey', 'metadesc', 'images']))
+            ->from($db->quoteName('#__content'))
+            ->whereIn($db->quoteName('id'), $ids)
+            // Never export trashed content, regardless of what was selected client-side.
+            ->where($db->quoteName('state') . ' != -2');
 
-        if ($this->verb === 'patch') {
-            try {
-                $this->verb ='patch';
-                $artid      = $this->json->data[0]->id;
-                $response   =  HttpFactory::getHttp($this->options)->patch($this->postUrl .'/' . $artid, $content, $this->headers, $this->params->get('timeout', 3));
-            } catch (\Exception $e) {
+        $db->setQuery($query);
+        $rows = $db->loadObjectList();
 
-                $this->app->enqueueMessage(Text::_('PatchArt:' . $e->getMessage()), 'error');
-                return false;
+        $articles    = [];
+        $pluginCatid = $this->getConfiguredCatId();
+        $pluginState = $this->getConfiguredState();
+
+        foreach ($rows as $row) {
+            $exportItem            = new \stdClass();
+            $exportItem->title     = (string) $row->title;
+            $exportItem->alias     = (string) $row->alias;
+            $exportItem->introtext = (string) $row->introtext;
+            $exportItem->fulltext  = (string) $row->fulltext;
+
+            // Category and publish state are always enforced by the plugin,
+            // never taken from the article itself.
+            $exportItem->catid    = $pluginCatid;
+            $exportItem->state    = $pluginState;
+            $exportItem->language = !empty($row->language) ? $row->language : '*';
+
+            if (!empty($row->metakey)) {
+                $exportItem->metakey = $row->metakey;
             }
 
-            if ($response->code !== 200) {
-                $this->app->enqueueMessage(Text::_('PatchArt:' . $response->code), 'error');
-                return false;
+            if (!empty($row->metadesc)) {
+                $exportItem->metadesc = $row->metadesc;
             }
 
-            return true;
+            if (!empty($row->images)) {
+                $imagesObj          = json_decode($row->images);
+                $exportItem->images = json_last_error() === JSON_ERROR_NONE ? $imagesObj : $row->images;
+            }
+
+            $articles[] = $exportItem;
         }
 
-        try {
-            $this->verb ='post';
-            $response   = HttpFactory::getHttp($this->options)->post($this->postUrl, $content, $this->headers, $this->params->get('timeout', 3));
-        } catch (\Exception $e) {
-            $this->app->enqueueMessage(Text::_('PostArt:' . $e->getMessage()), 'error');
-            return false;
-        }
-
-        if ($response->code !== 200) {
-            $this->app->enqueueMessage(Text::_('PostArt:' . $response->code), 'error');
-            return false;
-        }
-
-        return true;
+        return array_values($articles);
     }
+
+    /**
+     * Returns the category ID configured for this plugin instance.
+     * No arbitrary magic default: if it is not configured, 0 is
+     * returned and callers/JS validation should treat that as "not set".
+     *
+     * @return  integer
+     *
+     * @since   1.0.0
+     */
+    private function getConfiguredCatId(): int
+    {
+        return (int) $this->params->get('catid', 0);
+    }
+
+    /**
+     * Returns the publish state configured for this plugin instance.
+     *
+     * @return  integer
+     *
+     * @since   1.0.0
+     */
+    private function getConfiguredState(): int
+    {
+        return (int) $this->params->get('state', 0);
+    }
+
+    /**
+     * Returns the maximum number of IDs allowed in a bulk operation.
+     *
+     * @return  integer
+     *
+     * @since   1.0.0
+     */
+    private function getMaxBulkIds(): int
+    {
+        return max(1, (int) $this->params->get('max_bulk_ids', 5));
+    }
+
+    /**
+     * AJAX handler that returns articles as a base64-encoded downloadable file.
+     *
+     * @return  array{filename: string, content: string}
+     *
+     * @throws  \Exception
+     *
+     * @since   1.0.0
+     */
+    public function onAjaxExportDownload(): array
+    {
+        if (!$this->app->checkToken('POST')) {
+            throw new \Exception(Text::_('JINVALID_TOKEN'), 403);
+        }
+
+        $user = $this->app->getIdentity();
+
+        if ($user === null || $user->guest || (!$user->authorise('core.edit', 'com_content') && !$user->authorise('core.edit.own', 'com_content'))) {
+            throw new \Exception(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+        }
+
+        $format = $this->params->get('download_format', 'none');
+
+        if ($format === 'none') {
+            throw new \Exception('Download format not configured.', 400);
+        }
+
+        $ids = $this->app->input->post->get('ids', [], 'ARRAY');
+        $ids = array_values(array_unique(array_filter(array_map('intval', $ids), static fn ($id) => $id > 0)));
+
+        if (empty($ids)) {
+            throw new \Exception(Text::_('PLG_CONTENT_EXPORT_BULK_NO_IDS'), 400);
+        }
+
+        if (\count($ids) > $this->getMaxBulkIds()) {
+            throw new \Exception(Text::sprintf('PLG_CONTENT_EXPORT_BULK_TOO_MANY_IDS', $this->getMaxBulkIds()), 400);
+        }
+
+        $db    = Factory::getDbo();
+        $query = $db->getQuery(true)
+            ->select($db->quoteName(['id', 'title', 'alias', 'introtext', 'fulltext', 'language', 'metakey', 'metadesc', 'images']))
+            ->from($db->quoteName('#__content'))
+            ->whereIn($db->quoteName('id'), $ids)
+            ->where($db->quoteName('state') . ' != -2');
+
+        $db->setQuery($query);
+        $rows = $db->loadObjectList();
+
+        $articles = [];
+
+        foreach ($rows as $row) {
+            $item            = new \stdClass();
+            $item->title     = (string) $row->title;
+            $item->alias     = (string) $row->alias;
+            $item->introtext = (string) $row->introtext;
+            $item->fulltext  = (string) $row->fulltext;
+            $item->language  = !empty($row->language) ? $row->language : '*';
+
+            if (!empty($row->metakey)) {
+                $item->metakey = $row->metakey;
+            }
+
+            if (!empty($row->metadesc)) {
+                $item->metadesc = $row->metadesc;
+            }
+
+            if (!empty($row->images)) {
+                $decoded      = json_decode($row->images);
+                $item->images = json_last_error() === JSON_ERROR_NONE ? $decoded : $row->images;
+            }
+
+            $articles[] = $item;
+        }
+
+        $filename = 'articles-export-' . date('Ymd-His');
+
+        if ($format === 'xml') {
+            $xml = new \SimpleXMLElement('<articles/>');
+
+            foreach ($articles as $article) {
+                $node = $xml->addChild('article');
+                foreach ((array) $article as $k => $v) {
+                    $node->addChild($k, htmlspecialchars((string) (\is_object($v) ? json_encode($v) : $v)));
+                }
+            }
+
+            $content  = $xml->asXML();
+            $mime     = 'application/xml';
+            $filename .= '.xml';
+        } else {
+            $content  = json_encode($articles, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            $mime     = 'application/json';
+            $filename .= '.json';
+        }
+
+        return [
+            'filename' => $filename,
+            'mime'     => $mime,
+            'content'  => base64_encode($content),
+        ];
+    }
+
 }
