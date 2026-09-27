@@ -120,6 +120,16 @@ final class Export extends CMSPlugin implements SubscriberInterface
             return;
         }
 
+        // For the articles list view, only show buttons when there are items displayed
+        if ($view === 'articles') {
+            $articlesModel = $this->app->bootComponent('com_content')->getMVCFactory()
+                ->createModel('Articles', 'Administrator');
+
+            if ((int) $articlesModel->getTotal() === 0) {
+                return;
+            }
+        }
+
         // Get an instance of the Toolbar and add the export button
         $toolbar = Toolbar::getInstance('toolbar');
         $toolbar->appendButton('Link', 'upload', 'Export', '#');
