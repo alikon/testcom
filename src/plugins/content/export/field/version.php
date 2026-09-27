@@ -1,13 +1,32 @@
 <?php
 
+/**
+ * @package     Joomla.Plugin
+ * @subpackage  Content.Export
+ *
+ * @copyright   Copyright (C) 2026 Alikon. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ */
+
 \defined('_JEXEC') or die;
 
 use Joomla\CMS\Form\FormField;
 
+/**
+ * Form field to display the plugin version as a styled badge.
+ *
+ * Reads the version string from the plugin's XML manifest and renders
+ * it as a highlighted inline element within the Joomla form.
+ */
 class JFormFieldVersion extends FormField
 {
     protected $type = 'Version';
 
+    /**
+     * Returns the HTML input markup for the version badge.
+     *
+     * @return string  HTML span element displaying the plugin version.
+     */
     public function getInput()
     {
         // 1. Get the path to your plugin's XML
