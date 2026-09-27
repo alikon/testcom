@@ -31,11 +31,22 @@
                 <field name="plugin_links" type="links" label="PLG_CONTENT_EXPORT_LINKS_LABEL" />
 				<field name="plugin_version" type="version" label="PLG_CONTENT_EXPORT_VERSION_LABEL" />
 				<field
+					name="download_format"
+					type="list"
+					label="PLG_CONTENT_EXPORT_DOWNLOAD_FORMAT_LABEL"
+					description="PLG_CONTENT_EXPORT_DOWNLOAD_FORMAT_DESC"
+					default="none"
+				>
+					<option value="none">PLG_CONTENT_EXPORT_DOWNLOAD_FORMAT_NONE</option>
+					<option value="json">JSON</option>
+					<option value="xml">XML</option>
+				</field>
+				<field
 					name="url"
-					type="text"
+					type="exporturl"
 					label="PLG_CONTENT_EXPORT_URL_LABEL"
 					description="PLG_CONTENT_EXPORT_URL_DESC"
-					required="true"
+					showon="download_format!:json,xml"
 				/>
 				<field
 					name="authorization"
@@ -43,17 +54,17 @@
 					label="PLG_CONTENT_EXPORT_AUTH_LABEL"
 					description="PLG_CONTENT_EXPORT_AUTH_DESC"
 					default="Bearer"
-					required="true"
+					showon="download_format!:json,xml"
 				>
 					<option value="Bearer">PLG_CONTENT_EXPORT_BEARER</option>
 					<option value="X-Joomla-Token">PLG_CONTENT_EXPORT_JOOMLATOKEN</option>
 				</field>
 				<field
 					name="key"
-					type="text"
+					type="exportkey"
 					label="PLG_CONTENT_EXPORT_KEY_LABEL"
 					description="PLG_CONTENT_EXPORT_KEY_DESC"
-					required="true"
+					showon="download_format!:json,xml"
 				/>
 				<field
 					name="catid"
@@ -86,17 +97,6 @@
 					step="1"
 					default="5"
 				/>
-				<field
-					name="download_format"
-					type="list"
-					label="PLG_CONTENT_EXPORT_DOWNLOAD_FORMAT_LABEL"
-					description="PLG_CONTENT_EXPORT_DOWNLOAD_FORMAT_DESC"
-					default="none"
-				>
-					<option value="none">PLG_CONTENT_EXPORT_DOWNLOAD_FORMAT_NONE</option>
-					<option value="json">JSON</option>
-					<option value="xml">XML</option>
-				</field>
 				<field
 					name="timeout"
 					type="integer"
