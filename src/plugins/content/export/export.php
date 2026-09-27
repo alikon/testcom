@@ -16,6 +16,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Toolbar\Toolbar;
+use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -225,7 +226,7 @@ final class Export extends CMSPlugin implements SubscriberInterface
      *
      * @since   1.0.0
      */
-    public function onAjaxExport(): array
+    public function onAjaxExport(Event $event): array
     {
         if (!$this->app->checkToken('POST')) {
             throw new \Exception(Text::_('JINVALID_TOKEN'), 403);
@@ -301,7 +302,12 @@ final class Export extends CMSPlugin implements SubscriberInterface
             $articles[] = $exportItem;
         }
 
-        return array_values($articles);
+        $result = array_values($articles);
+
+        // Add result to Event object for com_ajax dispatching
+        $event->addResult($result);
+
+        return $result;
     }
 
     /**
@@ -351,7 +357,7 @@ final class Export extends CMSPlugin implements SubscriberInterface
      *
      * @since   1.0.0
      */
-    public function onAjaxExportDownload(): array
+    public function onAjaxExportDownload(Event $event): array
     {
         if (!$this->app->checkToken('POST')) {
             throw new \Exception(Text::_('JINVALID_TOKEN'), 403);
@@ -437,11 +443,15 @@ final class Export extends CMSPlugin implements SubscriberInterface
             $filename .= '.json';
         }
 
-        return [
+        $result = [
             'filename' => $filename,
             'mime'     => $mime,
             'content'  => base64_encode($content),
         ];
+
+        $event->addResult($result);
+
+        return $result;
     }
 
 }
