@@ -455,8 +455,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
     {
         $db = $this->getDatabase();
 
-        // Only load users in groups that actually hold core.admin (Super User)
-        // access, instead of iterating every unblocked user on the site.
+        // Find enabled users belonging to any usergroup
         $query = $db->getQuery(true)
             ->select('DISTINCT ' . $db->quoteName('u.id'))
             ->from($db->quoteName('#__users', 'u'))
@@ -465,13 +464,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
                 $db->quoteName('#__user_usergroup_map', 'm'),
                 $db->quoteName('m.user_id') . ' = ' . $db->quoteName('u.id')
             )
-            ->join(
-                'INNER',
-                $db->quoteName('#__usergroups', 'g'),
-                $db->quoteName('g.id') . ' = ' . $db->quoteName('m.group_id')
-            )
-            ->where($db->quoteName('u.block') . ' = 0')
-            ->where($db->quoteName('g.rules') . ' LIKE ' . $db->quote('%"core.admin"%'));
+            ->where($db->quoteName('u.block') . ' = 0');
 
         $userIds = $db->setQuery($query)->loadColumn();
 
