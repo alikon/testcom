@@ -503,60 +503,69 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
     {
         $deleted = 0;
         $failed  = 0;
-    
+
         // Language strings used by the associations cleanup below
         $language = $this->getApplication()->getLanguage();
         $language->load('com_associations', JPATH_ADMINISTRATOR, 'en-GB', false, true);
         $language->load('com_associations', JPATH_ADMINISTRATOR, null, true);
-    
+
         /** @var \Joomla\Component\Content\Administrator\Model\ArticlesModel $listModel */
         $listModel = $this->app->bootComponent('com_content')
             ->getMVCFactory()
             ->createModel('Articles', 'Administrator', ['ignore_request' => true]);
         $listModel->setState('filter.published', -2);
         $trashed = $listModel->getItems();
-    
+
         if (empty($trashed)) {
             return;
         }
-    
+
         /** @var \Joomla\Component\Content\Administrator\Model\ArticleModel $articleModel */
         $articleModel = $this->app->bootComponent('com_content')
             ->getMVCFactory()
             ->createModel('Article', 'Administrator', ['ignore_request' => true]);
-    
+
         foreach ($trashed as $item) {
             $id  = (int) $item->id;
             $pks = [$id];
-    
-            // Model path: dispatches onContentBeforeDelete/onContentAfterDelete,
-            // deletes the asset, #__content_frontpage, #__history, #__associations
-            // and the #__workflow_associations row.
-            if ($articleModel->delete($pks)) {
-                $deleted++;
-    
-                // Core does not clean these on article delete, so keep the extra SQL.
-                $this->deleteArticleAuxiliaryData($id);
-            } else {
+
+            // Isolate each article: one failure must not abort the rest
+            try {
+                // Model path: dispatches onContentBeforeDelete/onContentAfterDelete,
+                // deletes the asset, #__content_frontpage, #__history, #__associations
+                // and the #__workflow_associations row.
+                if ($articleModel->delete($pks)) {
+                    $deleted++;
+
+                    // Core does not clean these on article delete, so keep the extra SQL.
+                    $this->deleteArticleAuxiliaryData($id);
+                } else {
+                    $failed++;
+                    $this->logTask(
+                        Text::sprintf('PLG_TASK_DELTRASH_ARTICLE_FAILED', $id, $articleModel->getError()),
+                        'warning'
+                    );
+                }
+            } catch (\Throwable $e) {
                 $failed++;
                 $this->logTask(
-                    Text::sprintf('PLG_TASK_DELTRASH_ARTICLE_FAILED', $id, $articleModel->getError()),
-                    'warning'
+                    Text::sprintf('PLG_TASK_DELTRASH_ARTICLE_FAILED', $id, $e->getMessage()),
+                    'error'
                 );
             }
         }
-    
+
         // Global orphan cleanup - run once, not once per article.
         /** @var \Joomla\Component\Associations\Administrator\Model\AssociationsModel $assocModel */
         $assocModel = $this->app->bootComponent('com_associations')
             ->getMVCFactory()
             ->createModel('Associations', 'Administrator', ['ignore_request' => true]);
         $assocModel->clean();
-    
+
         if ($deleted > 0) {
             $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_ARTICLES', $deleted), 'info');
         }
-    
+
         if ($failed > 0) {
             $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_ARTICLES_FAILED', $failed), 'warning');
         }
