@@ -523,7 +523,8 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         $result = $this->deleteItemsSafely(
             $trashed,
             function (int $id) use ($articleModel, &$deletedIds) {
-                if ($articleModel->delete([$id])) {
+                $pks = [$id];
+                if ($articleModel->delete($pks)) {
                     $deletedIds[] = $id;
 
                     return true;
