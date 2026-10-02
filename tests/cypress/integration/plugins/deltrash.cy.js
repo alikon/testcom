@@ -196,7 +196,7 @@ describe('Test that the Joomla Task Plugin: Deltrash runs via CLI', () => {
         'queryDB',
         `UPDATE #__scheduler_tasks SET next_execution = (NOW() - INTERVAL 5 MINUTE) WHERE id = ${task.id}`
       ).then(() =>
-        cy.exec(`php ${Cypress.env('cmsPath')}/cli/joomla.php scheduler:run`, {
+        cy.exec(`php ${Cypress.expose('cmsPath')}/cli/joomla.php scheduler:run`, {
           timeout: 60000,
           failOnNonZeroExit: false,
         }).then((result) => {
