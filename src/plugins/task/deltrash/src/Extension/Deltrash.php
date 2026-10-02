@@ -97,10 +97,12 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             return Status::KNOCKOUT;
         }
 
-        $params    = $event->getArgument('params');
-        $hasErrors = false;
+        $params      = $event->getArgument('params');
+        $hasErrors   = false;
+        $failedItems = 0;
 
-        // Build the list of enabled sub-routines as closures
+        // Build the list of enabled sub-routines as closures.
+        // Each routine returns the number of items it failed to delete.
         $routines = [];
 
         if ($params->articles ?? false) {
@@ -146,7 +148,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             // Run each routine in isolation: one failure must not abort the rest
             foreach ($routines as $name => $routine) {
                 try {
-                    $routine();
+                    $failedItems += (int) $routine();
                 } catch (\Throwable $e) {
                     $hasErrors = true;
                     $this->logTask(
@@ -164,6 +166,15 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             }
         }
 
+        // Partial item failures are less severe than a routine crash:
+        // surface them as a summary warning but still report success.
+        if ($failedItems > 0) {
+            $this->logTask(
+                Text::sprintf('PLG_TASK_DELTRASH_ITEMS_REMAINING', $failedItems),
+                'warning'
+            );
+        }
+
         return $hasErrors ? Status::KNOCKOUT : Status::OK;
     }
 
@@ -172,11 +183,11 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      *
      * @param   string  $component  The component extension (e.g. 'com_content').
      *
-     * @return  void
+     * @return  integer  The number of items that failed to delete.
      *
      * @since   1.0.0
      */
-    private function delCategories(string $component): void
+    private function delCategories(string $component): int
     {
         $factory = $this->app->bootComponent('com_categories')->getMVCFactory();
 
@@ -220,6 +231,8 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         if ($result['failed'] > 0) {
             $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_NOLEAF', $component, $result['failed']), 'info');
         }
+
+        return $result['failed'];
     }
 
     /**
@@ -227,11 +240,11 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      *
      * @param   array  $type  Client types to process: 'site', 'admin', or both.
      *
-     * @return  void
+     * @return  integer  The number of items that failed to delete.
      *
      * @since   1.1.0
      */
-    private function delModules(array $type = []): void
+    private function delModules(array $type = []): int
     {
         $factory  = $this->app->bootComponent('com_modules')->getMVCFactory();
         $strashed = [];
@@ -267,6 +280,8 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         if ($result['deleted'] > 0) {
             $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_MODULES_DELETED', $result['deleted']), 'info');
         }
+
+        return $result['failed'];
     }
 
     /**
@@ -274,11 +289,11 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      *
      * @param   bool  $purge  Whether to purge all redirects before deleting trashed ones.
      *
-     * @return  void
+     * @return  integer  The number of items that failed to delete.
      *
      * @since   1.1.0
      */
-    private function delRedirects(bool $purge = false): void
+    private function delRedirects(bool $purge = false): int
     {
         $factory = $this->app->bootComponent('com_redirect')->getMVCFactory();
 
@@ -304,16 +319,18 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         if ($result['deleted'] > 0) {
             $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_REDIRECTS_TRASHED', $result['deleted']), 'info');
         }
+
+        return $result['failed'];
     }
 
     /**
      * Deletes trashed tags.
      *
-     * @return  void
+     * @return  integer  The number of items that failed to delete.
      *
      * @since   1.2.0
      */
-    private function delTags(): void
+    private function delTags(): int
     {
         $factory = $this->app->bootComponent('com_tags')->getMVCFactory();
 
@@ -335,16 +352,18 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         if ($result['deleted'] > 0) {
             $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_TAGS', $result['deleted']), 'info');
         }
+
+        return $result['failed'];
     }
 
     /**
      * Deletes trashed scheduled tasks.
      *
-     * @return  void
+     * @return  integer  The number of items that failed to delete.
      *
      * @since   1.2.0
      */
-    private function delTasks(): void
+    private function delTasks(): int
     {
         $factory = $this->app->bootComponent('com_scheduler')->getMVCFactory();
 
@@ -365,6 +384,8 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         if ($result['deleted'] > 0) {
             $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_TASKS', $result['deleted']), 'info');
         }
+
+        return $result['failed'];
     }
 
     /**
@@ -372,11 +393,11 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      *
      * @param   array  $type  Client types to process: 'site', 'admin', or both.
      *
-     * @return  void
+     * @return  integer  The number of items that failed to delete.
      *
      * @since   1.2.0
      */
-    private function delMenuItems(array $type = []): void
+    private function delMenuItems(array $type = []): int
     {
         $factory  = $this->app->bootComponent('com_menus')->getMVCFactory();
         $strashed = [];
@@ -412,16 +433,18 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         if ($result['deleted'] > 0) {
             $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_MENUITEMS', $result['deleted']), 'info');
         }
+
+        return $result['failed'];
     }
 
     /**
      * Deletes trashed contacts.
      *
-     * @return  void
+     * @return  integer  The number of items that failed to delete.
      *
      * @since   1.3.0
      */
-    private function delContacts(): void
+    private function delContacts(): int
     {
         $factory = $this->app->bootComponent('com_contact')->getMVCFactory();
 
@@ -442,6 +465,8 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         if ($result['deleted'] > 0) {
             $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_CONTACTS_DELETED', $result['deleted']), 'info');
         }
+
+        return $result['failed'];
     }
 
     /**
@@ -490,11 +515,11 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
     /**
      * Deletes trashed articles and their related records.
      *
-     * @return  void
+     * @return  integer  The number of items that failed to delete.
      *
      * @since   1.0.0
      */
-    private function deleteArticles(): void
+    private function deleteArticles(): int
     {
         // Language strings used by the associations cleanup below
         $language = $this->getApplication()->getLanguage();
@@ -509,7 +534,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         $trashed = $listModel->getItems();
 
         if (empty($trashed)) {
-            return;
+            return 0;
         }
 
         /** @var \Joomla\Component\Content\Administrator\Model\ArticleModel $articleModel */
@@ -554,6 +579,8 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         if ($result['failed'] > 0) {
             $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_ARTICLES_FAILED', $result['failed']), 'warning');
         }
+
+        return $result['failed'];
     }
 
     /**
