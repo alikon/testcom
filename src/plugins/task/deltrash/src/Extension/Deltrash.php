@@ -10,14 +10,11 @@
 
 namespace Alikonweb\Plugin\Task\Deltrash\Extension;
 
-use Joomla\CMS\Access\Access;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\CMS\Table\Table;
 use Joomla\CMS\User\UserFactoryInterface;
-use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Scheduler\Administrator\Event\ExecuteTaskEvent;
 use Joomla\Component\Scheduler\Administrator\Task\Status;
 use Joomla\Component\Scheduler\Administrator\Traits\TaskPluginTrait;
@@ -36,8 +33,8 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
     use TaskPluginTrait;
 
     /**
-     * @var string[]
-     * @since 4.1.0
+     * @var array<string, array<string, string>>
+     * @since 1.0.0
      */
     protected const TASKS_MAP = [
         'plg_task_deltrash' => [
@@ -45,28 +42,21 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             'form'            => 'deltrash_parameters',
             'method'          => 'deleteTrash',
         ],
-
     ];
 
     /**
      * The application object.
      *
      * @var  CMSApplication
-     * @since 4.1.0
+     * @since 1.0.0
      */
     protected $app;
-
-    /**
-     * @var  DatabaseInterface
-     * @since  4.1.0
-     */
-    protected $db;
 
     /**
      * Autoload the language file.
      *
      * @var boolean
-     * @since 4.1.0
+     * @since 1.0.0
      */
     protected $autoloadLanguage = true;
 
@@ -75,7 +65,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      *
      * @return string[]
      *
-     * @since 4.1.0
+     * @since 1.0.0
      */
     public static function getSubscribedEvents(): array
     {
@@ -93,60 +83,99 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      *
      * @return  integer  The task status code.
      *
-     * @since   4.1.0
-     * @throws  \Exception
+     * @since   1.0.0
      */
     public function deleteTrash(ExecuteTaskEvent $event): int
     {
-        //$this->createRootUser();
+        // Remember the current identity so we can restore it afterwards
+        $session      = $this->app->getSession();
+        $previousUser = $this->app->getIdentity();
 
-        $this->setGrant();
+        if (!$this->setGrant()) {
+            $this->logTask(Text::_('PLG_TASK_DELTRASH_GRANT_FAILED'), 'error');
 
-        if ($event->getArgument('params')->articles ?? false) {
-            $this->delArticles();
+            return Status::KNOCKOUT;
         }
 
-        if ($event->getArgument('params')->categories ?? false) {
-            $components = $event->getArgument('params')->components ?? [];
+        $params      = $event->getArgument('params');
+        $hasErrors   = false;
+        $failedItems = 0;
+
+        // Build the list of enabled sub-routines as closures.
+        // Each routine returns the number of items it failed to delete.
+        $routines = [];
+
+        if ($params->articles ?? false) {
+            $routines['articles'] = fn() => $this->deleteArticles();
+        }
+
+        if ($params->categories ?? false) {
+            $components = $params->components ?? [];
 
             foreach ($components as $component) {
-                $this->delCategories($component);
+                $routines['categories:' . $component] = fn() => $this->delCategories($component);
             }
         }
 
-        if ($event->getArgument('params')->modules ?? false) {
-            $module = $event->getArgument('params')->moduletype ?? [];
-            $this->delModules($module);
+        if ($params->modules ?? false) {
+            $module = $params->moduletype ?? [];
+            $routines['modules'] = fn() => $this->delModules($module);
         }
 
-        if ($event->getArgument('params')->redirects ?? false) {
-            $purge = $event->getArgument('params')->redirectspurge ?? false;
-            $this->delRedirects($purge);
+        if ($params->redirects ?? false) {
+            $purge = $params->redirectspurge ?? false;
+            $routines['redirects'] = fn() => $this->delRedirects($purge);
         }
 
-        if ($event->getArgument('params')->tags ?? false) {
-            $this->delTags();
+        if ($params->tags ?? false) {
+            $routines['tags'] = fn() => $this->delTags();
         }
 
-        if ($event->getArgument('params')->tasks ?? false) {
-            $this->delTasks();
+        if ($params->tasks ?? false) {
+            $routines['tasks'] = fn() => $this->delTasks();
         }
 
-        if ($event->getArgument('params')->contacts ?? false) {
-            $this->delContacts();
+        if ($params->contacts ?? false) {
+            $routines['contacts'] = fn() => $this->delContacts();
         }
 
-        if ($event->getArgument('params')->menus ?? false) {
-            $menus = $event->getArgument('params')->menutype ?? [];
-            $this->delMenuItems($menus);
+        if ($params->menus ?? false) {
+            $menus = $params->menutype ?? [];
+            $routines['menus'] = fn() => $this->delMenuItems($menus);
         }
 
-        //$user = User::getInstance($this->app->getIdentity()->id);
+        try {
+            // Run each routine in isolation: one failure must not abort the rest
+            foreach ($routines as $name => $routine) {
+                try {
+                    $failedItems += (int) $routine();
+                } catch (\Throwable $e) {
+                    $hasErrors = true;
+                    $this->logTask(
+                        Text::sprintf('PLG_TASK_DELTRASH_ROUTINE_FAILED', $name, $e->getMessage()),
+                        'error'
+                    );
+                }
+            }
+        } finally {
+            // Restore the previous identity so a web-triggered run does not
+            // hijack the current admin session
+            if ($previousUser) {
+                $session->set('user', $previousUser);
+                $this->app->loadIdentity($previousUser);
+            }
+        }
 
-        // Trigger delete of user
-        //$user->delete();
+        // Partial item failures are less severe than a routine crash:
+        // surface them as a summary warning but still report success.
+        if ($failedItems > 0) {
+            $this->logTask(
+                Text::sprintf('PLG_TASK_DELTRASH_ITEMS_REMAINING', $failedItems),
+                'warning'
+            );
+        }
 
-        return Status::OK;
+        return $hasErrors ? Status::KNOCKOUT : Status::OK;
     }
 
     /**
@@ -154,132 +183,56 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      *
      * @param   string  $component  The component extension (e.g. 'com_content').
      *
-     * @return  void
+     * @return  integer  The number of items that failed to delete.
      *
-     * @since   4.1.0
+     * @since   1.0.0
      */
-    private function delCategories($component): void
+    private function delCategories(string $component): int
     {
-        $cat    = 0;
-        $noleaf = 0;
-        $cmodel = $this->app->bootComponent('com_categories')
-            ->getMVCFactory()
-            ->createModel('Categories', 'Administrator', ['ignore_request' => true]);
+        $factory = $this->app->bootComponent('com_categories')->getMVCFactory();
+
+        /** @var \Joomla\Component\Categories\Administrator\Model\CategoriesModel $cmodel */
+        $cmodel = $factory->createModel('Categories', 'Administrator', ['ignore_request' => true]);
         $cmodel->setState('filter.published', -2);
         $cmodel->setState('filter.extension', $component);
         $cmodel->setState('category.extension', $component);
+
         // Extract the component name
         $parts = explode('.', $component);
         $cmodel->setState('category.component', $parts[0]);
-        $this->app->input->set('extension', $component);
+        $cmodel->setState('extension', $component);
 
-        $ctrashed = $cmodel->getItems();
+        // The core content plugin (canDeleteCategories) reads 'extension' from the
+        // request input; without it PHP 8.4 raises a null-array-offset deprecation.
+        $input    = $this->app->input;
+        $previous = $input->get('extension', null);
+        $input->set('extension', $component);
 
-        $model = $this->app->bootComponent('com_categories')
-            ->getMVCFactory()
-            ->createModel('Category', 'Administrator', ['ignore_request' => true]);
-        //$model->setCurrentUser($this->app->getIdentity());
+        try {
+            $ctrashed = $cmodel->getItems();
 
-        foreach ($ctrashed as $item) {
-            if (!$model->delete($item->id)) {
-                $noleaf++;
-            }
+            /** @var \Joomla\Component\Categories\Administrator\Model\CategoryModel $model */
+            $model = $factory->createModel('Category', 'Administrator', ['ignore_request' => true]);
 
-            $cat++;
+            $result = $this->deleteItemsSafely(
+                $ctrashed,
+                fn(int $id) => $model->delete($id),
+                fn() => $model->getError()
+            );
+        } finally {
+            // Always restore the previous input value, even on exception
+            $input->set('extension', $previous);
         }
 
-        if ($cat - $noleaf > 0) {
-            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_CATEGORIES_DELETED', $component, $cat - $noleaf), 'info');
+        if ($result['deleted'] > 0) {
+            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_CATEGORIES_DELETED', $component, $result['deleted']), 'info');
         }
 
-        if ($noleaf > 0) {
-            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_NOLEAF', $component, $noleaf), 'info');
-        }
-    }
-
-    /**
-     * Deletes trashed articles and their related records.
-     *
-     * @return  void
-     *
-     * @since   4.1.0
-     */
-    private function delArticles(): void
-    {
-        $art      = 0;
-        $language = $this->getApplication()->getLanguage();
-        $language->load('com_associations', JPATH_ADMINISTRATOR, 'en-GB', false, true);
-        $language->load('com_associations', JPATH_ADMINISTRATOR, null, true);
-        /** @var \Joomla\Component\Content\Administrator\Model\ArticlesModel $model */
-        $model = $this->app->bootComponent('com_content')
-            ->getMVCFactory()->createModel('Articles', 'Administrator', ['ignore_request' => true]);
-        $model->setState('filter.published', -2);
-        $atrashed = $model->getItems();
-
-        /** @var \Joomla\Component\Content\Administrator\Model\ArticleModel $model */
-        //$amodel = $this->app->bootComponent('com_content')
-        //    ->getMVCFactory()->createModel('Article', 'Administrator', ['ignore_request' => true]);
-        // Dirty hack for the inafmous Workflow
-        $table = Table::getInstance('Content');
-        foreach ($atrashed as $item) {
-            if ($table->delete($item->id)) {
-                $art++;
-            }
-            $db    = $this->getDatabase();
-            // frontpage
-            $query = $db->getQuery(true)
-                ->delete($db->quoteName('#__content_frontpage'))
-                ->where($db->quoteName('content_id') . ' = :contentid')
-                ->bind(':contentid', $item->id, ParameterType::INTEGER);
-            $db->setQuery($query);
-            $db->execute();
-            // tags ??
-            $query = $db->getQuery(true)
-                ->delete($db->quoteName('#__contentitem_tag_map'))
-                ->where($db->quoteName('content_item_id') . '= :contentitemid')
-                ->bind(':contentitemid', $item->id, ParameterType::INTEGER);
-            $db->setQuery($query);
-            $db->execute();
-            $query = $db->getQuery(true)
-                ->delete($db->quoteName('#__ucm_content'))
-                ->where($db->quoteName('core_content_item_id') . '= :corecontentitemid')
-                ->bind(':corecontentitemid', $item->id, ParameterType::INTEGER);
-            $db->setQuery($query);
-            $db->execute();
-            $query = $db->getQuery(true)
-                ->delete($db->quoteName('#__ucm_base'))
-                ->where($db->quoteName('ucm_item_id') . '= :ucmitemid')
-                ->bind(':ucmitemid', $item->id, ParameterType::INTEGER);
-            $db->setQuery($query);
-            $db->execute();
-            // versions
-            $a     = 'com_content.article.' . $item->id;
-            $query = $db->getQuery(true)
-                ->delete($db->quoteName('#__history'))
-                ->where($db->quoteName('item_id') . '= :ucmitemid')
-                ->bind(':ucmitemid', $a);
-            $db->setQuery($query);
-            $db->execute();
-            // infamous workflow
-            $extension = 'com_content.article';
-            $query     = $db->getQuery(true)
-                ->delete($db->quoteName('#__workflow_associations'))
-                ->where($db->quoteName('item_id') . '= :wrkflid')
-                ->where($db->quoteName('extension') . ' = :extension')
-                ->bind(':wrkflid', $item->id, ParameterType::INTEGER)
-                ->bind(':extension', $extension);
-            $db->setQuery($query);
-            $db->execute();
-            // language associations
-            /** @var \Joomla\Component\Content\Administrator\Model\ArticleModel $model */
-            $amodel = $this->app->bootComponent('com_associations')
-                ->getMVCFactory()->createModel('Associations', 'Administrator', ['ignore_request' => true]);
-            $amodel->clean();
+        if ($result['failed'] > 0) {
+            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_NOLEAF', $component, $result['failed']), 'info');
         }
 
-        if ($art > 0) {
-            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_ARTICLES', $art), 'info');
-        }
+        return $result['failed'];
     }
 
     /**
@@ -287,27 +240,26 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      *
      * @param   array  $type  Client types to process: 'site', 'admin', or both.
      *
-     * @return  void
+     * @return  integer  The number of items that failed to delete.
      *
-     * @since   4.1.0
+     * @since   1.1.0
      */
-    private function delModules(array $type = []): void
+    private function delModules(array $type = []): int
     {
-        $mod      = 0;
+        $factory  = $this->app->bootComponent('com_modules')->getMVCFactory();
         $strashed = [];
         $atrashed = [];
 
         if (\in_array('site', $type)) {
-            /** @var \Joomla\Component\Modules\Administrator\Model\ModuleModel $model */
-            $model = $this->app->bootComponent('com_modules')->getMVCFactory()
-                ->createModel('Modules', 'Administrator', ['ignore_request' => true]);
+            /** @var \Joomla\Component\Modules\Administrator\Model\ModulesModel $model */
+            $model = $factory->createModel('Modules', 'Administrator', ['ignore_request' => true]);
             $model->setState('filter.state', -2);
             $strashed = $model->getItems();
         }
 
         if (\in_array('admin', $type)) {
-            $gmodel = $this->app->bootComponent('com_modules')->getMVCFactory()
-                ->createModel('Modules', 'Administrator', ['ignore_request' => true]);
+            /** @var \Joomla\Component\Modules\Administrator\Model\ModulesModel $gmodel */
+            $gmodel = $factory->createModel('Modules', 'Administrator', ['ignore_request' => true]);
             $gmodel->setState('filter.client_id', 1);
             $gmodel->setState('client_id', 1);
             $gmodel->setState('filter.state', -2);
@@ -315,20 +267,21 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         }
 
         $trashed = array_merge($strashed, $atrashed);
-        /** @var \Joomla\Component\Modules\Administrator\Model\ModuleModel $model */
-        $mmodel = $this->app->bootComponent('com_modules')->getMVCFactory()
-            ->createModel('Module', 'Administrator', ['ignore_request' => true]);
-        //$mmodel->setCurrentUser($this->app->getIdentity());
 
-        foreach ($trashed as $item) {
-            if ($mmodel->delete($item->id)) {
-                $mod++;
-            }
+        /** @var \Joomla\Component\Modules\Administrator\Model\ModuleModel $mmodel */
+        $mmodel = $factory->createModel('Module', 'Administrator', ['ignore_request' => true]);
+
+        $result = $this->deleteItemsSafely(
+            $trashed,
+            fn(int $id) => $mmodel->delete($id),
+            fn() => $mmodel->getError()
+        );
+
+        if ($result['deleted'] > 0) {
+            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_MODULES_DELETED', $result['deleted']), 'info');
         }
 
-        if ($mod > 0) {
-            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_MODULES_DELETED', $mod), 'info');
-        }
+        return $result['failed'];
     }
 
     /**
@@ -336,16 +289,16 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      *
      * @param   bool  $purge  Whether to purge all redirects before deleting trashed ones.
      *
-     * @return  void
+     * @return  integer  The number of items that failed to delete.
      *
-     * @since   4.1.0
+     * @since   1.1.0
      */
-    private function delRedirects(Bool $purge = false): void
+    private function delRedirects(bool $purge = false): int
     {
-        $red = 0;
+        $factory = $this->app->bootComponent('com_redirect')->getMVCFactory();
+
         /** @var \Joomla\Component\Redirect\Administrator\Model\LinksModel $model */
-        $model = $this->app->bootComponent('com_redirect')
-            ->getMVCFactory()->createModel('Links', 'Administrator', ['ignore_request' => true]);
+        $model = $factory->createModel('Links', 'Administrator', ['ignore_request' => true]);
 
         if ($purge && $model->purge()) {
             $this->logTask(Text::_('PLG_TASK_DELTRASH_REDIRECTS_PURGED'), 'info');
@@ -354,82 +307,85 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         $model->setState('filter.state', -2);
         $trashed = $model->getItems();
 
-        $model = $this->app->bootComponent('com_redirect')
-            ->getMVCFactory()->createModel('Link', 'Administrator', ['ignore_request' => true]);
+        /** @var \Joomla\Component\Redirect\Administrator\Model\LinkModel $lmodel */
+        $lmodel = $factory->createModel('Link', 'Administrator', ['ignore_request' => true]);
 
-        foreach ($trashed as $item) {
-            if ($model->delete($item->id)) {
-                $red++;
-            }
+        $result = $this->deleteItemsSafely(
+            $trashed,
+            fn(int $id) => $lmodel->delete($id),
+            fn() => $lmodel->getError()
+        );
+
+        if ($result['deleted'] > 0) {
+            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_REDIRECTS_TRASHED', $result['deleted']), 'info');
         }
 
-        if ($red > 0) {
-            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_REDIRECTS_TRASHED', $red), 'info');
-        }
+        return $result['failed'];
     }
 
     /**
      * Deletes trashed tags.
      *
-     * @return  void
+     * @return  integer  The number of items that failed to delete.
      *
-     * @since   4.1.0
+     * @since   1.2.0
      */
-    private function delTags(): void
+    private function delTags(): int
     {
-        $art = 0;
-        /** @var \Joomla\Component\Content\Administrator\Model\ArticlesModel $model */
-        $model = $this->app->bootComponent('com_tags')
-            ->getMVCFactory()->createModel('Tags', 'Administrator', ['ignore_request' => true]);
+        $factory = $this->app->bootComponent('com_tags')->getMVCFactory();
+
+        /** @var \Joomla\Component\Tags\Administrator\Model\TagsModel $model */
+        $model = $factory->createModel('Tags', 'Administrator', ['ignore_request' => true]);
         $model->setState('filter.published', -2);
         $model->setState('filter.extension', '');
         $atrashed = $model->getItems();
 
-        /** @var \Joomla\Component\Content\Administrator\Model\ArticleModel $model */
-        $amodel = $this->app->bootComponent('com_tags')
-            ->getMVCFactory()->createModel('Tag', 'Administrator', ['ignore_request' => true]);
+        /** @var \Joomla\Component\Tags\Administrator\Model\TagModel $amodel */
+        $amodel = $factory->createModel('Tag', 'Administrator', ['ignore_request' => true]);
 
-        foreach ($atrashed as $item) {
-            if ($amodel->delete($item->id)) {
-                $art++;
-            }
+        $result = $this->deleteItemsSafely(
+            $atrashed,
+            fn(int $id) => $amodel->delete($id),
+            fn() => $amodel->getError()
+        );
+
+        if ($result['deleted'] > 0) {
+            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_TAGS', $result['deleted']), 'info');
         }
 
-        if ($art > 0) {
-            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_TAGS', $art), 'info');
-        }
+        return $result['failed'];
     }
 
     /**
      * Deletes trashed scheduled tasks.
      *
-     * @return  void
+     * @return  integer  The number of items that failed to delete.
      *
-     * @since   4.1.0
+     * @since   1.2.0
      */
-    private function delTasks(): void
+    private function delTasks(): int
     {
-        $art = 0;
-        /** @var \Joomla\Component\Content\Administrator\Model\ArticlesModel $model */
-        $model = $this->app->bootComponent('com_scheduler')
-            ->getMVCFactory()->createModel('Tasks', 'Administrator', ['ignore_request' => true]);
+        $factory = $this->app->bootComponent('com_scheduler')->getMVCFactory();
+
+        /** @var \Joomla\Component\Scheduler\Administrator\Model\TasksModel $model */
+        $model = $factory->createModel('Tasks', 'Administrator', ['ignore_request' => true]);
         $model->setState('filter.state', -2);
         $atrashed = $model->getItems();
 
-        /** @var \Joomla\Component\Content\Administrator\Model\ArticleModel $model */
-        $amodel = $this->app->bootComponent('com_scheduler')
-            ->getMVCFactory()->createModel('Task', 'Administrator', ['ignore_request' => true]);
-        $amodel->setCurrentUser($this->app->getIdentity());
+        /** @var \Joomla\Component\Scheduler\Administrator\Model\TaskModel $amodel */
+        $amodel = $factory->createModel('Task', 'Administrator', ['ignore_request' => true]);
 
-        foreach ($atrashed as $item) {
-            if ($amodel->delete($item->id)) {
-                $art++;
-            }
+        $result = $this->deleteItemsSafely(
+            $atrashed,
+            fn(int $id) => $amodel->delete($id),
+            fn() => $amodel->getError()
+        );
+
+        if ($result['deleted'] > 0) {
+            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_TASKS', $result['deleted']), 'info');
         }
 
-        if ($art > 0) {
-            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_TASKS', $art), 'info');
-        }
+        return $result['failed'];
     }
 
     /**
@@ -437,20 +393,19 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      *
      * @param   array  $type  Client types to process: 'site', 'admin', or both.
      *
-     * @return  void
+     * @return  integer  The number of items that failed to delete.
      *
-     * @since   4.1.0
+     * @since   1.2.0
      */
-    private function delMenuItems(array $type = []): void
+    private function delMenuItems(array $type = []): int
     {
-        $art      = 0;
+        $factory  = $this->app->bootComponent('com_menus')->getMVCFactory();
         $strashed = [];
         $atrashed = [];
 
         if (\in_array('admin', $type)) {
-            /** @var \Joomla\Component\Content\Administrator\Model\ArticlesModel $model */
-            $model = $this->app->bootComponent('com_menus')
-                ->getMVCFactory()->createModel('Items', 'Administrator', ['ignore_request' => true]);
+            /** @var \Joomla\Component\Menus\Administrator\Model\ItemsModel $model */
+            $model = $factory->createModel('Items', 'Administrator', ['ignore_request' => true]);
             $model->setState('filter.published', -2);
             $model->setState('filter.client_id', 1);
             $model->setState('client_id', 1);
@@ -458,90 +413,291 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         }
 
         if (\in_array('site', $type)) {
-            /** @var \Joomla\Component\Content\Administrator\Model\ArticlesModel $model */
-            $model = $this->app->bootComponent('com_menus')
-                ->getMVCFactory()->createModel('Items', 'Administrator', ['ignore_request' => true]);
+            /** @var \Joomla\Component\Menus\Administrator\Model\ItemsModel $model */
+            $model = $factory->createModel('Items', 'Administrator', ['ignore_request' => true]);
             $model->setState('filter.published', -2);
             $strashed = $model->getItems();
         }
 
         $trashed = array_merge($strashed, $atrashed);
-        /** @var \Joomla\Component\Content\Administrator\Model\ArticleModel $model */
-        $mmodel = $this->app->bootComponent('com_menus')
-            ->getMVCFactory()->createModel('Item', 'Administrator', ['ignore_request' => true]);
-        //$mmodel->setCurrentUser($this->app->getIdentity());
 
-        foreach ($trashed as $item) {
-            if ($mmodel->delete($item->id)) {
-                $art++;
-            }
+        /** @var \Joomla\Component\Menus\Administrator\Model\ItemModel $mmodel */
+        $mmodel = $factory->createModel('Item', 'Administrator', ['ignore_request' => true]);
+
+        $result = $this->deleteItemsSafely(
+            $trashed,
+            fn(int $id) => $mmodel->delete($id),
+            fn() => $mmodel->getError()
+        );
+
+        if ($result['deleted'] > 0) {
+            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_MENUITEMS', $result['deleted']), 'info');
         }
 
-        if ($art > 0) {
-            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_MENUITEMS', $art), 'info');
-        }
+        return $result['failed'];
     }
 
     /**
      * Deletes trashed contacts.
      *
-     * @return  void
+     * @return  integer  The number of items that failed to delete.
      *
-     * @since   4.1.0
+     * @since   1.3.0
      */
-    private function delContacts(): void
+    private function delContacts(): int
     {
-        $art = 0;
+        $factory = $this->app->bootComponent('com_contact')->getMVCFactory();
+
         /** @var \Joomla\Component\Contact\Administrator\Model\ContactsModel $model */
-        $model = $this->app->bootComponent('com_contact')
-            ->getMVCFactory()->createModel('Contacts', 'Administrator', ['ignore_request' => true]);
+        $model = $factory->createModel('Contacts', 'Administrator', ['ignore_request' => true]);
         $model->setState('filter.published', -2);
         $atrashed = $model->getItems();
 
-        /** @var \Joomla\Component\Contact\Administrator\Model\ContactModel $model */
-        $amodel = $this->app->bootComponent('com_contact')
-            ->getMVCFactory()->createModel('Contact', 'Administrator', ['ignore_request' => true]);
-        //$amodel->setCurrentUser($this->app->getIdentity());
+        /** @var \Joomla\Component\Contact\Administrator\Model\ContactModel $amodel */
+        $amodel = $factory->createModel('Contact', 'Administrator', ['ignore_request' => true]);
 
-        foreach ($atrashed as $item) {
-            if ($amodel->delete($item->id)) {
-                $art++;
+        $result = $this->deleteItemsSafely(
+            $atrashed,
+            fn(int $id) => $amodel->delete($id),
+            fn() => $amodel->getError()
+        );
+
+        if ($result['deleted'] > 0) {
+            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_CONTACTS_DELETED', $result['deleted']), 'info');
+        }
+
+        return $result['failed'];
+    }
+
+    /**
+     * Loads a Super User identity into the application to grant elevated access.
+     *
+     * @return  boolean  True when a super user identity was loaded.
+     *
+     * @since   1.1.0
+     */
+    private function setGrant(): bool
+    {
+        $db = $this->getDatabase();
+
+        // Find enabled users belonging to any usergroup
+        $query = $db->getQuery(true)
+            ->select('DISTINCT ' . $db->quoteName('u.id'))
+            ->from($db->quoteName('#__users', 'u'))
+            ->join(
+                'INNER',
+                $db->quoteName('#__user_usergroup_map', 'm'),
+                $db->quoteName('m.user_id') . ' = ' . $db->quoteName('u.id')
+            )
+            ->where($db->quoteName('u.block') . ' = 0');
+
+        $userIds = $db->setQuery($query)->loadColumn();
+
+        $userFactory = Factory::getContainer()->get(UserFactoryInterface::class);
+
+        foreach ($userIds as $uid) {
+            $user = $userFactory->loadUserById((int) $uid);
+
+            // Authorise check instead of group guessing: is this user a Super User?
+            if ($user->authorise('core.admin')) {
+                $this->app->getSession()->set('user', $user);
+                $this->app->loadIdentity($user);
+
+                return true;
             }
         }
 
-        if ($art > 0) {
-            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_CONTACTS_DELETED', $art), 'info');
+        $this->logTask(Text::_('PLG_TASK_DELTRASH_NO_SUPERUSER'), 'error');
+
+        return false;
+    }
+
+    /**
+     * Deletes trashed articles and their related records.
+     *
+     * @return  integer  The number of items that failed to delete.
+     *
+     * @since   1.0.0
+     */
+    private function deleteArticles(): int
+    {
+        // Language strings used by the associations cleanup below
+        $language = $this->getApplication()->getLanguage();
+        $language->load('com_associations', JPATH_ADMINISTRATOR, 'en-GB', false, true);
+        $language->load('com_associations', JPATH_ADMINISTRATOR, null, true);
+
+        $factory = $this->app->bootComponent('com_content')->getMVCFactory();
+
+        /** @var \Joomla\Component\Content\Administrator\Model\ArticlesModel $listModel */
+        $listModel = $factory->createModel('Articles', 'Administrator', ['ignore_request' => true]);
+        $listModel->setState('filter.published', -2);
+        $trashed = $listModel->getItems();
+
+        if (empty($trashed)) {
+            return 0;
+        }
+
+        /** @var \Joomla\Component\Content\Administrator\Model\ArticleModel $articleModel */
+        $articleModel = $factory->createModel('Article', 'Administrator', ['ignore_request' => true]);
+
+        $deletedIds = [];
+
+        // Model path: dispatches onContentBeforeDelete/onContentAfterDelete,
+        // deletes the asset, #__content_frontpage, #__history, #__associations
+        // and the #__workflow_associations row.
+        $result = $this->deleteItemsSafely(
+            $trashed,
+            function (int $id) use ($articleModel, &$deletedIds) {
+                $pks = [$id];
+                if ($articleModel->delete($pks)) {
+                    $deletedIds[] = $id;
+
+                    return true;
+                }
+
+                return false;
+            },
+            fn() => $articleModel->getError()
+        );
+
+        // Core does not clean these on article delete - batched: 3 queries total.
+        if (!empty($deletedIds)) {
+            $this->deleteArticleAuxiliaryData($deletedIds);
+        }
+
+        // Global orphan cleanup - run once, not once per article.
+        /** @var \Joomla\Component\Associations\Administrator\Model\AssociationsModel $assocModel */
+        $assocModel = $this->app->bootComponent('com_associations')
+            ->getMVCFactory()
+            ->createModel('Associations', 'Administrator', ['ignore_request' => true]);
+        $assocModel->clean();
+
+        if ($result['deleted'] > 0) {
+            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_ARTICLES', $result['deleted']), 'info');
+        }
+
+        if ($result['failed'] > 0) {
+            $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_ARTICLES_FAILED', $result['failed']), 'warning');
+        }
+
+        return $result['failed'];
+    }
+
+    /**
+    * Removes the auxiliary rows that core does not clean when articles are deleted.
+    *
+    *   Rows in the shared UCM and tag-map tables are scoped by the content type
+    *   alias, because numeric item ids are NOT unique across content types.
+    *
+    *   @param   integer[]  $ids  The deleted article ids.
+    *
+    *   @return  void
+    *
+    *   @throws  \RuntimeException  On database failure (transaction is rolled back).
+    *
+    *   @since   2.0.0
+    *
+    */
+    private function deleteArticleAuxiliaryData(array $ids): void
+    {
+        $ids = array_values(array_unique(array_map('intval', array_filter($ids))));
+
+        if ($ids === []) {
+            return;
+        }
+
+        $db    = $this->getDatabase();
+        $alias = 'com_content.article';
+
+        $articleTypeId = (int) $db->setQuery(
+            $db->getQuery(true)
+                    ->select($db->quoteName('type_id'))
+                    ->from($db->quoteName('#__content_types'))
+                    ->where($db->quoteName('type_alias') . ' = :alias')
+                    ->bind(':alias', $alias)
+        )->loadResult();
+
+        $db->transactionStart();
+
+        try {
+            // Tag mappings - scoped by type_alias
+            $query = $db->getQuery(true)
+                ->delete($db->quoteName('#__contentitem_tag_map'))
+                ->whereIn($db->quoteName('content_item_id'), $ids, ParameterType::INTEGER)
+                ->where($db->quoteName('type_alias') . ' = :alias')
+                ->bind(':alias', $alias);
+            $db->setQuery($query)->execute();
+
+            // UCM content - scoped by core_type_alias
+            $query = $db->getQuery(true)
+                ->delete($db->quoteName('#__ucm_content'))
+                ->whereIn($db->quoteName('core_content_item_id'), $ids, ParameterType::INTEGER)
+                ->where($db->quoteName('core_type_alias') . ' = :alias')
+                ->bind(':alias', $alias);
+            $db->setQuery($query)->execute();
+
+            // UCM base - scoped by ucm_type_id
+            if ($articleTypeId > 0) {
+                $query = $db->getQuery(true)
+                    ->delete($db->quoteName('#__ucm_base'))
+                    ->whereIn($db->quoteName('ucm_item_id'), $ids, ParameterType::INTEGER)
+                    ->where($db->quoteName('ucm_type_id') . ' = :typeId')
+                    ->bind(':typeId', $articleTypeId, ParameterType::INTEGER);
+                $db->setQuery($query)->execute();
+            }
+
+            $db->transactionCommit();
+        } catch (\Throwable $e) {
+            $db->transactionRollback();
+
+            // Log as warning: the articles themselves were already deleted;
+            // leftover UCM rows are harmless orphans, not a task failure.
+            $this->logTask(
+                Text::sprintf('PLG_TASK_DELTRASH_AUX_CLEANUP_FAILED', $e->getMessage()),
+                'warning'
+            );
         }
     }
-    
+
     /**
-     * Loads a Super User identity into the application session to grant elevated access.
+     * Deletes items one by one, isolating failures so one bad item
+     * does not abort the rest of the batch.
      *
-     * @return  void
+     * @param   iterable  $items     Items with an ->id property
+     * @param   callable  $deleteFn  Receives the item id, returns bool
+     * @param   callable  $errorFn   Returns the last model error message
      *
-     * @since   4.1.0
+     * @return  array{deleted: int, failed: int}
+     *
+     * @since   2.0.0
      */
-    private function setGrant(): void
+    private function deleteItemsSafely(iterable $items, callable $deleteFn, callable $errorFn): array
     {
-        // Get all usergroups with Super User access
-        $db    = $this->db;
-        $query = $db->getQuery(true)
-             ->select([$db->qn('id')])
-            ->from($db->qn('#__usergroups'));
-        $groups = $db->setQuery($query)->loadColumn();
+        $deleted = 0;
+        $failed  = 0;
 
-        // Get the groups that are Super Users
-        $groups = array_filter($groups, function ($gid) {
-            return Access::checkGroup($gid, 'core.admin');
-        });
+        foreach ($items as $item) {
+            $id = (int) $item->id;
 
-        foreach ($groups as $gid) {
-            $uids = Access::getUsersByGroup($gid);
-            $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($uids[0]);
-            $this->app->getSession()->set('user', $user);
-            $this->app->loadIdentity($user);
-
-            break;
+            try {
+                if ($deleteFn($id)) {
+                    $deleted++;
+                } else {
+                    $failed++;
+                    $this->logTask(
+                        Text::sprintf('PLG_TASK_DELTRASH_ITEM_FAILED', $id, $errorFn()),
+                        'warning'
+                    );
+                }
+            } catch (\Throwable $e) {
+                $failed++;
+                $this->logTask(
+                    Text::sprintf('PLG_TASK_DELTRASH_ITEM_FAILED', $id, $e->getMessage()),
+                    'error'
+                );
+            }
         }
+
+        return ['deleted' => $deleted, 'failed' => $failed];
     }
 }
