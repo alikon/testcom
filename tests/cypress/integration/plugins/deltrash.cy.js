@@ -159,3 +159,191 @@ describe('Test that the Joomla Task Plugin: Deltrash', () => {
     cy.contains('No Articles have been created yet').should('exist');
   });
 });
+
+describe('Test that the Joomla Task Plugin: Deltrash runs via CLI', () => {
+  /**
+   * Create a deltrash task and execute it from the command line:
+   *   php cli/joomla.php scheduler:run --task=<id>
+   */
+  const runDeltrashTaskViaCli = (paramsOverrides = {}, title = 'CLI deltrash task') => {
+    const defaultParams = {
+      notifications: { success_mail: 0 },
+      articles: 0,
+      categories: 0,
+      components: [],
+      contacts: 0,
+      menus: 0,
+      menutype: [],
+      modules: 0,
+      moduletype: [],
+      redirects: 0,
+      redirectspurge: 0,
+      tags: 0,
+      tasks: 0,
+    };
+
+    const mergedParams = { ...defaultParams, ...paramsOverrides };
+
+    return cy.db_createSchedulerTask({
+      title,
+      type: 'plg_task_deltrash',
+      state: 1,
+      execution_rules: { 'rule-type': 'interval', interval: 1, unit: 'minutes' },
+      cron_rules: { type: 'interval', exp: '* * * * *' },
+      params: mergedParams,
+    }).then((task) =>
+      cy.task(
+        'queryDB',
+        `UPDATE #__scheduler_tasks SET next_execution = (NOW() - INTERVAL 5 MINUTE) WHERE id = ${task.id}`
+      ).then(() =>
+        cy.exec('php cli/joomla.php scheduler:run', {
+          timeout: 60000,
+          failOnNonZeroExit: false,
+        }).then((result) => {
+          expect(
+            result.exitCode,
+            `CLI run output:\nstdout: ${result.stdout}\nstderr: ${result.stderr}`
+          ).to.eq(0);
+
+          return cy.wrap(task);
+        })
+      )
+    );
+  };
+
+  const countRows = (sql) =>
+    cy.task('queryDB', sql).then((rows) => Number(rows[0].cnt));
+
+  beforeEach(() => {
+    cy.task('clearEmails');
+    cy.db_enableExtension('1', 'plg_task_deltrash');
+  });
+
+  it('empties trashed articles when run from the CLI', () => {
+    cy.db_createArticle({ title: 'CLI trash article', state: -2 }).then(() => {
+      countRows("SELECT COUNT(*) AS cnt FROM #__content WHERE title = 'CLI trash article' AND state = -2")
+        .should('be.greaterThan', 0);
+    });
+
+    runDeltrashTaskViaCli({ articles: 1 }, 'CLI articles task').then(() => {
+      countRows("SELECT COUNT(*) AS cnt FROM #__content WHERE title = 'CLI trash article'")
+        .should('eq', 0);
+
+      countRows(
+        "SELECT COUNT(*) AS cnt FROM #__ucm_content WHERE core_type_alias = 'com_content.article'" +
+        ' AND core_content_item_id NOT IN (SELECT id FROM #__content)'
+      ).should('eq', 0);
+    });
+  });
+
+  it('cleans article auxiliary data (tag map) when run from the CLI', () => {
+    cy.db_createArticle({ title: 'CLI tagged trash article', state: -2 });
+    cy.db_createTag({ title: 'cli-test-tag', published: 1 });
+
+    cy.task('queryDB', "SELECT id FROM #__content WHERE title = 'CLI tagged trash article' LIMIT 1").then((artRows) => {
+      const articleId = artRows[0].id;
+
+      cy.task('queryDB', "SELECT id FROM #__tags WHERE title = 'cli-test-tag' LIMIT 1").then((tagRows) => {
+        const tagId = tagRows[0].id;
+
+        // Query corretta per la tabella #__contentitem_tag_map
+        cy.task(
+          'queryDB',
+          `INSERT INTO #__contentitem_tag_map (tag_id, content_item_id, type_alias, type_id, core_content_id)` +
+          ` VALUES (${tagId}, ${articleId}, 'com_content.article', 1, 0)`
+        ).then(() => {
+          countRows("SELECT COUNT(*) AS cnt FROM #__contentitem_tag_map WHERE type_alias = 'com_content.article'")
+            .should('be.greaterThan', 0);
+
+          runDeltrashTaskViaCli({ articles: 1 }, 'CLI aux cleanup task').then(() => {
+            countRows(
+              "SELECT COUNT(*) AS cnt FROM #__contentitem_tag_map WHERE type_alias = 'com_content.article'" +
+              ' AND content_item_id NOT IN (SELECT id FROM #__content)'
+            ).should('eq', 0);
+          });
+        });
+      });
+    });
+  });
+
+  it('empties trashed categories via CLI', () => {
+    cy.db_createCategory({ title: 'CLI trash category', extension: 'com_content', published: -2 });
+
+    runDeltrashTaskViaCli({ categories: 1, components: ['com_content'] }, 'CLI categories task').then(() => {
+      countRows("SELECT COUNT(*) AS cnt FROM #__categories WHERE title = 'CLI trash category' AND published = -2")
+        .should('eq', 0);
+    });
+  });
+
+  it('empties trashed tags via CLI', () => {
+    cy.db_createTag({ title: 'CLI trash tag', published: -2 });
+
+    runDeltrashTaskViaCli({ tags: 1 }, 'CLI tags task').then(() => {
+      countRows("SELECT COUNT(*) AS cnt FROM #__tags WHERE title = 'CLI trash tag' AND published = -2")
+        .should('eq', 0);
+    });
+  });
+
+ it('empties trashed modules via CLI', () => {
+    // Creiamo il modulo nel cestino (published: -2) con il suo module type specifico
+    cy.db_createModule({ title: 'CLI trash module', module: 'mod_custom', published: -2, client_id: 0 });
+
+    // Passiamo moduletype popolato con il tipo specifico del modulo oppure 'mod_custom'
+    runDeltrashTaskViaCli({ modules: 1, moduletype: ['site'] }, 'CLI modules task').then(() => {
+      countRows("SELECT COUNT(*) AS cnt FROM #__modules WHERE title = 'CLI trash module' AND published = -2")
+      .should('eq', 0);
+    });
+  });
+
+  it('empties trashed contacts via CLI', () => {
+    cy.db_createContact({ name: 'CLI trash contact', published: -2 });
+
+    runDeltrashTaskViaCli({ contacts: 1 }, 'CLI contacts task').then(() => {
+      countRows("SELECT COUNT(*) AS cnt FROM #__contact_details WHERE name = 'CLI trash contact' AND published = -2")
+        .should('eq', 0);
+    });
+  });
+
+  it('empties trashed site and admin menu items via CLI', () => {
+    cy.db_createMenuItem({ title: 'CLI trash site menu item', published: -2, client_id: 0 });
+    cy.db_createMenuItem({ title: 'CLI trash admin menu item', published: -2, client_id: 1 });
+
+    runDeltrashTaskViaCli({ menus: 1, menutype: ['site', 'admin'] }, 'CLI menus task').then(() => {
+      countRows("SELECT COUNT(*) AS cnt FROM #__menu WHERE title = 'CLI trash site menu item' AND published = -2")
+        .should('eq', 0);
+      countRows("SELECT COUNT(*) AS cnt FROM #__menu WHERE title = 'CLI trash admin menu item' AND published = -2")
+        .should('eq', 0);
+    });
+  });
+
+  it('completes successfully when the trash is already empty', () => {
+    runDeltrashTaskViaCli({ articles: 1, tags: 1, contacts: 1 }, 'CLI empty trash task');
+  });
+
+  it('runs all routines together via CLI', () => {
+    cy.db_createArticle({ title: 'CLI combined article', state: -2 });
+    cy.db_createTag({ title: 'CLI combined tag', published: -2 });
+    cy.db_createContact({ name: 'CLI combined contact', published: -2 });
+    cy.db_createCategory({ title: 'CLI combined category', extension: 'com_content', published: -2 });
+
+    runDeltrashTaskViaCli({
+      articles: 1,
+      categories: 1,
+      components: ['com_content'],
+      contacts: 1,
+      menus: 0,
+      menutype: [],
+      modules: 0,
+      moduletype: [],
+      redirects: 0,
+      redirectspurge: 0,
+      tags: 1,
+      tasks: 0,
+    }, 'CLI combined deltrash task').then(() => {
+      countRows("SELECT COUNT(*) AS cnt FROM #__content WHERE title = 'CLI combined article'").should('eq', 0);
+      countRows("SELECT COUNT(*) AS cnt FROM #__tags WHERE title = 'CLI combined tag'").should('eq', 0);
+      countRows("SELECT COUNT(*) AS cnt FROM #__contact_details WHERE name = 'CLI combined contact'").should('eq', 0);
+      countRows("SELECT COUNT(*) AS cnt FROM #__categories WHERE title = 'CLI combined category' AND published = -2").should('eq', 0);
+    });
+  });
+});
