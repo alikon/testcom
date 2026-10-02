@@ -584,35 +584,79 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
     }
 
     /**
-     * Removes the auxiliary rows that core does not clean when articles are deleted.
-     *
-     * @param   integer[]  $ids  The deleted article ids.
-     *
-     * @return  void
-     *
-     * @since   2.0.0
-     */
+    * Removes the auxiliary rows that core does not clean when articles are deleted.
+    *
+    *   Rows in the shared UCM and tag-map tables are scoped by the content type
+    *   alias, because numeric item ids are NOT unique across content types.
+    *
+    *   @param   integer[]  $ids  The deleted article ids.
+    *
+    *   @return  void
+    *
+    *   @throws  \RuntimeException  On database failure (transaction is rolled back).
+    *
+    *   @since   2.0.0
+    *
+    */
     private function deleteArticleAuxiliaryData(array $ids): void
     {
-        $db = $this->getDatabase();
+        $ids = array_values(array_unique(array_map('intval', array_filter($ids))));
 
-        // Tag mappings
-        $query = $db->getQuery(true)
-            ->delete($db->quoteName('#__contentitem_tag_map'))
-            ->whereIn($db->quoteName('content_item_id'), $ids, ParameterType::INTEGER);
-        $db->setQuery($query)->execute();
+        if ($ids === []) {
+            return;
+        }
 
-        // UCM content
-        $query = $db->getQuery(true)
-            ->delete($db->quoteName('#__ucm_content'))
-            ->whereIn($db->quoteName('core_content_item_id'), $ids, ParameterType::INTEGER);
-        $db->setQuery($query)->execute();
+        $db    = $this->getDatabase();
+        $alias = 'com_content.article';
 
-        // UCM base
-        $query = $db->getQuery(true)
-            ->delete($db->quoteName('#__ucm_base'))
-            ->whereIn($db->quoteName('ucm_item_id'), $ids, ParameterType::INTEGER);
-        $db->setQuery($query)->execute();
+        $articleTypeId = (int) $db->setQuery(
+            $db->getQuery(true)
+                    ->select($db->quoteName('type_id'))
+                    ->from($db->quoteName('#__content_types'))
+                    ->where($db->quoteName('type_alias') . ' = :alias')
+                    ->bind(':alias', $alias)
+        )->loadResult();
+
+        $db->transactionStart();
+
+        try {
+            // Tag mappings - scoped by type_alias
+            $query = $db->getQuery(true)
+                ->delete($db->quoteName('#__contentitem_tag_map'))
+                ->whereIn($db->quoteName('content_item_id'), $ids, ParameterType::INTEGER)
+                ->where($db->quoteName('type_alias') . ' = :alias')
+                ->bind(':alias', $alias);
+            $db->setQuery($query)->execute();
+
+            // UCM content - scoped by core_type_alias
+            $query = $db->getQuery(true)
+                ->delete($db->quoteName('#__ucm_content'))
+                ->whereIn($db->quoteName('core_content_item_id'), $ids, ParameterType::INTEGER)
+                ->where($db->quoteName('core_type_alias') . ' = :alias')
+                ->bind(':alias', $alias);
+            $db->setQuery($query)->execute();
+
+            // UCM base - scoped by ucm_type_id
+            if ($articleTypeId > 0) {
+                $query = $db->getQuery(true)
+                    ->delete($db->quoteName('#__ucm_base'))
+                    ->whereIn($db->quoteName('ucm_item_id'), $ids, ParameterType::INTEGER)
+                    ->where($db->quoteName('ucm_type_id') . ' = :typeId')
+                    ->bind(':typeId', $articleTypeId, ParameterType::INTEGER);
+                $db->setQuery($query)->execute();
+            }
+
+            $db->transactionCommit();
+        } catch (\Throwable $e) {
+            $db->transactionRollback();
+
+            // Log as warning: the articles themselves were already deleted;
+            // leftover UCM rows are harmless orphans, not a task failure.
+            $this->logTask(
+                Text::sprintf('PLG_TASK_DELTRASH_AUX_CLEANUP_FAILED', $e->getMessage()),
+                'warning'
+            );
+        }
     }
 
     /**
