@@ -306,6 +306,9 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Configure Git safe directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
       - name: Restore build from cache
         uses: actions/cache/restore@v5
         with:
