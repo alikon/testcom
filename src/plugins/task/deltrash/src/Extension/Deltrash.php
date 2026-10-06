@@ -269,15 +269,15 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             /** @var \Joomla\Component\Modules\Administrator\Model\ModulesModel $model */
             $model = $factory->createModel('Modules', 'Administrator', ['ignore_request' => true]);
             $model->setState('filter.state', -2);
+            $model->setState('client_id', 0);
             $strashed = $model->getItems();
         }
 
         if (\in_array('admin', $type, true)) {
             /** @var \Joomla\Component\Modules\Administrator\Model\ModulesModel $gmodel */
             $gmodel = $factory->createModel('Modules', 'Administrator', ['ignore_request' => true]);
-            $gmodel->setState('filter.client_id', 1);
-            $gmodel->setState('client_id', 1);
             $gmodel->setState('filter.state', -2);
+            $gmodel->setState('client_id', 1);
             $atrashed = $gmodel->getItems();
         }
 
