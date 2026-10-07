@@ -91,7 +91,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         $session      = $this->app->getSession();
         $previousUser = $this->app->getIdentity();
 
-        if (!$this->setGrant()) {
+        if (Factory::getApplication()->isClient('cli') && !$this->setGrant()) {
             $this->logTask(Text::_('PLG_TASK_DELTRASH_GRANT_FAILED'), 'error');
 
             return Status::KNOCKOUT;
