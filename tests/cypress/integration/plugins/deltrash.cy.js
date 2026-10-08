@@ -134,11 +134,13 @@ describe('Test that the Joomla Task Plugin: Deltrash', () => {
   });
 
   it('empties trashed categories for the selected component', () => {
-    cy.db_createCategory({
+    cy.api_post('/content/categories', {
       title: 'Test trash category',
+      description: 'automated test content category description',
+      parent_id: 1,
       extension: 'com_content',
       published: -2,
-    });
+    })    
 
     runDeltrashTask({
       categories: 1,
