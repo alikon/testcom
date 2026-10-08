@@ -416,7 +416,7 @@ describe('Test that the Joomla Task Plugin: Deltrash runs via CLI', () => {
   });
 
   it('empties trashed articles when run from the CLI', () => {
-    cy.api_post('/content/articles',
+    cy.api_post('/content/articles', {
       title: 'CLI trash article',
       state: -2,
       catid: 2,
@@ -445,7 +445,7 @@ describe('Test that the Joomla Task Plugin: Deltrash runs via CLI', () => {
   });
 
   it('cleans article auxiliary data (tag map) when run from the CLI', () => {
-    cy.db_createArticle({
+    cy.api_post('/content/articles', {
       title: 'CLI tagged trash article',
       catid: 2,
       state: -2,
@@ -613,7 +613,7 @@ describe('Test that the Joomla Task Plugin: Deltrash runs via CLI', () => {
   });
 
   it('runs all routines together via CLI', () => {
-    cy.db_createArticle({
+    cy.api_post('/content/articles', {
       title: 'CLI combined article',
       state: -2,
       catid: 2,
