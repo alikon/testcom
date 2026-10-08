@@ -418,9 +418,20 @@ describe('Test that the Joomla Task Plugin: Deltrash runs via CLI', () => {
   it('empties trashed articles when run from the CLI', () => {
     cy.api_post('/content/articles', {
       title: 'CLI trash article',
-      state: -2,
+      alias: 'test-article',
       catid: 2,
+      introtext: '',
+      fulltext: '',
+      state: -2,
+      access: 1,
       language: '*',
+      created: '2023-01-01 20:00:00',
+      modified: '2023-01-01 20:00:00',
+      images: '',
+      urls: '',
+      attribs: '',
+      metadesc: '',
+      metadata: '',
     });
 
     waitForRowCount(
@@ -447,9 +458,20 @@ describe('Test that the Joomla Task Plugin: Deltrash runs via CLI', () => {
   it('cleans article auxiliary data (tag map) when run from the CLI', () => {
     cy.api_post('/content/articles', {
       title: 'CLI tagged trash article',
+      alias: 'test-article',
       catid: 2,
+      introtext: '',
+      fulltext: '',
       state: -2,
+      access: 1,
       language: '*',
+      created: '2023-01-01 20:00:00',
+      modified: '2023-01-01 20:00:00',
+      images: '',
+      urls: '',
+      attribs: '',
+      metadesc: '',
+      metadata: '',
     });
 
     cy.db_createTag({
@@ -615,10 +637,20 @@ describe('Test that the Joomla Task Plugin: Deltrash runs via CLI', () => {
   it('runs all routines together via CLI', () => {
     cy.api_post('/content/articles', {
       title: 'CLI combined article',
-      state: -2,
+      alias: 'test-article',
       catid: 2,
+      introtext: '',
+      fulltext: '',
       state: -2,
+      access: 1,
       language: '*',
+      created: '2023-01-01 20:00:00',
+      modified: '2023-01-01 20:00:00',
+      images: '',
+      urls: '',
+      attribs: '',
+      metadesc: '',
+      metadata: '',
     });
 
     cy.db_createTag({
