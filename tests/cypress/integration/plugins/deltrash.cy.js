@@ -624,8 +624,10 @@ describe('Test that the Joomla Task Plugin: Deltrash runs via CLI', () => {
       published: -2,
     });
 
-    cy.db_createCategory({
+    cy.api_post('/content/categories', {
       title: 'CLI combined category',
+      description: 'automated test content category description',
+      parent_id: 1,
       extension: 'com_content',
       published: -2,
     });
