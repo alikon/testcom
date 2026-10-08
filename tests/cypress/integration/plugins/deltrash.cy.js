@@ -582,4 +582,86 @@ describe('Test that the Joomla Task Plugin: Deltrash runs via CLI', () => {
     runDeltrashTaskViaCli(
       {
         menus: 1,
-        men
+        menutype: ['site', 'admin'],
+      },
+      'CLI menus task'
+    ).then(() => {
+      waitForRowCount(
+        "SELECT COUNT(*) AS cnt FROM #__menu WHERE title IN ('CLI trash site menu item', 'CLI trash admin menu item') AND published = -2",
+        0
+      );
+    });
+  });
+
+  it('completes successfully when the trash is already empty', () => {
+    runDeltrashTaskViaCli(
+      {
+        articles: 1,
+        tags: 1,
+        contacts: 1,
+      },
+      'CLI empty trash task'
+    );
+  });
+
+  it('runs all routines together via CLI', () => {
+    cy.db_createArticle({
+      title: 'CLI combined article',
+      state: -2,
+    });
+
+    cy.db_createTag({
+      title: 'CLI combined tag',
+      published: -2,
+    });
+
+    cy.db_createContact({
+      name: 'CLI combined contact',
+      published: -2,
+    });
+
+    cy.db_createCategory({
+      title: 'CLI combined category',
+      extension: 'com_content',
+      published: -2,
+    });
+
+    runDeltrashTaskViaCli(
+      {
+        articles: 1,
+        categories: 1,
+        components: ['com_content'],
+        contacts: 1,
+        menus: 0,
+        menutype: [],
+        modules: 0,
+        moduletype: [],
+        redirects: 0,
+        redirectspurge: 0,
+        tags: 1,
+        tasks: 0,
+      },
+      'CLI combined deltrash task'
+    ).then(() => {
+      waitForRowCount(
+        "SELECT COUNT(*) AS cnt FROM #__content WHERE title = 'CLI combined article'",
+        0
+      );
+
+      waitForRowCount(
+        "SELECT COUNT(*) AS cnt FROM #__tags WHERE title = 'CLI combined tag'",
+        0
+      );
+
+      waitForRowCount(
+        "SELECT COUNT(*) AS cnt FROM #__contact_details WHERE name = 'CLI combined contact'",
+        0
+      );
+
+      waitForRowCount(
+        "SELECT COUNT(*) AS cnt FROM #__categories WHERE title = 'CLI combined category' AND published = -2",
+        0
+      );
+    });
+  });
+});
