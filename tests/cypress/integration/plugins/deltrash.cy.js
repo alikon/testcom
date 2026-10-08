@@ -445,7 +445,9 @@ describe('Test that the Joomla Task Plugin: Deltrash runs via CLI', () => {
   it('cleans article auxiliary data (tag map) when run from the CLI', () => {
     cy.db_createArticle({
       title: 'CLI tagged trash article',
+      catid: 2,
       state: -2,
+      language: '*',
     });
 
     cy.db_createTag({
@@ -612,6 +614,9 @@ describe('Test that the Joomla Task Plugin: Deltrash runs via CLI', () => {
     cy.db_createArticle({
       title: 'CLI combined article',
       state: -2,
+      catid: 2,
+      state: -2,
+      language: '*',
     });
 
     cy.db_createTag({
