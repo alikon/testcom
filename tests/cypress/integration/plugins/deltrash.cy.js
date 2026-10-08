@@ -416,9 +416,11 @@ describe('Test that the Joomla Task Plugin: Deltrash runs via CLI', () => {
   });
 
   it('empties trashed articles when run from the CLI', () => {
-    cy.db_createArticle({
+    cy.api_post('/content/articles',
       title: 'CLI trash article',
       state: -2,
+      catid: 2,
+      language: '*',
     });
 
     waitForRowCount(
