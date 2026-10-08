@@ -413,6 +413,7 @@ describe('Test that the Joomla Task Plugin: Deltrash runs via CLI', () => {
   beforeEach(() => {
     cy.task('clearEmails');
     cy.db_enableExtension('1', 'plg_task_deltrash');
+    cy.task('queryDB', 'DELETE FROM #__content');
   });
 
   it('empties trashed articles when run from the CLI', () => {
