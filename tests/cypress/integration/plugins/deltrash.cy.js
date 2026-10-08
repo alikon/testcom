@@ -54,6 +54,22 @@ describe('Test that the Joomla Task Plugin: Deltrash', () => {
   const countRows = (sql) =>
     cy.task('queryDB', sql).then((rows) => Number(rows[0].cnt));
 
+  function waitForRowCount(query, expectedCount, maxRetries = 10, delayMs = 500) {
+    return countRows(query).then((cnt) => {
+      if (cnt === expectedCount) {
+        return; // Successo! La condizione è verificata.
+      }
+
+      if (maxRetries <= 0) {
+        throw new Error(`Timeout: Il conteggio delle righe è ${cnt}, atteso ${expectedCount}`);
+      }
+
+      // Aspetta e ritenta ricorsivamente
+      cy.wait(delayMs);
+      return waitForRowCount(query, expectedCount, maxRetries - 1, delayMs);
+    });
+  }
+
   beforeEach(() => {
     cy.task('clearEmails');
     cy.doAdministratorLogin();
@@ -125,12 +141,10 @@ describe('Test that the Joomla Task Plugin: Deltrash', () => {
       components: ['com_content'],
     });
 
-    countRows(
-      "SELECT COUNT(*) AS cnt FROM #__categories " +
-      "WHERE title = 'Test trash category' " +
-      "AND extension = 'com_content' " +
-      "AND published = -2"
-    ).should('eq', 0);
+    waitForRowCount(
+      "SELECT COUNT(*) AS cnt FROM #__categories WHERE title = 'Test trash category' AND extension = 'com_content' AND published = -2",
+      0
+    );
   });
 
   it('empties trashed admin modules', () => {
