@@ -86,7 +86,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        joomla-version: ['5.4', '6.1']
+        joomla-version: ['5.4', '6.1', '6.2']
     container:
       image: joomlaprojects/docker-images:cypress8.3
     timeout-minutes: 15
@@ -263,6 +263,16 @@ jobs:
             db-prefix: pgsql_
             alter-user-cmd: "apt-get update && apt-get install -y postgresql-client"
           - joomla-version: '6.1'
+            php-version: '8.5'
+            db: mysql
+            db-type: mysqli
+            db-host: mysql
+            image: mysql:8.0
+            db-prefix: mysql_
+            alter-user-cmd: |
+              apt-get update && apt-get install -y default-mysql-client
+              mysql -h mysql -u root -proot --skip-ssl -e "ALTER USER 'joomla_ut'@'%' IDENTIFIED WITH mysql_native_password BY 'joomla_ut'; FLUSH PRIVILEGES;"
+          - joomla-version: '6.2'
             php-version: '8.5'
             db: mysql
             db-type: mysqli
