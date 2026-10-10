@@ -567,25 +567,47 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             return 0;
         }
 
-        /** @var \Joomla\Component\Content\Administrator\Model\ArticleModel $articleModel */
-        $articleModel = $factory->createModel('Article', 'Administrator', ['ignore_request' => true]);
-
         $deletedIds = [];
+
+        if (version_compare(JVERSION, '6.0', '>=')) {
+            /** @var \Joomla\Component\Content\Administrator\Model\ArticleModel $model */
+            $model = $factory->createModel('Article', 'Administrator', ['ignore_request' => true]);
+            $deleteFn = static function (int $id) use ($model, &$deletedIds): bool {
+                $pks = [$id];
+
+                if (!$model->delete($pks)) {
+                    return false;
+                }
+
+                $deletedIds[] = $id;
+
+                return true;
+            };
+            $errorFn = static fn() => $model->getError();
+        } else {
+            // Joomla 5's ArticleModel cannot initialize Workflow with the CLI application.
+            // Deleting through the table avoids that model constructor while retaining asset cleanup.
+            $articleTable = $factory->createTable('Article', 'Administrator');
+            $deleteFn = static function (int $id) use ($articleTable, &$deletedIds): bool {
+                if (!$articleTable->load($id) || (int) $articleTable->state !== -2) {
+                    return false;
+                }
+
+                if (!$articleTable->delete($id)) {
+                    return false;
+                }
+
+                $deletedIds[] = $id;
+
+                return true;
+            };
+            $errorFn = static fn() => $articleTable->getError();
+        }
 
         $result = $this->deleteItemsSafely(
             $trashed,
-            function (int $id) use ($articleModel, &$deletedIds): bool {
-                $pks = [$id];
-
-                if ($articleModel->delete($pks)) {
-                    $deletedIds[] = $id;
-
-                    return true;
-                }
-
-                return false;
-            },
-            fn() => $articleModel->getError()
+            $deleteFn,
+            $errorFn
         );
 
         // Core does not clean these rows on article delete.
@@ -657,6 +679,20 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
                 )
                 ->where($db->quoteName('type_alias') . ' = :alias')
                 ->bind(':alias', $alias);
+
+            $db->setQuery($query)->execute();
+
+            $query = $db->getQuery(true)
+                ->delete($db->quoteName('#__content_frontpage'))
+                ->whereIn($db->quoteName('content_id'), $ids, ParameterType::INTEGER);
+
+            $db->setQuery($query)->execute();
+
+            $query = $db->getQuery(true)
+                ->delete($db->quoteName('#__workflow_associations'))
+                ->whereIn($db->quoteName('item_id'), $ids, ParameterType::INTEGER)
+                ->where($db->quoteName('extension') . ' = :extension')
+                ->bind(':extension', 'com_content.article');
 
             $db->setQuery($query)->execute();
 
