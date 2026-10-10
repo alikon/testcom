@@ -110,15 +110,21 @@ final class Export extends CMSPlugin
         $toolbar = Toolbar::getInstance('toolbar');
         $toolbar->appendButton('Link', 'upload', 'Export', '#');
 
+        $downloadFormat = $this->params->get('download_format', 'none');
+        if ($downloadFormat !== 'none') {
+            $toolbar->appendButton('Link', 'download', 'Download ' . strtoupper($downloadFormat), '#download-export');
+        }
+
         // Build the options array shared by both views
         $scriptOptions = [
-            'apiKey'    => $key,
-            'catid'     => $this->getConfiguredCatId(),
-            'get'       => $this->getUrl,
-            'post'      => $this->postUrl,
-            'auth'      => $auth,
-            'view'      => $view,
-            'maxBulk'   => $this->getMaxBulkIds(),
+            'apiKey'         => $key,
+            'catid'          => $this->getConfiguredCatId(),
+            'get'            => $this->getUrl,
+            'post'           => $this->postUrl,
+            'auth'           => $auth,
+            'view'           => $view,
+            'maxBulk'        => $this->getMaxBulkIds(),
+            'downloadFormat' => $this->params->get('download_format', 'none'),
         ];
 
         // For the single article view, pre-load the current article data
@@ -173,6 +179,7 @@ final class Export extends CMSPlugin
         Text::script('PLG_CONTENT_EXPORT_BULK_NO_ARTICLES');
         Text::script('PLG_CONTENT_EXPORT_BULK_COMPLETE');
         Text::script('PLG_CONTENT_EXPORT_BULK_FATAL_ERROR');
+        Text::script('PLG_CONTENT_EXPORT_DOWNLOAD_COMPLETE');
 
         // Pass data to javascript
         $this->app->getDocument()->addScriptOptions('a-export', $scriptOptions);
@@ -309,6 +316,108 @@ final class Export extends CMSPlugin
     private function getMaxBulkIds(): int
     {
         return max(1, (int) $this->params->get('max_bulk_ids', 5));
+    }
+
+    /**
+     * AJAX handler that returns articles as a base64-encoded downloadable file.
+     *
+     * @return  array{filename: string, content: string}
+     *
+     * @throws  \Exception
+     *
+     * @since   1.0.0
+     */
+    public function onAjaxExportDownload(): array
+    {
+        if (!$this->app->checkToken('POST')) {
+            throw new \Exception(Text::_('JINVALID_TOKEN'), 403);
+        }
+
+        $user = $this->app->getIdentity();
+
+        if ($user === null || $user->guest || (!$user->authorise('core.edit', 'com_content') && !$user->authorise('core.edit.own', 'com_content'))) {
+            throw new \Exception(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+        }
+
+        $format = $this->params->get('download_format', 'none');
+
+        if ($format === 'none') {
+            throw new \Exception('Download format not configured.', 400);
+        }
+
+        $ids = $this->app->input->post->get('ids', [], 'ARRAY');
+        $ids = array_values(array_unique(array_filter(array_map('intval', $ids), static fn ($id) => $id > 0)));
+
+        if (empty($ids)) {
+            throw new \Exception(Text::_('PLG_CONTENT_EXPORT_BULK_NO_IDS'), 400);
+        }
+
+        if (\count($ids) > $this->getMaxBulkIds()) {
+            throw new \Exception(Text::sprintf('PLG_CONTENT_EXPORT_BULK_TOO_MANY_IDS', $this->getMaxBulkIds()), 400);
+        }
+
+        $db    = Factory::getDbo();
+        $query = $db->getQuery(true)
+            ->select($db->quoteName(['id', 'title', 'alias', 'introtext', 'fulltext', 'language', 'metakey', 'metadesc', 'images']))
+            ->from($db->quoteName('#__content'))
+            ->whereIn($db->quoteName('id'), $ids)
+            ->where($db->quoteName('state') . ' != -2');
+
+        $db->setQuery($query);
+        $rows = $db->loadObjectList();
+
+        $articles = [];
+
+        foreach ($rows as $row) {
+            $item            = new \stdClass();
+            $item->title     = (string) $row->title;
+            $item->alias     = (string) $row->alias;
+            $item->introtext = (string) $row->introtext;
+            $item->fulltext  = (string) $row->fulltext;
+            $item->language  = !empty($row->language) ? $row->language : '*';
+
+            if (!empty($row->metakey)) {
+                $item->metakey = $row->metakey;
+            }
+
+            if (!empty($row->metadesc)) {
+                $item->metadesc = $row->metadesc;
+            }
+
+            if (!empty($row->images)) {
+                $decoded      = json_decode($row->images);
+                $item->images = json_last_error() === JSON_ERROR_NONE ? $decoded : $row->images;
+            }
+
+            $articles[] = $item;
+        }
+
+        $filename = 'articles-export-' . date('Ymd-His');
+
+        if ($format === 'xml') {
+            $xml = new \SimpleXMLElement('<articles/>');
+
+            foreach ($articles as $article) {
+                $node = $xml->addChild('article');
+                foreach ((array) $article as $k => $v) {
+                    $node->addChild($k, htmlspecialchars((string) (\is_object($v) ? json_encode($v) : $v)));
+                }
+            }
+
+            $content  = $xml->asXML();
+            $mime     = 'application/xml';
+            $filename .= '.xml';
+        } else {
+            $content  = json_encode($articles, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            $mime     = 'application/json';
+            $filename .= '.json';
+        }
+
+        return [
+            'filename' => $filename,
+            'mime'     => $mime,
+            'content'  => base64_encode($content),
+        ];
     }
 
 }
