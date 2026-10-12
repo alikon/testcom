@@ -778,7 +778,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
                     Text::sprintf(
                         'PLG_TASK_DELTRASH_ITEM_FAILED',
                         $id,
-                        $errorFn()
+                        $this->getErrorMessage($errorFn)
                     ),
                     'warning'
                 );
@@ -800,5 +800,33 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             'deleted' => $deleted,
             'failed'  => $failed,
         ];
+    }
+
+    /**
+     * Returns a readable error message from a model error callback.
+     *
+     * @param callable $errorFn Returns the last model error message.
+     *
+     * @return string
+     *
+     * @since 2.0.0
+     */
+    private function getErrorMessage(callable $errorFn): string
+    {
+        try {
+            $error = $errorFn();
+        } catch (\Throwable $e) {
+            $message = trim($e->getMessage());
+
+            return $message !== '' ? $message : 'Unable to retrieve error details';
+        }
+
+        if (!is_scalar($error)) {
+            return 'Unknown error';
+        }
+
+        $message = trim((string) $error);
+
+        return $message !== '' ? $message : 'Unknown error';
     }
 }
