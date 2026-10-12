@@ -398,6 +398,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
 
         /** @var \Joomla\Component\Scheduler\Administrator\Model\TaskModel $taskModel */
         $taskModel = $factory->createModel('Task', 'Administrator', ['ignore_request' => true]);
+        $taskModel->setCurrentUser($this->app->getIdentity());
 
         $result = $this->deleteItemsSafely(
             $trashed,
@@ -657,13 +658,13 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         }
 
         $db    = $this->getDatabase();
-        $alias = 'com_content.article';
+        $extension = 'com_content.article';
 
         $query = $db->getQuery(true)
             ->select($db->quoteName('type_id'))
             ->from($db->quoteName('#__content_types'))
             ->where($db->quoteName('type_alias') . ' = :alias')
-            ->bind(':alias', $alias);
+            ->bind(':alias', $extension);
 
         $articleTypeId = (int) $db->setQuery($query)->loadResult();
 
@@ -678,7 +679,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
                     ParameterType::INTEGER
                 )
                 ->where($db->quoteName('type_alias') . ' = :alias')
-                ->bind(':alias', $alias);
+                ->bind(':alias', $extension);
 
             $db->setQuery($query)->execute();
 
@@ -692,7 +693,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
                 ->delete($db->quoteName('#__workflow_associations'))
                 ->whereIn($db->quoteName('item_id'), $ids, ParameterType::INTEGER)
                 ->where($db->quoteName('extension') . ' = :extension')
-                ->bind(':extension', 'com_content.article');
+                ->bind(':extension', $extension);
 
             $db->setQuery($query)->execute();
 
@@ -704,7 +705,15 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
                     ParameterType::INTEGER
                 )
                 ->where($db->quoteName('core_type_alias') . ' = :alias')
-                ->bind(':alias', $alias);
+                ->bind(':alias', $extension);
+
+            $db->setQuery($query)->execute();
+
+            $itemIds = array_map(fn(int $id) => 'com_content.article.' . $id, $ids);
+
+            $query = $db->getQuery(true)
+                ->delete($db->quoteName('#__history'))                
+                ->whereIn($db->quoteName('item_id'), $itemIds);
 
             $db->setQuery($query)->execute();
 
