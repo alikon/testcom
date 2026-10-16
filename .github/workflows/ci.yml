@@ -27,7 +27,7 @@ jobs:
   phpcs:
     runs-on: ubuntu-latest
     container:
-      image: joomlaprojects/docker-images:php8.3
+      image: joomlaprojects/docker-images:php8.5
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
@@ -86,9 +86,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        joomla-version: ['5.4', '6.1', '6.2']
+        joomla-version: ['5.4', '6.2', '6.3']
     container:
-      image: joomlaprojects/docker-images:cypress8.3
+      image: joomlaprojects/docker-images:cypress8.5
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
@@ -166,7 +166,7 @@ jobs:
     needs: prepare_tests
     strategy:
       matrix:
-        joomla-version: ['5.4', '6.1']
+        joomla-version: ['5.4', '6.2']
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
@@ -246,7 +246,7 @@ jobs:
             image: postgres:12-alpine
             db-prefix: pgsql_
             alter-user-cmd: "apt-get update && apt-get install -y postgresql-client"
-          - joomla-version: '6.1'
+          - joomla-version: '6.2'
             php-version: '8.3'
             db: mariadb
             db-type: mysqli
@@ -254,7 +254,7 @@ jobs:
             image: mariadb:10.6
             db-prefix: mariadb_
             alter-user-cmd: "apt-get update && apt-get install -y mariadb-client"
-          - joomla-version: '6.1'
+          - joomla-version: '6.2'
             php-version: '8.4'
             db: pgsql
             db-type: pgsql
@@ -262,7 +262,7 @@ jobs:
             image: postgres:12-alpine
             db-prefix: pgsql_
             alter-user-cmd: "apt-get update && apt-get install -y postgresql-client"
-          - joomla-version: '6.1'
+          - joomla-version: '6.2'
             php-version: '8.5'
             db: mysql
             db-type: mysqli
@@ -272,7 +272,7 @@ jobs:
             alter-user-cmd: |
               apt-get update && apt-get install -y default-mysql-client
               mysql -h mysql -u root -proot --skip-ssl -e "ALTER USER 'joomla_ut'@'%' IDENTIFIED WITH mysql_native_password BY 'joomla_ut'; FLUSH PRIVILEGES;"
-          - joomla-version: '6.2'
+          - joomla-version: '6.3'
             php-version: '8.5'
             db: mysql
             db-type: mysqli
