@@ -16,6 +16,8 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Toolbar\Toolbar;
+use Joomla\Event\Event;
+use Joomla\Event\SubscriberInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -27,8 +29,21 @@ use Joomla\CMS\Toolbar\Toolbar;
  *
  * @since  1.0.0
  */
-final class Export extends CMSPlugin
+final class Export extends CMSPlugin implements SubscriberInterface
 {
+    /**
+     * @return array
+     * @since 1.0.0
+     */
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            'onBeforeRender'       => 'onBeforeRender',
+            'onAjaxExport'         => 'onAjaxExport',
+            'onAjaxExportDownload' => 'onAjaxExportDownload',
+        ];
+    }
+
     /**
      * Maximum number of article IDs accepted in a single bulk export
      * AJAX request, to avoid abuse / resource exhaustion.
@@ -104,6 +119,16 @@ final class Export extends CMSPlugin
         $canDo = ContentHelper::getActions('com_content');
         if (!$canDo->get('core.admin')) {
             return;
+        }
+
+        // For the articles list view, only show buttons when there are items displayed
+        if ($view === 'articles') {
+            $articlesModel = $this->app->bootComponent('com_content')->getMVCFactory()
+                ->createModel('Articles', 'Administrator');
+
+            if ((int) $articlesModel->getTotal() === 0) {
+                return;
+            }
         }
 
         // Get an instance of the Toolbar and add the export button
@@ -201,7 +226,7 @@ final class Export extends CMSPlugin
      *
      * @since   1.0.0
      */
-    public function onAjaxExport(): array
+    public function onAjaxExport(Event $event): array
     {
         if (!$this->app->checkToken('POST')) {
             throw new \Exception(Text::_('JINVALID_TOKEN'), 403);
@@ -277,7 +302,12 @@ final class Export extends CMSPlugin
             $articles[] = $exportItem;
         }
 
-        return array_values($articles);
+        $result = array_values($articles);
+
+        // Add result to Event object for com_ajax dispatching
+        $event->addResult($result);
+
+        return $result;
     }
 
     /**
@@ -327,7 +357,7 @@ final class Export extends CMSPlugin
      *
      * @since   1.0.0
      */
-    public function onAjaxExportDownload(): array
+    public function onAjaxExportDownload(Event $event): array
     {
         if (!$this->app->checkToken('POST')) {
             throw new \Exception(Text::_('JINVALID_TOKEN'), 403);
@@ -413,11 +443,15 @@ final class Export extends CMSPlugin
             $filename .= '.json';
         }
 
-        return [
+        $result = [
             'filename' => $filename,
             'mime'     => $mime,
             'content'  => base64_encode($content),
         ];
+
+        $event->addResult($result);
+
+        return $result;
     }
 
 }
