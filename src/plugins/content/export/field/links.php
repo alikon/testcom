@@ -1,12 +1,32 @@
 <?php
 
+/**
+ * @package     Joomla.Plugin
+ * @subpackage  Content.Export
+ *
+ * @copyright   Copyright (C) 2026 Alikon. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ */
+
 \defined('_JEXEC') or die;
 
 use Joomla\CMS\Form\FormField;
 use Joomla\CMS\Language\Text;
 
+/**
+ * Form field to render a row of external link buttons.
+ *
+ * @since  1.0.0
+ */
 class JFormFieldLinks extends FormField
 {
+    /**
+     * Renders the HTML for the link buttons.
+     *
+     * @return  string  HTML output of the button row.
+     *
+     * @since   1.0.0
+     */
     protected $type = 'Links';
 
     public function getInput()
