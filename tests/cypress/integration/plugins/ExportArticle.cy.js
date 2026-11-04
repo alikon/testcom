@@ -54,6 +54,7 @@ describe('Test in backend that the content Export plugin', () => {
   });
 
   it('shows the Export button on the articles list view', () => {
+    cy.db_createArticle({ title: 'Test export article' });
     cy.visit('/administrator/index.php?option=com_content&view=articles&filter=');
     cy.get('#toolbar-upload').should('exist').and('contain.text', 'Export');
   });
@@ -66,6 +67,7 @@ describe('Test in backend that the content Export plugin', () => {
   });
 
   it('shows an error and does not call the local AJAX endpoint when no article is selected', () => {
+    cy.db_createArticle({ title: 'Test export article' });
     stubRemoteApi();
     cy.intercept('POST', '**/index.php?option=com_ajax&plugin=export&group=content&format=json').as('bulkExportAjax');
 

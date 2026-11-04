@@ -10,11 +10,12 @@
     const toolbar = document.getElementById('toolbar-upload');
     if (!toolbar) return;
 
-    // Keep this in sync with Export::MAX_BULK_IDS on the server, it's
-    // only used here to fail fast client-side before hitting the AJAX call.
-    //const MAX_BULK_IDS = 100;
-
     toolbar.addEventListener('click', fetchData);
+
+    const downloadToolbar = document.getElementById('toolbar-download');
+    if (downloadToolbar) {
+      downloadToolbar.addEventListener('click', handleDownload);
+    }
 
     /**
      * Small sprintf-like helper so user-facing messages can stay in the
@@ -24,6 +25,84 @@
       const str = Joomla.Text._(key) || key;
       let i = 0;
       return str.replace(/%\d*\$?[sd]/g, () => args[i++]);
+    }
+
+    async function handleDownload(e) {
+      if (e) e.preventDefault();
+
+      const options = window.Joomla.getOptions('a-export');
+
+      if (!options || options.downloadFormat === 'none') return;
+
+      const csrfToken = Joomla.getOptions('csrf.token', '');
+      const postParams = new URLSearchParams();
+
+      if (csrfToken) {
+        postParams.append(csrfToken, '1');
+      }
+
+      let ids = [];
+
+      if (options.view === 'articles') {
+        ids = Array.from(document.querySelectorAll('input[name="cid[]"]:checked')).map(cb => cb.value);
+
+        if (ids.length === 0) {
+          showMessage(t('PLG_CONTENT_EXPORT_BULK_NO_SELECTION'), 'error');
+          return;
+        }
+
+        if (ids.length > options.maxBulk) {
+          showMessage(t('PLG_CONTENT_EXPORT_BULK_TOO_MANY_SELECTED', options.maxBulk), 'error');
+          return;
+        }
+      } else {
+        if (!options.article || !options.article.id) {
+          showMessage(t('PLG_CONTENT_EXPORT_ARTICLE_SAVE_REQUIRED'), 'error');
+          return;
+        }
+
+        ids = [options.article.id];
+      }
+
+      ids.forEach(id => postParams.append('ids[]', id));
+
+      try {
+        const resp = await fetch(
+          'index.php?option=com_ajax&plugin=exportDownload&group=content&format=json',
+          { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: postParams }
+        );
+
+        if (!resp.ok) {
+          showMessage(t('PLG_CONTENT_EXPORT_BULK_LOCAL_HTTP_ERROR'), 'error');
+          return;
+        }
+
+        const json = await resp.json();
+
+        if (!json || !json.success || !json.data) {
+          showMessage(json && json.message ? json.message : t('PLG_CONTENT_EXPORT_BULK_LOCAL_HTTP_ERROR'), 'error');
+          return;
+        }
+
+        // com_ajax wraps the return value as data[0]
+        const payload  = Array.isArray(json.data) ? json.data[0] : json.data;
+        const binary   = atob(payload.content);
+        const bytes    = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        const blob     = new Blob([bytes], { type: payload.mime });
+        const url      = URL.createObjectURL(blob);
+        const a        = document.createElement('a');
+        a.href         = url;
+        a.download     = payload.filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+
+        showMessage(t('PLG_CONTENT_EXPORT_DOWNLOAD_COMPLETE', ids.length, options.downloadFormat.toUpperCase()), 'success');
+      } catch (err) {
+        showMessage(t('PLG_CONTENT_EXPORT_BULK_FATAL_ERROR', err.message), 'error');
+      }
     }
 
     async function fetchData(e) {
