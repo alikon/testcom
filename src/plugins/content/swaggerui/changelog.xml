@@ -43,4 +43,13 @@
             <item>Namespace</item>            
         </change>
     </changelog>
+    <changelog>
+        <element>swaggerui</element>
+        <folder>content</folder>
+        <type>plugin</type>
+        <version>2.1.1</version>
+        <language>
+            <item>Reference official documentation</item>            
+        </language>
+    </changelog>
 </changelogs>
