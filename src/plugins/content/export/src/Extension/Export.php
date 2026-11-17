@@ -131,13 +131,15 @@ final class Export extends CMSPlugin implements SubscriberInterface
             }
         }
 
+        $downloadFormat = $this->params->get('download_format', 'none');
+
         // Get an instance of the Toolbar and add the export button
         $toolbar = Toolbar::getInstance('toolbar');
-        $toolbar->appendButton('Link', 'upload', 'Export', '#');
-
-        $downloadFormat = $this->params->get('download_format', 'none');
+        
         if ($downloadFormat !== 'none') {
             $toolbar->appendButton('Link', 'download', 'Download ' . strtoupper($downloadFormat), '#download-export');
+        } else {
+            $toolbar->appendButton('Link', 'upload', 'Export', '#');
         }
 
         // Build the options array shared by both views
