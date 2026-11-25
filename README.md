@@ -1,5 +1,16 @@
 This is the source of my Joomla extensions playground. Here you will find components, plugins, modules, CLI Commands webservices entrypoint.
 
+# Alikonweb Playground Demo
+
+A complete Joomla site in your browser tab: no server, no installation, no account. Try a Joomla version, test
+an idea, show something to someone, and throw it away, or keep it in your browser for later.
+
+**Open it:** <https://alikon.github.io/joomla-playground/?blueprint=alikonweb>
+
+After a few seconds you see Joomla's administrator, already logged in as a Super User. Everything runs in your
+browser: PHP is compiled to WebAssembly, and the site and its database live in the tab's memory. Nothing is
+sent to a server.
+
 Build Status
 ------------
 

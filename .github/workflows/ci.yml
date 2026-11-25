@@ -274,14 +274,12 @@ jobs:
               mysql -h mysql -u root -proot --skip-ssl -e "ALTER USER 'joomla_ut'@'%' IDENTIFIED WITH mysql_native_password BY 'joomla_ut'; FLUSH PRIVILEGES;"
           - joomla-version: '6.3'
             php-version: '8.5'
-            db: mysql
-            db-type: mysqli
-            db-host: mysql
-            image: mysql:8.0
-            db-prefix: mysql_
-            alter-user-cmd: |
-              apt-get update && apt-get install -y default-mysql-client
-              mysql -h mysql -u root -proot --skip-ssl -e "ALTER USER 'joomla_ut'@'%' IDENTIFIED WITH mysql_native_password BY 'joomla_ut'; FLUSH PRIVILEGES;"
+            db: pgsql
+            db-type: pgsql
+            db-host: postgres
+            image: postgres:12-alpine
+            db-prefix: pgsql_
+            alter-user-cmd: "apt-get update && apt-get install -y postgresql-client"
 
     container:
       image: joomlaprojects/docker-images:cypress${{ matrix.php-version }}
