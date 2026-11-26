@@ -24,5 +24,40 @@ export default function setupPlugins(on, config) {
     getMails: () => getMails(),
     clearEmails: () => clearEmails(),
     startMailServer: () => startMailServer(config),
+    getLatestReleaseZipUrl: async () => {
+      const headers = {
+        Accept: 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+        'User-Agent': 'testcom-cypress-tests',
+      };
+
+      if (process.env.GITHUB_TOKEN) {
+        headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+      }
+
+      const response = await fetch(
+        'https://api.github.com/repos/alikon/testcom/releases/latest',
+        { headers },
+      );
+      const release = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          `GitHub releases/latest returned ${response.status}: ${release.message || 'unknown error'}`,
+        );
+      }
+
+      const zipAsset = (release.assets || []).find(
+        (asset) => /^pkg[-_]alikonweb.*\.zip$/i.test(asset.name),
+      );
+
+      if (!zipAsset) {
+        throw new Error(
+          `Latest package ZIP not found. Assets: ${(release.assets || []).map((asset) => asset.name).join(', ') || 'none'}`,
+        );
+      }
+
+      return zipAsset.browser_download_url;
+    },
   });
 }

@@ -116,32 +116,7 @@ describe('Package Upgrade Test for alikon/testcom (Latest Release -> PR Candidat
   });
 
   it('2. installs latest stable package release from GitHub', () => {
-    cy.request({
-      url: 'https://api.github.com/repos/alikon/testcom/releases/latest',
-      failOnStatusCode: false,
-    }).then((response) => {
-      expect(response.status, 'GitHub releases/latest reachable').to.eq(200);
-
-      const assets = response.body.assets || [];
-      cy.log(`Found ${assets.length} release assets: ${assets.map((a) => a.name).join(', ')}`);
-
-      // FIX: il nome del file zip può usare l'underscore dell'element
-      // (pkg_alikonweb-x.y.z.zip) invece del trattino usato in precedenza
-      // (pkg-alikonweb...). Accettiamo entrambe le varianti.
-      const zipAsset = assets.find(
-        (asset) => /^pkg[-_]alikonweb.*\.zip$/i.test(asset.name)
-      );
-
-      expect(
-        zipAsset,
-        `Latest package zip asset found (checked: ${assets.map((a) => a.name).join(', ') || 'none'})`
-      ).to.exist;
-
-      ctx.latestZipUrl = zipAsset.browser_download_url;
-      cy.wrap(ctx.latestZipUrl).as('latestZipUrl');
-    });
-
-    cy.get('@latestZipUrl').then((url) => {
+    cy.task('getLatestReleaseZipUrl').then((url) => {
       cy.installExtensionFromUrl(url);
     });
     cy.get('#system-message-container').should('contain', 'Installation of the package was successful');
