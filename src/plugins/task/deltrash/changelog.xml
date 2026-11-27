@@ -133,4 +133,13 @@
             <item>Namespace</item>
         </change>
     </changelog>
+    <changelog>
+        <element>deltrash</element>
+        <folder>task</folder>
+        <type>plugin</type>
+        <version>2.0.0</version>
+        <change>
+            <item>Code improvments</item>
+        </change>
+    </changelog>
 </changelogs>
