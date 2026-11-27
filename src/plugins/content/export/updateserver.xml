@@ -205,4 +205,41 @@
         <updatefromcli>false</updatefromcli>
         <targetplatform name="joomla" version="((5\.[01234])|(6\.[01234]))" />
     </update>
+    <update>
+        <name>Content - Export Article</name>
+        <description>Joomla! Content - Export Article Plugin</description>
+        <element>export</element>
+        <type>plugin</type>
+        <folder>content</folder>
+        <version>3.0.0</version>
+        <client>site</client>
+        <php_minimum>8.1</php_minimum>
+        <infourl title="Joomla! Content - Export Article Plugin">https://www.alikonweb.it/extensions/content-plugin-export-article</infourl>
+        <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/content/export/changelog.xml</changelogurl>
+        <downloads>
+            <downloadurl type="full" format="zip">https://github.com/alikon/testcom/releases/download/v1.5/plg_content_export-3.0.0.zip</downloadurl>
+        </downloads>
+        <tags><tag>stable</tag></tags>
+        <sha256>4dcdedf6380a50aa670dcab3420bc3830991081f835ca3a6f884b715514bdbdd</sha256>
+        <updatefromcli>false</updatefromcli>
+        <targetplatform name="joomla" version="((5\.[01234])|(6\.[01234]))" />
+    </update><update>
+        <name>Content - Export Article</name>
+        <description>Joomla! Content - Export Article Plugin</description>
+        <element>export</element>
+        <type>plugin</type>
+        <folder>content</folder>
+        <version>4.0.0</version>
+        <client>site</client>
+        <php_minimum>8.1</php_minimum>
+        <infourl title="Joomla! Content - Export Article Plugin">https://www.alikonweb.it/extensions/content-plugin-export-article</infourl>
+        <changelogurl>https://raw.githubusercontent.com/alikon/testcom/main/src/plugins/content/export/changelog.xml</changelogurl>
+        <downloads>
+            <downloadurl type="full" format="zip">https://github.com/alikon/testcom/releases/download/v1.6/plg_content_export-4.0.0.zip</downloadurl>
+        </downloads>
+        <tags><tag>stable</tag></tags>
+        <sha256>893e9955e0821c0fb11f034e12442685748a26b5b261e751a5242fb392995cfe</sha256>
+        <updatefromcli>false</updatefromcli>
+        <targetplatform name="joomla" version="((5\.[01234])|(6\.[01234]))" />
+    </update>
 </updates>
